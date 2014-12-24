@@ -70,7 +70,7 @@
         password: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$"),
         alpha: new RegExp("^([a-zA-Z0-9]){1,100}$"),
-        commaSeparated: new RegExp("/^[a-zA-Z0-9,]{1,80}$"),
+        commaSeparated: new RegExp("^[a-zA-Z0-9,]{1,80}$"),
         unixId: new RegExp("^([a-z_][a-z0-9-_\\.\\-]{0,30})$"),
         unixPermissions: new RegExp("^((([0-7]){1,4})|(\\*))$"),
         osPath: new RegExp("^[^\\0 ]+$"),
