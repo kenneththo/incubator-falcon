@@ -20,14 +20,14 @@
   
   var falconModule = angular.module('app.services.falcon', ['app.services.x2js', 'ngCookies']);
 
-  falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', function ($http, X2jsService, $location, $rootScope, $cookieStore) {
+  falconModule.factory('Falcon', ["$http", "X2jsService", function ($http, X2jsService) {
 
     var Falcon = {},
         NUMBER_OF_RESULTS = 50; 
     
     function buildURI(uri) {
       var paramSeparator = (uri.indexOf('?') !== -1) ? '&' : '?';
-      uri = uri + paramSeparator + 'user.name=' + userToken.user;
+      uri = uri + paramSeparator + 'user.name=ambari-qa';
       return uri;
     }
     
