@@ -36,10 +36,6 @@
         templateUrl: 'html/mainTpl.html',
         controller: 'DashboardCtrl'
       })
-      .state('login', {
-      	controller: 'LoginFormCtrl',
-        templateUrl: 'html/login.html'
-      })
       .state('entityDetails', {
         controller: 'EntityDetailsCtrl',
         templateUrl: 'html/entityDetailsTpl.html'
@@ -134,87 +130,11 @@
 
   app.run(['$rootScope', '$state', '$location', '$http', '$stateParams', '$cookieStore', 
            function ($rootScope, $state, $location, $http, $stateParams, $cookieStore) {	
-  	
-  	var location = $location.absUrl();
-    var index = location.indexOf("views/");
-    if(index !== -1){
-    	index = index + 6;
-      var path = location.substring(index);
-      var servicePaths = path.split("/");
-      $rootScope.serviceURI = '/api/v1/views/'+servicePaths[0]+'/versions/'+servicePaths[1]+'/instances/'+servicePaths[2]+'/resources/proxy';
-      
-    }
-  	
-  	$rootScope.ambariView = function () {
-  		var location_call = $location.absUrl();
-      var index_call = location_call.indexOf("views/");
-      if(index_call !== -1){
-      	return true;
-      }else{
-      	return false;
-      }
-    };
-    
-  	$rootScope.userLogged = function () {
-      if($rootScope.ambariView()){
-      	return true;
-      }else{
-      	if(angular.isDefined($cookieStore.get('userToken')) && $cookieStore.get('userToken') !== null){
-    		  return true;
-    	  }else{
-    		  return false;
-    	  }
-      }
-    };  
     
     $rootScope.$on('$stateChangeError',
       function(event, toState, toParams, fromState, fromParams, error){
         console.log('Manual log of stateChangeError: ' + error);
       });
-    
-		$rootScope.$on('$stateChangeStart', 
-		  function(event, toState){ 
-				if(toState.name !== 'login'){
-					if($rootScope.ambariView()){
-						
-						if(angular.isDefined($cookieStore.get('userToken')) && $cookieStore.get('userToken') !== null){
-				  		
-				  	}else{
-				  		event.preventDefault();
-				  		$http.get($rootScope.serviceURI).success(function (data) {
-								var userToken = {};
-				      	userToken.user = data;
-					 			$cookieStore.put('userToken', userToken);
-					 			$state.transitionTo('main');
-				  		});
-				  	}
-						
-					}else	if($rootScope.userLogged()){
-						
-		  			var userToken = $cookieStore.get('userToken');
-		  			var timeOut = new Date().getTime();
-		  			
-		  			timeOut = timeOut - userToken.timeOut;
-		  			
-		  			if(timeOut > userToken.timeOutLimit){
-		  				console.log("session expired");
-		  				$cookieStore.put('userToken', null);
-		  				event.preventDefault();
-		  				$state.transitionTo('login');
-		  			}else{
-		  				userToken.timeOut = new Date().getTime();
-		  				$cookieStore.put('userToken', userToken);
-		  			}
-		  			
-		  			
-						
-			    }else{
-			    	console.log("Not logged, redirect to login");
-			 		  event.preventDefault();
-			 		  $state.transitionTo('login');
-			    }
-				}
-		  });
 		
   }]);
 

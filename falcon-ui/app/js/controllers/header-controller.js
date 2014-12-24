@@ -53,27 +53,6 @@
         $scope.cloningMode = true;
         $state.go("forms.feed.general");
       };
-      
-      $scope.userLogged = function () {
-    	  if($rootScope.userLogged()){
-    	  	if(angular.isDefined($cookieStore.get('userToken')) && $cookieStore.get('userToken') !== null){
-    	  		$scope.userToken = $cookieStore.get('userToken').user;
-    	  		return true;
-    	  	}else{
-    	  		$timeout(function() {
-    	  			$scope.userToken = $cookieStore.get('userToken').user;
-    	  			return true;
-    	  		}, 1000);
-    	  	}
-    	  }else{
-    		  return false;
-    	  }
-      };
-      
-      $scope.logOut = function() {
-      	$cookieStore.put('userToken', null);
-      	$state.transitionTo('login');
-      };
         
     }]);
 

@@ -19,7 +19,6 @@
   'use strict';
   
   angular.module('app.controllers', [
-                                      'app.controllers.login',
                                       'app.controllers.navHeader',
                                       'app.controllers.rootCtrl',
                                       'app.controllers.dashboardCtrl',
