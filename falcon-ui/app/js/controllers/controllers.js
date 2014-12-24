@@ -23,7 +23,6 @@
                                       'app.controllers.rootCtrl',
                                       'app.controllers.dashboardCtrl',
                                       'app.controllers.view',
-                                      'app.controllers.cluster',
                                       'app.controllers.entity'   
                                     ]);
 
