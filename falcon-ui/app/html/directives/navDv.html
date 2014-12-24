@@ -24,7 +24,7 @@
         <img src="css/img/falcon.png" /> Falcon
       </h1>
 
-      <div class="createNavWrapper" ng-show="userLogged()">
+      <div class="createNavWrapper">
         <h4>Create an entity</h4>
         <div ng-click="resetCluster()">
           <span class="entypo archive"></span> Cluster
@@ -32,12 +32,9 @@
         <div ng-click="resetFeed()">
           <span class="entypo download"></span> Feed
         </div>
-        <div id="createProcessButton" ng-click="resetProcess()">
-          <span class="entypo cycle"></span> Process
-        </div>
       </div>
 
-      <div class="uploadNavWrapper" ng-show="userLogged()">
+      <div class="uploadNavWrapper">
         <h4>Upload an entity</h4>
         <div class="btn-file">
           <span class="entypo up"></span>
@@ -45,23 +42,6 @@
           Browse for the XML file
         </div>
       </div>
-
-
-
-      <div class="loginHeaderBox">
-        <div ng-show="userLogged()">
-          <span class="entypo user"></span> <strong>{{userToken}}</strong>
-        </div>
-        <div ng-show="userLogged() && !ambariView()" ng-click="logOut()">
-          <span class="entypo logout pointer"></span><strong class="pointer">Logout</strong>
-        </div>
-        <div>
-          <span class="entypo circled-help"></span>Help
-        </div>
-      </div>
-
-
-
 
   </div>
 </nav>

@@ -25,7 +25,6 @@
                                       'app.controllers.view',
                                       'app.controllers.cluster',
                                       'app.controllers.feed',
-                                      'app.controllers.process',
                                       'app.controllers.entity'   
                                     ]);
 

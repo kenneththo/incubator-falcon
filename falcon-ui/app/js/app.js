@@ -128,8 +128,8 @@
     
   }]);
 
-  app.run(['$rootScope', '$state', '$location', '$http', '$stateParams', '$cookieStore', 
-           function ($rootScope, $state, $location, $http, $stateParams, $cookieStore) {	
+  app.run(['$rootScope', 
+           function ($rootScope) {	
     
     $rootScope.$on('$stateChangeError',
       function(event, toState, toParams, fromState, fromParams, error){
