@@ -40,27 +40,27 @@
            ng-required="true" ng-disabled="xmlPreview.edit" validation-message="{{validations.messages.description}}"
            ng-model="clusterEntity.clusterModel.cluster._description" />
   </div>
-  
+
   <div class="col-xs-24">
     <label class="light">Tags</label>
   </div>
-  
+
   <div class="col-xs-24">
-    <div ng-repeat="tag in tagsArray" class="row dynamic-table-spacer">   
+    <div ng-repeat="tag in tagsArray" class="row dynamic-table-spacer">
       <div class="col-xs-10">
         <input type="text" class="form-control" ng-model="tag.key" ng-disabled="xmlPreview.edit" placeholder="key"
-               ng-pattern="validations.patterns.alpha" ng-required="tag.value"/>
+               ng-pattern="validations.patterns.alpha" ng-required="tag.value" validation-message="{{validations.messages.key}}"/>
       </div>
       <div class="col-xs-11">
         <input type="text" class="form-control" ng-disabled="xmlPreview.edit" placeholder="value"
-               ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key"/>
+               ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" validation-message="{{validations.messages.value}}"/>
       </div>
       <div class="col-xs-3">
         <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
           <span class="entypo minus"></span> delete
         </div>
       </div>
-    </div>   
+    </div>
   </div>
 
   <div class="col-sm-24 dynamic-table-spacer">
@@ -71,22 +71,27 @@
   <h4 class="col-sm-24"> Access Control List </h4>
   <div class="col-sm-8">
     <label class="light">Owner</label>
-    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" ng-pattern="validations.patterns.unixId"
+    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" validation-optional-message="{{validations.messages.acl.owner}}"
+           ng-required="clusterEntity.clusterModel.cluster.ACL._group || clusterEntity.clusterModel.cluster.ACL._permission"
+           ng-pattern="validations.patterns.unixId"
            ng-model="clusterEntity.clusterModel.cluster.ACL._owner"/>
   </div>
   <div class="col-sm-8">
     <label class="light">Group</label>
-    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" ng-pattern="validations.patterns.unixId"
+    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" validation-optional-message="{{validations.messages.acl.group}}"
+           ng-required="clusterEntity.clusterModel.cluster.ACL._owner || clusterEntity.clusterModel.cluster.ACL._permission"
+           ng-pattern="validations.patterns.unixId"
            ng-model="clusterEntity.clusterModel.cluster.ACL._group"/>
   </div>
   <div class="col-sm-8">
     <label class="light">Permissions</label>
-    <input type="text" class="form-control" ng-disabled="xmlPreview.edit"
+    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" validation-optional-message="{{validations.messages.acl.permission}}"
+           ng-required="clusterEntity.clusterModel.cluster.ACL._owner || clusterEntity.clusterModel.cluster.ACL._group"
            ng-pattern="validations.patterns.unixPermissions"
            ng-model="clusterEntity.clusterModel.cluster.ACL._permission"/>
   </div>
-  
-  <h4 class="col-sm-24"> Interfaces </h4> 
+
+  <h4 class="col-sm-24"> Interfaces </h4>
   <label class="col-xs-4">
     Type
   </label>
@@ -156,7 +161,7 @@
         <input type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
                ng-disabled="xmlPreview.edit" ng-required="true" validation-message="{{validations.messages.location}}"/>
       </div>
-      <div class="col-xs-2 dynamic-table-spacer"></div>     
+      <div class="col-xs-2 dynamic-table-spacer"></div>
       <div class="clearfix hidden-md"></div>
     </div>
 
@@ -165,7 +170,7 @@
         <input type="text" class="form-control" ng-model="location._name" ng-pattern="validations.patterns.alpha"
                ng-disabled="xmlPreview.edit" ng-required="location._path" placeholder="name" />
       </div>
-      <div class="col-xs-15 dynamic-table-spacer">   
+      <div class="col-xs-15 dynamic-table-spacer">
         <input type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
                ng-disabled="xmlPreview.edit" ng-required="location._name" placeholder="path" />
       </div>
@@ -174,10 +179,10 @@
              ng-disabled="xmlPreview.edit" >
           <span class="entypo minus"></span> delete
         </div>
-      </div>    
+      </div>
       <div class="clearfix hidden-md"></div>
     </div>
-    
+
   </div>
 
   <div class="col-xs-24 dynamic-table-spacer">

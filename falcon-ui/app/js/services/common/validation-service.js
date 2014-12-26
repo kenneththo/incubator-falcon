@@ -55,6 +55,19 @@
           empty: "You need to provide a provider",
           patternInvalid: "The provider has an invalid format. "
         },
+        acl: {
+          owner: {
+            empty: "You need to provide an owner",
+            patternInvalid: "The Owner has an invalid format. "
+          },
+          group: {
+            empty: "You need to provide a group",
+            patternInvalid: "The Group has an invalid format. "},
+          permission: {
+            empty: "You need to provide a Permission",
+            patternInvalid: "The Permission has an invalid format. "
+          }
+        },
         engine: { empty: "You need to select an engine" },
         cluster: { empty: "You need to select a cluster" },
         feed: { empty: "You need to select a feed" },
