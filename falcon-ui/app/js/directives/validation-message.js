@@ -50,14 +50,11 @@
           element.parent().append(
             '<label ng-show="messageSwitcher.show" class="custom-danger validationMessageGral"></label>'
           );
-          //var t0 = performance.now();
           angular.forEach(element.parent().children(), function () {
             lastOne = lastOne + 1;
           });
           lastOne = lastOne - 1;
           stringLabel = $(element).parent().children()[lastOne];
-          //var t1 = performance.now();
-          //console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         }
 
         function checkNameInList() {
@@ -162,8 +159,6 @@
           invalidPattern,
           messageObject = angular.fromJson(scope.validationOptionalMessage);
 
-        scope.messageSwitcher = { show: false };
-
         messageObject.patternInvalid = messageObject.patternInvalid || messageObject.empty;
 
         function getLabelElement() {
@@ -186,42 +181,27 @@
           invalidPattern = element.hasClass('ng-invalid-pattern');
 
           if (valLength === 0 && required) {
-            console.log("0 e invalido + required=" + required);
-
             element.addClass('empty');
             angular.element(stringLabel).html(messageObject.empty).addClass('hidden');
             element.parent().removeClass("showMessage showValidationStyle validationMessageParent");
 
           } else if (valLength === 0 && !required) {
-            console.log("0 y valido");
-
             element.addClass('empty');
             element.parent().removeClass("showMessage showValidationStyle validationMessageParent");
             angular.element(stringLabel).addClass('hidden');
 
           } else if (invalidPattern && valLength > 0) {
-            console.log("mayor a 0 y invalido");
-
             element.removeClass('empty');
-
-
             angular.element(stringLabel).html(messageObject.patternInvalid).removeClass('hidden');
             element.parent().addClass("showMessage showValidationStyle validationMessageParent");
 
           } else if (valid && valLength > 0) {
-            console.log("mayor a 0 y valido");
             element.removeClass('empty');
-
-
-           // scope.messageSwitcher.show = true;
             angular.element(stringLabel).addClass('hidden');
             element.parent().removeClass("showMessage showValidationStyle validationMessageParent");
 
           } else {
-            console.log("el caso else");
-            /*element.addClass('empty');
-            element.parent().removeClass("showMessage");*/
-         //   scope.messageSwitcher.show = false;
+            console.log("else");
           }
         }
         function addListeners() {
@@ -229,39 +209,19 @@
           element.bind('keyup', prepare);
           element.bind('blur', function () {
             if (valLength === 0 && required) {
-              console.log('hehe');
               element.removeClass('empty');
               angular.element(stringLabel).html(messageObject.empty).removeClass('hidden');
               element.parent().addClass("showMessage showValidationStyle validationMessageParent");
             }
-            /*if (element[0].value.length === 0 && required) {
-              element.parent().addClass("showMessage showValidationStyle validationMessageParent");
-        //      scope.messageSwitcher.show = true;
-              angular.element(stringLabel).html(messageObject.empty).removeClass('valid');
-            }*/
           });
-          element.bind('focus', function () {
-            /*element.removeClass('empty');*/
-          });
-
         }
         function normalize() {
           prepare();
-          console.log(valLength);
-          console.log(required);
           setTimeout(function () {
-            console.log(valLength);
-            console.log(required);
             if (valLength === 0 && required) {
               angular.element(stringLabel).removeClass('hidden');
               element.removeClass('empty');
             }
-            //prepare();
-            /*if (valid || element[0].value.length === 0) {
-              scope.messageSwitcher.show = false;
-            } else {
-              scope.messageSwitcher.show = true;
-            }*/
           }, 100);
         }
         function init() {
@@ -282,22 +242,6 @@
             element.addClass('empty');
           }
         });
-        /*scope.$watch(function () {
-          return validationService.displayValidations;
-        }, normalize);
-
-        scope.$watch(function () {
-          return valid;
-        }, function () {
-
-          checkNameInList();
-          if (element[0].value.length === 0 && valid) {
-            element.parent().addClass("showMessage showValidationStyle validationMessageParent");
-            //scope.messageSwitcher.show = true;
-            angular.element(stringLabel).html(messageObject.empty).removeClass('valid');
-          }
-
-        });*/
       }
     };
   }]);
