@@ -192,26 +192,11 @@
         $scope.jsonString = JSON.parse($scope.jsonString);
         $scope.jsonString = X2jsService.json2xml_str($scope.jsonString);
       };
-      function xmlPreviewCallback() {
-        if ($state.current.name !== 'forms.cluster.general' && $state.current.name !== 'forms.cluster.summary') {
-          $interval.cancel(refresher);
-        }
-        if(!$scope.xmlPreview.edit) {
-          if($scope.clusterEntity.clusterModel.cluster.tags !== undefined) { $scope.convertTags(); }
-          $scope.showInPreview();
-        }
-        else {
-          $scope.splitTags();
-          $scope.transformBack();
-        }
-      }
-      var refresher = $interval(xmlPreviewCallback, 1000);
-      
-      //xmlPreviewCallback();
-
 
       //------------init------------//
       normalizeModel();
+      
+      $scope.showInPreview();
     }
   ]);
 })();

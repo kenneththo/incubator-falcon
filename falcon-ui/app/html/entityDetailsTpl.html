@@ -17,18 +17,19 @@
  * limitations under the License.
  */
 -->
-<div class="col-sm-24 detailsHeaders"> 
-  <h3>
-    <small>{{clusterEntity._name}}</small>
-    {{ viewDock._name }}
-  </h3>
-</div>
-<div class="col-sm-23 detailsBox">
-  <h5>
-    Definition
-  </h5>
-  <div>
-    <textarea ng-model="prettyXml" rows="25" ng-disabled="true"></textarea>
-  </div>
-    
+<div class="container">
+
+	<h3 class="link-icons entity-title entity-link-null" id="entity-title">
+		Name <span class="label label-success">Type</span>
+	</h3>
+	
+	<div class="col-sm-24 detailsBox">
+	  <h5>
+	    Definition
+	  </h5>
+	  <div>
+	    <textarea ng-model="prettyXml" rows="25" ng-disabled="true"></textarea>
+	  </div>
+	</div>
+	
 </div>
