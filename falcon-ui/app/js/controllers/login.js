@@ -30,7 +30,6 @@
   	
   	$scope.loggUser = function(form) {
   		form.password.$setValidity("login", true);
-  		console.log(form.$valid);
   		var showLoginVal = {show: false};
   		if(form.$valid){
   			$http.get('config/loginData.js').success(function(data) {
