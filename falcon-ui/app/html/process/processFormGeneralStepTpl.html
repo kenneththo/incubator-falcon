@@ -18,7 +18,7 @@
  */
 -->
 <form name="processForm" class="mt10">
- 
+
     <div class="col-xs-24">
       <label class="light">Name</label>
       <input type="text" class="form-control" ng-keydown="validations.acceptNoSpaces($event)"
@@ -36,10 +36,12 @@
         <div class="row dynamic-table-spacer">
           <div class="col-xs-10">
             <input type="text" class="form-control" ng-model="tag.key" placeholder="key"
+                   validation-optional-message="{{validations.messages.key}}"
                    ng-pattern="validations.patterns.alpha" ng-required="tag.value"/>
           </div>
           <div class="col-xs-11">
             <input type="text" class="form-control" placeholder="value"
+                   validation-optional-message="{{validations.messages.value}}"
                    ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key"/>
           </div>
           <div class="col-xs-3">
@@ -71,20 +73,28 @@
   <div id="engineSection" class="col-xs-24">
     <label class="light">Engine</label>
     <div class="row">
-      <div class="col-xs-4" ng-class="{fakeInvalidRadio:!process.workflow.engine}">
-        <input type="radio" id="oozieEngineRadio"  ng-change="selectWorkflow()" ng-model="process.workflow.engine" value="oozie" ng-required="!process.workflow.engine"/> Oozie
+      <div class="col-xs-4">
+        <input
+                type="radio" id="oozieEngineRadio" ng-change="selectWorkflow()"
+                ng-model="process.workflow.engine" value="oozie"
+                ng-required="!process.workflow.engine"/> Oozie
       </div>
-      <div class="col-xs-4" ng-class="{fakeInvalidRadio:!process.workflow.engine}">
-        <input type="radio" id="pigEngineRadio" ng-change="selectWorkflow()" ng-model="process.workflow.engine" value="pig" ng-required="!process.workflow.engine"/> Pig
+      <div class="col-xs-4">
+        <input type="radio" id="pigEngineRadio" ng-change="selectWorkflow()"
+               ng-model="process.workflow.engine" value="pig"
+               ng-required="!process.workflow.engine"/> Pig
       </div>
-      <div class="col-xs-4" ng-class="{fakeInvalidRadio:!process.workflow.engine}">
-        <input type="radio" id="hiveEngineRadio" ng-change="selectWorkflow()" ng-model="process.workflow.engine" value="hive" ng-required="!process.workflow.engine"/> Hive
+      <div class="col-xs-4">
+        <input type="radio" id="hiveEngineRadio" ng-change="selectWorkflow()"
+               ng-model="process.workflow.engine" value="hive"
+               ng-required="!process.workflow.engine"/> Hive
       </div>
+
       <select id="engineVersionField" ng-model="process.workflow.version"
-        ng-required="true" ng-show="process.workflow.engine" validation-message="{{validations.messages.engine}}">
-        
+        ng-required="true" ng-show="process.workflow.engine">
+
         <option value="" disabled selected style='display:none;'>-Select {{process.workflow.engine}} version-</option>
-        
+
         <option ng-repeat="version in versions"
           id="{{process.workflow.engine}}Version{{$index}}"
           value="{{version}}"
@@ -92,6 +102,10 @@
           {{version}}
         </option>
       </select>
+      <label class="col-xs-24 custom-danger validationMessageGral"
+              ng-if="!process.workflow.engine">
+        {{validations.messages.engine.empty}}
+      </label>
     </div>
   </div>
   <div class="col-xs-24">
@@ -101,6 +115,7 @@
            ng-model="process.workflow.path"
            ng-required="true"
            ng-maxlength="200"
+           validation-optional-message="{{validations.messages.path}}"
            ng-pattern="validations.patterns.osPath"/>
   </div>
 

@@ -241,7 +241,7 @@
 
   function Output() {
     this.name = null;
-    this.feed = null;
+    this.feed = "";
     this.outputInstance = null;
   }
 
