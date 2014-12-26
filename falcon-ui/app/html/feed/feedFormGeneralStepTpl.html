@@ -28,7 +28,7 @@
     </div>
     <div class="col-sm-24">
       <label class="light">Description</label>
-      <input type="text" class="form-control"
+      <input type="text" class="form-control" validation-optional-message="{{validations.messages.description}}"
         ng-model="feed.description"
         ng-pattern="validations.patterns.freeText"/>
     </div>
@@ -42,10 +42,11 @@
         <div class="row dynamic-table-spacer">
           <div class="col-xs-10">
             <input type="text" class="form-control" ng-model="tag.key"
+                   validation-optional-message="{{validations.messages.key}}"
               ng-pattern="validations.patterns.alpha" ng-required="tag.value" placeholder="key"/>
           </div>
           <div class="col-xs-11">
-            <input type="text" class="form-control"
+            <input type="text" class="form-control" validation-optional-message="{{validations.messages.value}}"
               ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" placeholder="value"/>
           </div>
           <div class="col-xs-3">
@@ -64,7 +65,7 @@
 
     <div class="col-sm-24">
       <label class="light">Groups (comma separated)</label>
-      <input type="text" class="form-control"
+      <input type="text" class="form-control" validation-optional-message="{{validations.messages.acl.group}}"
         ng-pattern="validations.patterns.commaSeparated"
         ng-model="feed.groups"/>
     </div>
@@ -72,21 +73,24 @@
     <h4 class="col-sm-24"> Access Control List </h4>
     <div class="col-sm-8">
       <label class="light">Owner</label>
-      <input type="text" class="form-control"
-        ng-pattern="validations.patterns.unixId"
-        ng-model="feed.ACL.owner"/>
+      <input type="text" class="form-control" validation-optional-message="{{validations.messages.acl.owner}}"
+             ng-required="feed.ACL.permission || feed.ACL.group"
+             ng-pattern="validations.patterns.unixId"
+             ng-model="feed.ACL.owner"/>
     </div>
     <div class="col-sm-8">
       <label class="light">Group</label>
-      <input type="text" class="form-control"
-       ng-pattern="validations.patterns.unixId"
-       ng-model="feed.ACL.group"/>
+      <input type="text" class="form-control" validation-optional-message="{{validations.messages.acl.group}}"
+             ng-required="feed.ACL.owner || feed.ACL.permission"
+             ng-pattern="validations.patterns.unixId"
+             ng-model="feed.ACL.group"/>
     </div>
     <div class="col-sm-8">
       <label class="light">Permissions</label>
-      <input type="text" class="form-control"
-        ng-pattern="validations.patterns.unixPermissions"
-        ng-model="feed.ACL.permission"/>
+      <input type="text" class="form-control" validation-optional-message="{{validations.messages.acl.permission}}"
+             ng-required="feed.ACL.owner || feed.ACL.group"
+             ng-pattern="validations.patterns.unixPermissions"
+             ng-model="feed.ACL.permission"/>
     </div>
 
     <h4 class="col-sm-24">Schema</h4>
@@ -105,7 +109,7 @@
         ng-model="feed.schema.provider"
         ng-required="true"/>
     </div>
-  
+
 
   <div class="col-xs-24">
     <div class="feedBottomButtons row">

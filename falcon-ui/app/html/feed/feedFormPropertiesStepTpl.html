@@ -21,7 +21,7 @@
 
     <h5 class="col-xs-24 mb10">Timing</h5>
 
-    <div class="col-xs-9 inlineInputsGroup">   
+    <div class="col-xs-9 inlineInputsGroup">
       <div class="light">Frequency</div>
       <span>Every</span>
       <input type="text" class="form-control" validation-message="{{validations.messages.number}}"
@@ -30,7 +30,7 @@
              ng-keydown="validations.acceptOnlyNumber($event)"
              ng-pattern="validations.patterns.twoDigits"/>
 
-      <select       
+      <select
         ng-model="feed.frequency.unit"
         ng-required="true">
         <option selected value="minutes">minutes</option>
@@ -40,16 +40,16 @@
       </select>
     </div>
 
-    <div class="col-xs-9 inlineInputsGroup">   
+    <div class="col-xs-9 inlineInputsGroup">
       <div class="light"><input type="checkbox" ng-model="feed.lateArrival.active" />Late Arrival</div>
       <span>Up to</span>
-  
+
       <input type="text" class="form-control" ng-keydown="validations.acceptOnlyNumber($event)"
         ng-model="feed.lateArrival.cutOff.quantity"
         ng-disabled="!feed.lateArrival.active"
         ng-pattern="validations.patterns.twoDigits"
         ng-required="feed.lateArrival.active"/>
-  
+
       <select
         ng-model="feed.lateArrival.cutOff.unit" ng-disabled="!feed.lateArrival.active"
         ng-required="feed.lateArrival.active">
@@ -69,11 +69,11 @@
 
   <div class="col-xs-24">
     <div class="row mt20">
-      <label class="col-xs-5 light">Timezone</label> 
+      <label class="col-xs-5 light">Timezone</label>
       <time-zone-select ng-model="feed.timezone" class="col-xs-19"></time-zone-select>
-  
+
       <h5 class="col-xs-24">Properties</h5>
-  
+
       <div class="col-xs-5">
         <label class="light">Name</label>
       </div>
@@ -82,13 +82,13 @@
       </div>
       <div class="col-xs-24" id="feedPropertiesBox">
         <div ng-repeat="property in feed.properties" class="row">
-         
+
           <label class="col-xs-5">{{property.key}}</label>
-        
+
           <div class="col-xs-19" ng-if="property.key !== 'timeout' && property.key !== 'jobPriority'">
             <input type="text" class="form-control"
-              ng-model="property.value"
-              ng-patter="validations.patterns.alpha"/>
+              ng-model="property.value" validation-optional-message="{{validations.messages.value}}"
+              ng-pattern="validations.patterns.alpha"/>
           </div>
           <div class="col-xs-19 inlineInputsGroup" ng-if="property.key === 'timeout'">
             At
@@ -119,21 +119,21 @@
         <div ng-repeat="property in feed.customProperties" class="row">
           <div class="col-xs-5 mt10">
             <input type="text" class="form-control" placeholder="key"
-              ng-model="property.key"
+              ng-model="property.key" validation-optional-message="{{validations.messages.key}}"
               ng-pattern="validations.patterns.alpha"
               ng-required="property.value"/>
           </div>
-    
+
           <div class="col-xs-15 mt10">
             <input type="text" class="form-control" placeholder="value"
-              ng-model="property.value"
+              ng-model="property.value" validation-optional-message="{{validations.messages.value}}"
               ng-pattern="validations.patterns.alpha"
               ng-required="property.key"/>
           </div>
-          <div class="col-xs-4 mt10"> 
+          <div class="col-xs-4 mt10">
             <div class="btn btn-default btn-xs mt1" ng-click="removeCustomProperty($index)" ng-if="$index>0">
               <span class="entypo minus"></span> delete
-            </div>   
+            </div>
           </div>
         </div>
       </div>

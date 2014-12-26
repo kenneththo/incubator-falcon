@@ -34,7 +34,7 @@
               <option ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
             </select>
           </div>
-            
+
 
           <div class="col-xs-24 feedLocationNavBox nopointer">
             <h4 class="col-xs-7" ng-show="!feed.storage.fileSystem.active">Default Storage type</h4>
@@ -60,20 +60,26 @@
                ng-show="feed.storage.fileSystem.active"
                ng-repeat="location in cluster.storage.fileSystem.locations">
             <label class="light">{{location.type}} path</label>
-            <input type="text" class="form-control" ng-model="location.path" ng-pattern="validations.patterns.osPath" />
+            <input type="text" class="form-control"
+                   ng-model="location.path"
+                   validation-optional-message="{{validations.messages.path}}"
+                   ng-pattern="validations.patterns.osPath" />
           </div>
 
           <div class="col-xs-24 mb10" ng-show="feed.storage.catalog.active">
             <label class="light">Table uri</label>
-            <input type="text" class="form-control" ng-model="cluster.storage.catalog.catalogTable.uri" ng-pattern="validations.patterns.osPath"/>
+            <input type="text" class="form-control"
+                   ng-model="cluster.storage.catalog.catalogTable.uri"
+                   validation-optional-message="{{validations.messages.path}}"
+                   ng-pattern="validations.patterns.osPath"/>
           </div>
 
           <label class="col-xs-24"> Validity </label>
 
           <div class="col-xs-12">
-           
+
               <label class="light col-xs-24">Start</label>
-            
+
               <div class="input-group input-group-xs">
                 <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.start)"></span>
                 <input type="text" class="form-control" placeholder="Select start Date"
@@ -82,15 +88,15 @@
                   is-open="cluster.validity.start.opened"
                   ng-required="true">
               </div>
-            
+
           </div>
           <div class="col-xs-12">
             <timepicker class="timePicker" ng-model="cluster.validity.start.time" hour-step="1" minute-step="1" ></timepicker>
           </div>
           <div class="col-xs-12">
-           
+
             <label class="light col-xs-24">End</label>
-           
+
             <div class="input-group input-group-xs">
               <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.end)"></span>
               <input type="text" class="form-control" placeholder="Select end Date"
