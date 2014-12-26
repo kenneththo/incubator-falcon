@@ -20,8 +20,8 @@
 <form name="processForm" class="mt10">
   <div class="col-sm-offset-1 col-sm-22">
     <div ng-repeat="cluster in process.clusters" class="row">
-      <div class="col-xs-24 detailsBox processCluster">       
-          
+      <div class="col-xs-24 detailsBox processCluster">
+
         <h5>Cluster</h5>
         <div class="row">
           <div class="col-xs-24">
@@ -33,13 +33,13 @@
           </div>
         </div>
         <div class="clearfix"></div>
-        
+
         <h5>Validity</h5>
         <div class="row">
           <div class="col-xs-12">
-       
+
             <div>Start</div>
-           
+
             <div class="input-group input-group-xs">
               <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.start)"></span>
               <input type="text" class="form-control" placeholder="Start Date"
@@ -47,12 +47,16 @@
                      ng-model="cluster.validity.start.date"
                      is-open="cluster.validity.start.opened"
                      ng-required="true">
-            </div>     
+            </div>
+            <label class="col-xs-24 custom-danger validationMessageGral"
+                   ng-if="!cluster.validity.start.date">
+              {{validations.messages.date.empty}}
+            </label>
           </div>
-    
+
           <div class="col-xs-12">
             <div>End</div>
-            
+
             <div class="input-group input-group-xs">
               <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.end)"></span>
               <input type="text" class="form-control" placeholder="End Date"
@@ -60,7 +64,11 @@
                      ng-model="cluster.validity.end.date"
                      is-open="cluster.validity.end.opened"
                      ng-required="true">
-            </div>    
+            </div>
+            <label class="col-xs-24 custom-danger validationMessageGral"
+                   ng-if="!cluster.validity.end.date">
+              {{validations.messages.date.empty}}
+            </label>
           </div>
           <div class="col-xs-24 mt10">
             <div class="btn btn-default pull-right btn-xs" ng-click="removeCluster($index)" ng-if="!$first">
@@ -68,9 +76,9 @@
             </div>
           </div>
         </div>
-        
-        
-        
+
+
+
       </div>
     </div>
   </div>
@@ -92,5 +100,5 @@
       </u>
     </div>
   </div>
-  
+
 </form>
