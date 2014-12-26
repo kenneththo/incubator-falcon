@@ -49,11 +49,11 @@
     <div ng-repeat="tag in tagsArray" class="row dynamic-table-spacer">
       <div class="col-xs-10">
         <input type="text" class="form-control" ng-model="tag.key" ng-disabled="xmlPreview.edit" placeholder="key"
-               ng-pattern="validations.patterns.alpha" ng-required="tag.value" validation-message="{{validations.messages.key}}"/>
+               ng-pattern="validations.patterns.alpha" ng-required="tag.value" validation-optional-message="{{validations.messages.key}}"/>
       </div>
       <div class="col-xs-11">
         <input type="text" class="form-control" ng-disabled="xmlPreview.edit" placeholder="value"
-               ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" validation-message="{{validations.messages.value}}"/>
+               ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" validation-optional-message="{{validations.messages.value}}"/>
       </div>
       <div class="col-xs-3">
         <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
@@ -128,11 +128,13 @@
   <div ng-repeat="property in clusterEntity.clusterModel.cluster.properties.property">
     <div class="col-xs-7 dynamic-table-spacer">
       <input type="text" class="form-control" ng-model="property._name"
+             validation-optional-message="{{validations.messages.name}}"
              ng-pattern="validations.patterns.alpha" ng-disabled="xmlPreview.edit"
              ng-required="property._value" placeholder="name" />
     </div>
     <div class="col-xs-15 dynamic-table-spacer">
-      <input type="text" class="form-control" ng-model="property._value" ng-pattern="validations.patterns.alpha"
+      <input type="text" class="form-control" ng-model="property._value" validation-optional-message="{{validations.messages.value}}"
+             ng-pattern="validations.patterns.alpha"
              ng-disabled="xmlPreview.edit" ng-required="property._name" placeholder="value" />
     </div>
     <div class="col-xs-2 dynamic-table-spacer">
@@ -167,11 +169,15 @@
 
     <div class="row" ng-if="location._name !== 'staging' && location._name !== 'working' && location._name !== 'temp'">
       <div class="col-xs-7 dynamic-table-spacer">
-        <input type="text" class="form-control" ng-model="location._name" ng-pattern="validations.patterns.alpha"
+        <input type="text" class="form-control" ng-model="location._name"
+               validation-optional-message="{{validations.messages.name}}"
+               ng-pattern="validations.patterns.alpha"
                ng-disabled="xmlPreview.edit" ng-required="location._path" placeholder="name" />
       </div>
       <div class="col-xs-15 dynamic-table-spacer">
-        <input type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
+        <input type="text" class="form-control" ng-model="location._path"
+               validation-optional-message="{{validations.messages.path}}"
+               ng-pattern="validations.patterns.osPath"
                ng-disabled="xmlPreview.edit" ng-required="location._name" placeholder="path" />
       </div>
       <div class="col-xs-2 dynamic-table-spacer">
