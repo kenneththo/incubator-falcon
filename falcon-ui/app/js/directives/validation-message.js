@@ -141,7 +141,7 @@
     };
   }]);
 
-  directivesModule.directive('validationOptionalMessage', ["ValidationService", function (validationService) {
+  directivesModule.directive('validationOptionalMessage', [function () {
     return {
       replace: false,
       scope: {

@@ -213,6 +213,23 @@
           background: true,
           browsers: ['PhantomJS']
         }
+      },
+      
+      protractor:{
+      	options: {
+            configFile: "app/test/e2e/protractor.js", // Default config file
+            keepAlive: true, // If false, the grunt process stops when the test fails.
+            noColor: false, // If true, protractor will not use colors in its output.
+            args: {
+              // Arguments passed to the command
+            }
+          },
+          all: {   // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
+//            options: {
+//              configFile: "e2e.conf.js", // Target-specific config file
+//              args: {} // Target-specific arguments
+//            }
+          }
       }
 
     });
@@ -239,6 +256,8 @@
     grunt.registerTask('ambariview', [
       'clean', 'concat:vendor', 'uglify', 'less', 'resources', 
       'dependencies', 'karma:unit', 'copy:ambariview']);
+    
+    grunt.registerTask('testE2E', ['protractor:all']);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -252,6 +271,7 @@
     grunt.loadNpmTasks('grunt-datauri');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-protractor-runner');
 
   };
 
