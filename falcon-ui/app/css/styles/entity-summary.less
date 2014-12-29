@@ -1,4 +1,3 @@
-<!--
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,32 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
--->
-<div class="row entitySummary">
+@summarySuccess: #009900;
+@summaryWarning: #E6DD00;
+@summaryDanger: #FF0000;
 
-  <div class="whiteBox col-xs-6">
-    <div>
-      <h3>{{statusCount.TOTAL_AMOUNT}}</h3>
-      <h5 class="notBold">Total</h5>
-    </div>
-  </div>
-
-
-  <div class="whiteBox col-xs-16 pull-right" ng-if="type !== 'cluster'">
-    <div class="col-xs-8 text-success">
-      <h3>{{statusCount.RUNNING}}</h3>
-      <h5>RUNNING</h5>
-    </div>
-
-    <div class="col-xs-8 text-warning">
-      <h3>{{statusCount.SUSPENDED}}</h3>
-      <h5>SUSPENDED</h5>
-    </div>
-
-    <div class="col-xs-8 text-danger">
-      <h3>{{statusCount.UNKNOWN}}</h3>
-      <h5>UNKNOWN</h5>
-    </div>
-  </div>
-
-</div>
+.entitySummary {
+  text-align: center;
+  .whiteBox {
+    background-color: white;
+    border-radius: 3px;
+    margin: 0 7px 0 0;
+    padding: 5px 0;
+    &:first-child {
+      margin: 0 5px;
+    }
+  }
+  h3, h5 {
+    margin:0;
+  }
+  h3 { font-size:35px; }
+  h5 { font-size:9px; font-weight: bold; }
+  .notBold {
+    font-weight: normal;
+  }
+  .text-success {
+    color: @summarySuccess;
+    border-right: 2px solid @gray-lighter;
+  }
+  .text-warning {
+    color: @summaryWarning;
+    border-right: 2px solid @gray-lighter;
+  }
+  .text-danger {
+    color: @summaryDanger;
+  }
+}
