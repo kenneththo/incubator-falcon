@@ -20,7 +20,7 @@
 <div class="col-sm-24 clusterForm">
   <div class="col-sm-22 col-sm-offset-2">
     <div class="row">
-      <h3 class="col-sm-24">
+      <h3 id="cluster.title" class="col-sm-24">
         New Cluster
       </h3>
       <div class="col-sm-15 detailsBox">
@@ -49,7 +49,7 @@
           <h5 class="col-xs-13 col-xs-offset-1 noSpecial">XML Preview</h5>  
     
           <div class="col-xs-9">
-            <div class="btn btn-default btn-xs pull-right" ng-click="xmlPreview.editXML()" ng-class="{'btn-warning':xmlPreview.edit}">
+            <div id="cluster.editXML" class="btn btn-default btn-xs pull-right" ng-click="xmlPreview.editXML()" ng-class="{'btn-warning':xmlPreview.edit}">
               Edit XML
             </div>
           </div>

@@ -30,175 +30,23 @@
     "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService",
     function ($scope, $interval, Falcon, EntityModel, $state, X2jsService) {
 
-      $scope.clusterEntity = EntityModel;
+      $scope.entity = EntityModel;
       $scope.xmlPreview = { edit: false };
-      $scope.secondStep = false;
-
-      function normalizeModel() {
-        //------------INTERFACE-----------//
-        var requiredInterfaceFields = ["readonly", "write", "execute", "workflow", "messaging", "registry"],
-          requiredLocationFields = ["staging", "temp", "working", ""],
-          modelInterfaceArray = $scope.clusterEntity.clusterModel.cluster.interfaces.interface,
-          modelLocationsArray = $scope.clusterEntity.clusterModel.cluster.locations.location;
-
-        modelInterfaceArray.forEach(function (element) {
-          requiredInterfaceFields.forEach(function (requiredField) {
-            if (element._type === requiredField) { requiredInterfaceFields.splice(requiredField, 1); }
-          });
-        });
-        $scope.registry = { check: true };
-        requiredInterfaceFields.forEach(function (fieldToPush) {
-          var fieldObject = { _type: fieldToPush, _endpoint: "", _version: "" };
-          if (fieldToPush === "registry") { $scope.registry = { check: false }; }
-          modelInterfaceArray.push(fieldObject);
-        });
-        //--------------TAGS--------------//
-        if ($scope.clusterEntity.clusterModel.cluster.tags === "" ||
-            $scope.clusterEntity.clusterModel.cluster.tags === undefined) {
-          $scope.clusterEntity.clusterModel.cluster.tags = "";
-          $scope.tagsArray = [{key: null, value: null}];
-        } else {
-          $scope.splitTags();
-        }
-        //-------------ACL----------------//
-        if (!$scope.clusterEntity.clusterModel.cluster.ACL) {
-          $scope.clusterEntity.clusterModel.cluster.ACL = {
-            _owner: "", _group: "", _permission: ""
-          };
-        }
-        //------------Location------------//
-        modelLocationsArray.forEach(function(element) {
-          requiredLocationFields.forEach(function(requiredField) {
-            if(element._name === requiredField) { requiredLocationFields.splice(requiredField, 1); }
-          });
-        });
-        requiredLocationFields.forEach(function(fieldToPush) {
-          var fieldObject = {_name: fieldToPush, _path: ""};
-          modelLocationsArray.push(fieldObject);
-        });
-        //----------Properties -------------//
-        if(!$scope.clusterEntity.clusterModel.cluster.properties) {
-          $scope.clusterEntity.clusterModel.cluster.properties = { property : [{ _name: "", _value: ""}] };
-        }
-
-      }
-
-      $scope.arrangeFieldsOrder = function () {
-        var BK = $scope.clusterEntity.clusterModel.cluster,
-          orderedObj = {};
-
-        orderedObj._xmlns = 'uri:falcon:cluster:0.1';
-        orderedObj._name = BK._name;
-        orderedObj._description = BK._description;
-        orderedObj._colo = BK._colo;
-
-        if (BK.tags) { orderedObj.tags = BK.tags; }
-        if (BK.interfaces) { orderedObj.interfaces = BK.interfaces; }
-        if (BK.locations) { orderedObj.locations = BK.locations; }
-        if (BK.ACL) { orderedObj.ACL = BK.ACL; }
-        if (BK.properties) { orderedObj.properties = BK.properties; }
-
-        delete $scope.clusterEntity.clusterModel.cluster;
-        $scope.clusterEntity.clusterModel.cluster = orderedObj;
-
-      };
-      //--------------TAGS------------------------//
-
-      $scope.convertTags = function () {
-        var result = [];
-        $scope.tagsArray.forEach(function(element) {
-          if(element.key && element.value) {
-            result.push(element.key + "=" + element.value);
-          }
-        });
-        result = result.join(",");
-        $scope.clusterEntity.clusterModel.cluster.tags = result;
-      };
-      $scope.splitTags = function () {
-        $scope.tagsArray = [];
-        $scope.clusterEntity.clusterModel.cluster.tags.split(",").forEach(function (fieldToSplit) {
-          var splittedString = fieldToSplit.split("=");
-          $scope.tagsArray.push({key: splittedString[0], value: splittedString[1]});
-        });
-      };
-      $scope.addTag = function () {
-        $scope.tagsArray.push({key: null, value: null});
-      };
-      $scope.removeTag = function (index) {
-        if (!isNaN(index) && index !== undefined && index !== null) {
-          $scope.tagsArray.splice(index, 1);
-          $scope.convertTags();
-        }
-      };
-      //-------------------------------------//
-      //----------LOCATION-------------------//
-
-      $scope.addLocation = function () {
-        var lastOneIndex = $scope.clusterEntity.clusterModel.cluster.locations.location.length - 1;
-
-        if (!$scope.clusterEntity.clusterModel.cluster.locations.location[lastOneIndex]._name ||
-            !$scope.clusterEntity.clusterModel.cluster.locations.location[lastOneIndex]._path) {
-          //console.log('location empty');
-        } else {
-          $scope.clusterEntity.clusterModel.cluster.locations.location.push({_name: "", _path: ""});
-        }
-      };
-      $scope.removeLocation = function (index) {
-        if(!isNaN(index) && index !== undefined && index !== null) {
-          $scope.clusterEntity.clusterModel.cluster.locations.location.splice(index, 1);
-        }
-      };
-      //-----------PROPERTIES----------------//
-      $scope.addProperty = function () {
-        var lastOne = $scope.clusterEntity.clusterModel.cluster.properties.property.length - 1;
-        if($scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._name && $scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._value){
-          $scope.clusterEntity.clusterModel.cluster.properties.property.push({ _name: "", _value: ""});
-        // $scope.tempPropModel = { _name: "", _value: ""};
-        }
-      };
-      $scope.removeProperty = function(index) {
-        if(index !== null && $scope.clusterEntity.clusterModel.cluster.properties.property[index]) {
-          $scope.clusterEntity.clusterModel.cluster.properties.property.splice(index, 1);
-        }
-      };
     
-      //--------------------------------------//
-      //----------XML preview-----------------//
-    
-      $scope.xmlPreview.editXML = function () {
-        $scope.xmlPreview.edit = !$scope.xmlPreview.edit;
-      };
-      $scope.showInPreview = function() {
-        var xmlStr = X2jsService.json2xml_str(angular.copy($scope.clusterEntity.clusterModel));
-        $scope.prettyXml = X2jsService.prettifyXml(xmlStr);
-        $scope.xml = xmlStr;
-      };
-      $scope.transformBack = function() {
-        try {
-          var xmlObj = X2jsService.xml_str2json($scope.prettyXml);
-          $scope.clusterEntity.clusterModel = xmlObj;
-
-          if($scope.clusterEntity.clusterModel.cluster.properties && $scope.clusterEntity.clusterModel.cluster.properties.property[0] === '') {
-            $scope.clusterEntity.clusterModel.cluster.properties.property=[];
-          }
-        }
-        catch(err) {
-          console.log('xml malformed');
-        }
-      };
-      $scope.saveModelBuffer = function () {
-        $scope.jsonString = angular.toJson($scope.clusterEntity.clusterModel);
-        //goes back to js to have x2js parse it correctly
-        $scope.jsonString = JSON.parse($scope.jsonString);
-        $scope.jsonString = X2jsService.json2xml_str($scope.jsonString);
-      };
-
-      //------------init------------//
-      normalizeModel();
+      var xmlStr = X2jsService.json2xml_str(angular.copy($scope.entity.model));
+      $scope.prettyXml = X2jsService.prettifyXml(xmlStr);
+      $scope.xml = xmlStr;
       
-      $scope.showInPreview();
     }
   ]);
+  
+  clusterModule.filter('titleCase', function() {
+    return function(input) {
+      input = input || '';
+      return input.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    };
+  });
+  
 })();
 
 

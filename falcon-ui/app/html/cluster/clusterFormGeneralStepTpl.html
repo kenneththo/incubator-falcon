@@ -20,25 +20,28 @@
 <form name="clusterForm">
   <div class="col-sm-24">
     <label class="light">Name</label>
-    <input type="text" class="form-control nameInput" ng-pattern="validations.patterns.name"
-           ng-model="clusterEntity.clusterModel.cluster._name" ng-required="true"
-           ng-keydown="validations.acceptNoSpaces($event)"
-           check-name="{type:'cluster', check:true}" ng-class="{fakeInvalid:!validations.nameAvailable}"
-           ng-disabled="xmlPreview.edit" />
-           <!--check-type="cluster" check-name-flag="nameValid" check="true"-->
+    <input type="text" class="form-control nameInput" 
+    	ng-pattern="validations.patterns.name"
+        ng-model="clusterEntity.clusterModel.cluster._name" ng-required="true"
+        ng-keydown="validations.acceptNoSpaces($event)"
+        check-name="{type:'cluster', check:true}" ng-class="{fakeInvalid:!validations.nameAvailable}"
+        ng-disabled="xmlPreview.edit" />
+        <!--check-type="cluster" check-name-flag="nameValid" check="true"-->
 
   </div>
   <div class="col-sm-12">
     <label class="light">Colo</label>
-    <input type="text" class="form-control" ng-pattern="validations.patterns.freeText"
-           ng-required="true" ng-disabled="xmlPreview.edit"
-           ng-model="clusterEntity.clusterModel.cluster._colo" validation-message="{{validations.messages.colo}}"/>
+    <input type="text" class="form-control" 
+    	ng-pattern="validations.patterns.freeText"
+        ng-required="true" ng-disabled="xmlPreview.edit"
+        ng-model="clusterEntity.clusterModel.cluster._colo" validation-message="{{validations.messages.colo}}"/>
   </div>
   <div class="col-sm-12">
     <label class="light">Description</label>
-    <input type="text" class="form-control" ng-pattern="validations.patterns.freeText"
-           ng-required="true" ng-disabled="xmlPreview.edit" validation-message="{{validations.messages.description}}"
-           ng-model="clusterEntity.clusterModel.cluster._description" />
+    <input type="text" class="form-control" 
+    	ng-pattern="validations.patterns.freeText"
+        ng-required="true" ng-disabled="xmlPreview.edit" validation-message="{{validations.messages.description}}"
+        ng-model="clusterEntity.clusterModel.cluster._description" />
   </div>
 
   <div class="col-xs-24">
@@ -160,7 +163,7 @@
         {{location._name}}
       </div>
       <div class="col-xs-15 dynamic-table-spacer">
-        <input type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
+        <input id="location.{{location._name}}" type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
                ng-disabled="xmlPreview.edit" ng-required="true" validation-message="{{validations.messages.location}}"/>
       </div>
       <div class="col-xs-2 dynamic-table-spacer"></div>
@@ -201,7 +204,7 @@
       <div class="btn btn-default col-xs-6 mt10" ui-sref="main">
         Cancel
       </div>
-      <div class="btn btn-default col-xs-6 pull-right mt10" ng-disabled="xmlPreview.edit"
+      <div id="cluster.step1" class="btn btn-default col-xs-6 pull-right mt10" ng-disabled="xmlPreview.edit"
            ng-click="goSummaryStep(clusterForm.$invalid)">
         Next
       </div>

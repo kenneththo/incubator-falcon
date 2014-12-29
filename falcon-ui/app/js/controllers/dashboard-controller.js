@@ -87,12 +87,9 @@
             .success(function (data) {
               Falcon.logResponse('success', data, false, true);
               var entityModel = X2jsService.xml_str2json(data);
-              var modelName = type + "Model";
-              EntityModel[modelName] = entityModel;
-              $scope.models[modelName] = angular.copy(entityModel);
-              $scope.editingMode = true;// dont know utility of this
-              $scope.$parent.cloningMode = false;
-              //$state.go('forms.' + type + ".general");
+              EntityModel.type = type;
+              EntityModel.name = name;
+              EntityModel.model = entityModel;
               $state.go('entityDetails');
             })
             .error(function (err) {
