@@ -17,7 +17,7 @@
  */
 (function () {
   'use strict';
-  
+
   /*
    * tf: textfield
    * bt: button
@@ -31,24 +31,24 @@
    login.bt = {};
    login.tf = {};
    login.tl = {};
-   
+
   	login.tf.user = element(by.model('login.user'));
   	login.tf.password = element(by.model('login.password'));
   	login.bt.login = element(by.id('login.submit'));
   	login.tl.cluster = element(by.id('cluster.create'));
 
    beforeEach(function() {
-   	browser.get('http://localhost.localdomain:3000');
+   	browser.get('http://localhost:3000');
    });
-   
+
 	describe('Login', function() {
       it('Should login when clicking the login button', function() {
-      	
+
       	login.tf.user.sendKeys('ambari-qa');
       	login.tf.password.sendKeys('admin');
       	login.bt.login.click();
       	expect(login.tl.cluster.getText()).toEqual('Cluster');
-        
+
       });
     });
 

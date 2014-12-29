@@ -21,7 +21,7 @@
   }
 }
 
-.listTable { 
+.listTable {
   margin-top: 5px;
   border-collapse: separate;
   border-radius: 4px;
@@ -55,7 +55,7 @@
         //.trayAnimation;
       }
     }
-    
+
   }
   h5 {
     text-align: left;
@@ -97,14 +97,27 @@
       padding:0;
       font-size: 10px;
     }
-  } 
+  }
   .buttonsRow {
-    height: 41px;
+    height: 42px;
     td {
       border-top: none;
-    }  
-  }  
-  .buttonCell {}
+    }
+  }
+  .buttonCell {
+    .entypo, div {
+      display: inline-block;
+      vertical-align: top;
+    }
+    .entypo {
+      font-size: 27px;
+      //margin: 6px 0 0 0;
+      line-height: 18px;
+    }
+    div {
+      //margin: 3px 0 0 0;
+    }
+  }
   .entityRow {
     td {
       padding: 0 5px;
@@ -130,12 +143,8 @@
   input[type="radio"] {
     margin: -1px 0 0 -18px;
     font-size: 10px;
-  } 
-  .entypo {
-    font-size: 20px;
-    margin: 8px 0 0 0;
-    display: inline-block;
-  }  
+  }
+
   .nameCell {
     cursor: pointer;
     &:hover {
@@ -143,7 +152,7 @@
     }
   }
 }
-.buttons-to-show { 
+.buttons-to-show {
   margin:2px 0;
 }
 /* LOGIN */

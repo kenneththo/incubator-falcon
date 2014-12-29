@@ -35,7 +35,7 @@
 
 
   beforeEach(function() {
-    browser.get('http://localhost.localdomain:3000');
+    browser.get('http://localhost:3000');
   });
 
   describe('Process Entity', function() {

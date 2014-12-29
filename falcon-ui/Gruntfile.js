@@ -214,7 +214,7 @@
           browsers: ['PhantomJS']
         }
       },
-      
+
       protractor:{
       	options: {
             configFile: "app/test/e2e/protractor.js", // Default config file
@@ -247,17 +247,17 @@
       'express', 'clean', 'concat:vendor', 'uglify', 'less', 'resources',
       'dependencies', 'karma:unit:start', 'karma:continuous', 'watch'
     ]);
-    
+
     grunt.registerTask('deploy', [
       'clean', 'concat:vendor', 'uglify', 'less', 'resources',
       'dependencies', 'karma:unit', 'scp'
     ]);
-    
+
     grunt.registerTask('ambariview', [
-      'clean', 'concat:vendor', 'uglify', 'less', 'resources', 
+      'clean', 'concat:vendor', 'uglify', 'less', 'resources',
       'dependencies', 'karma:unit', 'copy:ambariview']);
-    
-    grunt.registerTask('testE2E', ['protractor:all']);
+
+    grunt.registerTask('testE2E', ['express', 'protractor:all']);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
