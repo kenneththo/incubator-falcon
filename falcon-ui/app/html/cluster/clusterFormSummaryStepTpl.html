@@ -66,11 +66,11 @@
 
 
 <div class="row clusterSummaryRow mt20">
-  <div class="btn btn-default col-xs-6" ui-sref="forms.cluster.general" ng-click="goGeneralStep()">
+  <div id="cluster.backToStep1" class="btn btn-default col-xs-6" ui-sref="forms.cluster.general" ng-click="goGeneralStep()">
     Previous
   </div>
 
-  <div class="btn btn-default col-xs-6 pull-right" ng-click="saveCluster()" ng-disabled="xmlPreview.edit">
+  <div id="cluster.step2" class="btn btn-default col-xs-6 pull-right" ng-click="saveCluster()" ng-disabled="xmlPreview.edit">
     Save
   </div>
 
