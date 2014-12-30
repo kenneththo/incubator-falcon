@@ -43,6 +43,31 @@
   </thead>
   <tbody>
     
+    <tr ng-if="input.length > 0 && type === 'cluster'" class="buttonsRow">
+      <td class="buttonCell" colspan="4">
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-hide="selectedDisabledButtons.schedule" ng-if="type !== 'cluster'">
+            <span class="entypo play"></span> Schedule
+        </div>
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeResume()" ng-hide="selectedDisabledButtons.resume" ng-if="type !== 'cluster'">
+            <span class="entypo play"></span> Resume
+        </div>
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-hide="selectedDisabledButtons.suspend" ng-if="type !== 'cluster'">
+            <span class="entypo paus"></span> Suspend
+        </div>
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeEdit()" ng-hide="selectedRows.length === 0 || selectedRows.length > 1" ng-if="type !== 'cluster'">
+            <span class="entypo cog"></span> Edit
+        </div>
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeClone()" ng-hide="selectedRows.length === 0 || selectedRows.length > 1">
+            <span class="entypo docs"></span> Copy
+        </div>
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeRemove()" ng-hide="selectedRows.length === 0">
+            <span class="entypo trash"></span> Delete
+        </div>
+        <div class="btn btn-default btn-xs buttons-to-show" ng-click="download()" ng-hide="selectedRows.length === 0 || selectedRows.length > 1">
+            <span class="entypo down"></span> Download XML
+        </div>
+      </td>
+    </tr> 
     <tr ng-if="input.length === 0 && !server.responses.listLoaded[type]">
       <td> loading {{ type }}s </td>
     </tr>
