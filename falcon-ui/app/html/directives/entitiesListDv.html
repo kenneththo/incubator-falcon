@@ -43,7 +43,7 @@
   </thead>
   <tbody>
     
-    <tr ng-if="input.length > 0 && type === 'cluster'" class="buttonsRow">
+    <tr ng-if="input.length > 0 && type !== 'process'" class="buttonsRow">
       <td class="buttonCell" colspan="4">
         <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-hide="selectedDisabledButtons.schedule" ng-if="type !== 'cluster'">
             <span class="entypo play"></span> Schedule

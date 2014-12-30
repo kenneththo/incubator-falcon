@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,15 +17,28 @@
  */
 (function () {
   'use strict';
-  
-  angular.module('app.controllers', [
-                                      'app.controllers.navHeader',
-                                      'app.controllers.rootCtrl',
-                                      'app.controllers.dashboardCtrl',
-                                      'app.controllers.view',
-                                      'app.controllers.cluster',
-                                      'app.controllers.feed',
-                                      'app.controllers.entity'   
-                                    ]);
+
+  /***
+   * @ngdoc controller
+   * @name app.controllers.feed.FeedController
+   * @requires clusters the list of clusters to display for selection of source
+   * @requires EntityModel the entity model to copy the feed entity from
+   * @requires Falcon the falcon entity service
+   */
+  var feedModule = angular.module('app.controllers.feed');
+
+  feedModule.controller('FeedLocationController', [ "$scope",function($scope) {
+
+    $scope.toggleStorage = function() {
+      toggle($scope.feed.storage.fileSystem);
+      toggle($scope.feed.storage.catalog);
+    };
+
+    function toggle(storage) {
+      storage.active = !storage.active;
+    }
+
+  }]);
+
 
 })();

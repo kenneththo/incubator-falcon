@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,15 +17,32 @@
  */
 (function () {
   'use strict';
-  
-  angular.module('app.controllers', [
-                                      'app.controllers.navHeader',
-                                      'app.controllers.rootCtrl',
-                                      'app.controllers.dashboardCtrl',
-                                      'app.controllers.view',
-                                      'app.controllers.cluster',
-                                      'app.controllers.feed',
-                                      'app.controllers.entity'   
-                                    ]);
+
+  /***
+   * @ngdoc controller
+   * @name app.controllers.feed.FeedController
+   * @requires clusters the list of clusters to display for selection of source
+   * @requires EntityModel the entity model to copy the feed entity from
+   * @requires Falcon the falcon entity service
+   */
+  var feedModule = angular.module('app.controllers.feed');
+
+  feedModule.controller('FeedSummaryController', [ "$scope", "$filter", function($scope, $filter) {
+
+    if($scope.transform) {
+      $scope.transform();
+    }
+
+    $scope.hasTags = function() {
+      var filteredTags = $filter('filter')($scope.feed.tags, {key: '!!'});
+      return filteredTags.length > 0;
+    };
+
+    $scope.optional = function(input, output) {
+      return input ? (output || input) : 'Not specified';
+    };
+
+  }]);
+
 
 })();
