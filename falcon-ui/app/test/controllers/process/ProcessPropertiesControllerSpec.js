@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,16 +17,28 @@
  */
 (function () {
   'use strict';
-  
-  angular.module('app.controllers', [
-                                      'app.controllers.navHeader',
-                                      'app.controllers.rootCtrl',
-                                      'app.controllers.dashboardCtrl',
-                                      'app.controllers.view',
-                                      'app.controllers.cluster',
-                                      'app.controllers.feed',
-                                      'app.controllers.process',
-                                      'app.controllers.entity'   
-                                    ]);
+  var scope;
+  var controller;
+
+  describe('ProcessPropertiesCtrl', function () {
+    beforeEach(module('app.controllers.process'));
+
+    beforeEach(inject(function($q, $rootScope, $controller) {
+      scope = $rootScope.$new();
+
+      controller = $controller('ProcessPropertiesCtrl', {
+        $scope: scope,
+        $state: {}
+      });
+    }));
+
+    describe('Desc', function() {
+
+      it('Should', function() {
+      });
+
+    });
+
+  });
 
 })();
