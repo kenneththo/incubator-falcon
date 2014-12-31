@@ -216,20 +216,28 @@
       },
 
       protractor:{
-      	options: {
-            configFile: "app/test/e2e/protractor.js", // Default config file
-            keepAlive: true, // If false, the grunt process stops when the test fails.
-            noColor: false, // If true, protractor will not use colors in its output.
-            args: {
-              // Arguments passed to the command
-            }
-          },
-          all: {   // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
-//            options: {
-//              configFile: "e2e.conf.js", // Target-specific config file
-//              args: {} // Target-specific arguments
-//            }
-          }
+         options: {
+	         configFile: "app/test/e2e/protractorAll.js",
+	         keepAlive: false,
+	         noColor: false,
+	         args: {}
+	       },
+	       all: {},
+	       cluster: {
+	      	 options: {
+	      		 configFile: "app/test/e2e/protractorCluster.js"
+	      	 }
+	       },
+	       feed: {
+	      	 options: {
+	      		 configFile: "app/test/e2e/protractorFeed.js"
+	      	 }
+	       },
+	       process: {
+	      	 options: {
+	      		 configFile: "app/test/e2e/protractorProcess.js"
+	      	 }
+	       }
       }
 
     });
@@ -258,6 +266,9 @@
       'dependencies', 'karma:unit', 'copy:ambariview']);
 
     grunt.registerTask('testE2E', ['express', 'protractor:all']);
+    grunt.registerTask('testClusterE2E', ['express', 'protractor:cluster']);
+    grunt.registerTask('testFeedE2E', ['express', 'protractor:feed']);
+    grunt.registerTask('testProcessE2E', ['express', 'protractor:process']);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');

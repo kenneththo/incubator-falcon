@@ -18,7 +18,7 @@
 (function () {
   'use strict';
 
-  var createProcessButton = element(by.id('createProcessButton'));
+  var createProcessButton = element(by.id('process.create'));
   var editXmlButton = element(by.id('editXmlButton'));
   var fieldWrapper = element(by.id('fieldWrapper'));
   var xmlPreviewArea = element(by.model('prettyXml'));

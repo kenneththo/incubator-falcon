@@ -146,10 +146,10 @@
   </div>
   <div class="col-xs-24">
     <div class="feedBottomButtons row">
-      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.general')">
+      <div id="feed.backToStep1" class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.general')">
         Previous
       </div>
-      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.location')">
+      <div id="feed.step2" class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.location')">
         Next
       </div>
       <u class="col-xs-3 pull-right" ui-sref="main">
