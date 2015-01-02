@@ -216,28 +216,87 @@
       },
 
       protractor:{
-         options: {
-	         configFile: "app/test/e2e/protractorAll.js",
-	         keepAlive: false,
-	         noColor: false,
-	         args: {}
-	       },
-	       all: {},
-	       cluster: {
-	      	 options: {
-	      		 configFile: "app/test/e2e/protractorCluster.js"
-	      	 }
-	       },
-	       feed: {
-	      	 options: {
-	      		 configFile: "app/test/e2e/protractorFeed.js"
-	      	 }
-	       },
-	       process: {
-	      	 options: {
-	      		 configFile: "app/test/e2e/protractorProcess.js"
-	      	 }
-	       }
+        options: {
+	        configFile: "app/test/e2e/protractor.js",
+	        keepAlive: true,
+	        noColor: false
+	      },
+        firefoxAll: {
+          options: {
+            args: {
+              browser: "firefox",
+              specs: [
+                "app/test/e2e/LoginE2E.js", "app/test/e2e/ClusterE2E.js",
+                "app/test/e2e/FeedE2E.js", "app/test/e2e/ProcessE2E.js"
+              ]
+            }
+          }
+        },
+        chromeAll: {
+          options: {
+            args: {
+              browser: "chrome",
+              specs: [
+                "app/test/e2e/LoginE2E.js", "app/test/e2e/ClusterE2E.js",
+                "app/test/e2e/FeedE2E.js", "app/test/e2e/ProcessE2E.js"
+              ]
+            }
+          }
+        },
+        firefoxCluster: {
+          options: {
+            args: {
+              browser: "firefox",
+              specs: ["app/test/e2e/LoginE2E.js", "app/test/e2e/ClusterE2E.js"]
+            }
+          }
+        },
+        chromeCluster: {
+          options: {
+            args: {
+              specs: ["app/test/e2e/LoginE2E.js", "app/test/e2e/ClusterE2E.js"],
+              browser: "chrome"
+            }
+          }
+        },
+        firefoxFeed: {
+          options: {
+            args: {
+              browser: "firefox",
+              specs: ["app/test/e2e/LoginE2E.js", "app/test/e2e/FeedE2E.js"]
+            }
+          }
+        },
+        chromeFeed: {
+          options: {
+            args: {
+              specs: ["app/test/e2e/LoginE2E.js", "app/test/e2e/FeedE2E.js"],
+              browser: "chrome"
+            }
+          }
+        },
+        firefoxProcess: {
+          options: {
+            args: {
+              browser: "firefox",
+              specs: ["app/test/e2e/LoginE2E.js", "app/test/e2e/ProcessE2E.js"]
+            }
+          }
+        },
+        chromeProcess: {
+          options: {
+            args: {
+              specs: ["app/test/e2e/LoginE2E.js", "app/test/e2e/ProcessE2E.js"],
+              browser: "chrome"
+            }
+          }
+        }
+      },
+      concurrent: {
+        all: ['protractor:firefoxAll', 'protractor:chromeAll'],
+        cluster: ['protractor:firefoxCluster', 'protractor:chromeCluster'],
+        feed: ['protractor:firefoxFeed', 'protractor:chromeFeed'],
+        process: ['protractor:firefoxProcess', 'protractor:chromeProcess']
       }
 
     });
@@ -265,10 +324,10 @@
       'clean', 'concat:vendor', 'uglify', 'less', 'resources',
       'dependencies', 'karma:unit', 'copy:ambariview']);
 
-    grunt.registerTask('testE2E', ['express', 'protractor:all']);
-    grunt.registerTask('testClusterE2E', ['express', 'protractor:cluster']);
-    grunt.registerTask('testFeedE2E', ['express', 'protractor:feed']);
-    grunt.registerTask('testProcessE2E', ['express', 'protractor:process']);
+    grunt.registerTask('testE2E', ['express', 'concurrent:all']);
+    grunt.registerTask('testClusterE2E', ['express', 'concurrent:cluster']);
+    grunt.registerTask('testFeedE2E', ['express', 'concurrent:feed']);
+    grunt.registerTask('testProcessE2E', ['express', 'concurrent:process']);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -283,6 +342,7 @@
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-protractor-runner');
+    grunt.loadNpmTasks('grunt-concurrent');
 
   };
 

@@ -102,9 +102,9 @@
 
 	      	cluster.tf.name.sendKeys('completeCluster');
 
-	      	cluster.valid.name = element(by.css('.nameValidationMessage'));
-
 	      	cluster.bt.step1.click();
+
+					cluster.valid.name = element(by.css('.nameValidationMessage'));
 
 	      	expect(cluster.valid.name.getText()).toEqual('The name you choosed is not available');
 
