@@ -91,10 +91,10 @@
   </div>
 
   <div class="row feedBottomButtons">
-    <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.properties')" >
+    <div id="feed.backToStep2" class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.properties')" >
       Previous
     </div>
-    <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
+    <div id="feed.step3" class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
       Next
     </div>
     <u class="col-xs-3 pull-right" ui-sref="main">

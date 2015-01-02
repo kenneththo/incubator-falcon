@@ -31,7 +31,7 @@
             <select ng-model="cluster.name" validation-message="{{validations.messages.cluster}}"
                     ng-required="true" class="col-sm-24 form-control padding0">
               <option value="" disabled selected style='display:none;'>-Select cluster-</option>
-              <option ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
+              <option id="cluster_" ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
             </select>
           </div>
 
@@ -152,10 +152,10 @@
   </div>
   <div class="col-xs-24">
     <div class="row feedBottomButtons">
-      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.location')" >
+      <div id="feed.backToStep3" class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.location')" >
         Previous
       </div>
-      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.summary')" >
+      <div id="feed.step4" class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.summary')" >
         Next
       </div>
       <u class="col-xs-3 pull-right" ui-sref="main">
