@@ -55,7 +55,7 @@
           $scope.baseInit();
           var type = $scope.entityType;
           $scope[type] = $scope.loadOrCreateEntity();
-          $scope.dateFormat ='dd-MMMM-yyyy';
+          $scope.dateFormat ='MM/dd/yyyy';
         };
 
         $scope.openDatePicker = function($event, container) {
@@ -80,7 +80,7 @@
             Falcon.logRequest();
             Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
               .success(function (response) {
-                Falcon.logResponse('success', response, false); 
+                Falcon.logResponse('success', response, false);
                 $state.go('main');
               })
               .error(function(err) {
@@ -90,7 +90,7 @@
             Falcon.logRequest();
             Falcon.postSubmitEntity($scope.xml, $scope.entityType)
               .success(function (response) {
-                Falcon.logResponse('success', response, false); 
+                Falcon.logResponse('success', response, false);
                 $state.go('main');
               })
               .error(function(err) {
@@ -173,6 +173,6 @@
       }]);
 
 
-  
+
 
 })();

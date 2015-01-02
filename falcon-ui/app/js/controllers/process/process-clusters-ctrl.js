@@ -31,7 +31,7 @@
     ['$scope', 'clustersList', 'EntityFactory', function($scope, clustersList, entityFactory) {
 
     $scope.init = function() {
-      $scope.dateFormat = 'dd-MMMM-yyyy';
+      $scope.dateFormat = 'MM/dd/yyyy';
     };
 
     $scope.openDatePicker = function($event, container) {
@@ -60,7 +60,7 @@
       } else if(typeOfData === "[object Object]") {
         $scope.clusterList = [clusters.entity];
       } else {
-        //console.log("type of data not recognized"); 
+        //console.log("type of data not recognized");
       }
     }
 
