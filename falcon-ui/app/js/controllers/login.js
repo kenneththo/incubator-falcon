@@ -25,12 +25,13 @@
    * @requires Falcon the falcon service to talk with the Falcon REST API
    */
   var loginModule = angular.module('app.controllers.login', ['ngMessages', 'app.services']);
-                                                      
+
   loginModule.controller('LoginFormCtrl', ['$scope', '$state', '$cookieStore', '$http', function($scope, $state, $cookieStore, $http) {
-  	
+		$scope.showLoginVal = {show: false, userPassInvalid: false};
+
   	$scope.loggUser = function(form) {
   		form.password.$setValidity("login", true);
-  		var showLoginVal = {show: false};
+  		$scope.showLoginVal = {show: false};
   		if(form.$valid){
   			$http.get('config/loginData.js').success(function(data) {
   	  		var user = data.user;
@@ -43,18 +44,19 @@
       			$cookieStore.put('userToken', userToken);
       			$state.go('main');
       		}else{
-      			showLoginVal.show = true;
-      			form.password.$setValidity("login", false);
+						$scope.showLoginVal.show = true;
+						$scope.showLoginVal.userPassInvalid = true;
+      			//form.password.$setValidity("login", false);
       		}
   	  	});
   		}else{
-  			showLoginVal.show = true;
+				$scope.showLoginVal.show = true;
   		}
     };
-    
-  }]);   
- 
-})();
+
+  }]);
+
+}());
 
 
 

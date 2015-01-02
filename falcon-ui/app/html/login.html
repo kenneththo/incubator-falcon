@@ -49,10 +49,10 @@
 		          name="user"
 		          ng-model="login.user"
 		          ng-required="true"
+							ng-class="{'ng-invalid': showLoginVal.userPassInvalid}"
 		          validation-message="{{validations.messages.user}}"
+							ng-keydown="showLoginVal.userPassInvalid = false"
 		          ng-pattern="validations.patterns.id" autofocus/>
-		        <div class="error" ng-messages="loginForm.user.$error">
-		        </div>
 		    </div>
 		  </div>
 
@@ -68,18 +68,18 @@
 		        <input type="password" class="form-control"
 		          name="password"
 		          ng-model="login.password"
-		          ng-required="validations.password.required"
+		          ng-required="true"
 		          validation-message="{{validations.messages.password}}"
+							ng-keydown="showLoginVal.userPassInvalid = false"
+							ng-class="{'ng-invalid': showLoginVal.userPassInvalid}"
 		          ng-pattern="validations.freeText.pattern"/>
-		        <div class="error" ng-messages="loginForm.password.$error" ng-show="loginForm.password.$dirty">
-		          <div ng-message="login">
-		            The user/password you have entered is invalid.
-		          </div>
-		        </div>
 		    </div>
 		   </div>
 
 		   <div class="row">
+				 <div class="col-sm-23 col-sm-offset-1 custom-danger" ng-if="showLoginVal.userPassInvalid">
+					 The user/password you have entered is invalid.
+				 </div>
 		     <div class="col-sm-offset-1 col-sm-22">
 		       <div class="clearfix hidden-md">&nbsp</div>
 		     </div>

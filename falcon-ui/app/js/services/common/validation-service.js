@@ -75,7 +75,10 @@
         number: { empty: "You need to provide a number" },
         option: { empty: "You need to select an option" },
         user: { empty: "Please enter your user name." },
-        password: { empty: "Please enter your password." },
+        password: {
+          empty: "Please enter your password.",
+          patternInvalid: "The Password has an invalid format."
+        }
 
       },
       checkPatterns = {
