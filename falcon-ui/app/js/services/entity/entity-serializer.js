@@ -86,10 +86,11 @@
       }
 
       function timeAndDateToString(input) {
+
         if(input.date !== "") {
           var dateComponent =
-          input.date.getFullYear() + '-' +
-          pad(input.date.getMonth()+1) + '-' +
+          input.date.getFullYear() + '/' +
+          pad(input.date.getMonth()+1) + '/' +
           pad(input.date.getDate());
         }
         else {
@@ -104,7 +105,6 @@
         else {
           var timeComponent = "00:00";
         }
-
         return dateComponent + 'T' + timeComponent + 'Z';
       }
 
