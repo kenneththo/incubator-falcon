@@ -41,12 +41,15 @@
             <div>Start</div>
 
             <div class="input-group input-group-xs">
-              <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.start)"></span>
-              <input type="text" class="form-control" placeholder="Start Date"
+              <input type="text" class="form-control dateInput" placeholder="Start Date"
                      datepicker-popup="{{dateFormat}}"
                      ng-model="cluster.validity.start.date"
                      is-open="cluster.validity.start.opened"
+                     ng-click="openDatePicker($event, cluster.validity.start)"
                      ng-required="true">
+              <span class="entypo calendar dateInputIcon"
+                    ng-click="openDatePicker($event, cluster.validity.start)">
+              </span>
             </div>
             <label class="col-xs-24 custom-danger validationMessageGral"
                    ng-if="!cluster.validity.start.date">
@@ -58,12 +61,15 @@
             <div>End</div>
 
             <div class="input-group input-group-xs">
-              <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.end)"></span>
-              <input type="text" class="form-control" placeholder="End Date"
+              <input type="text" class="form-control dateInput" placeholder="End Date"
                      datepicker-popup="{{dateFormat}}"
                      ng-model="cluster.validity.end.date"
                      is-open="cluster.validity.end.opened"
+                     ng-click="openDatePicker($event, cluster.validity.end)"
                      ng-required="true">
+              <span class="entypo calendar dateInputIcon"
+                    ng-click="openDatePicker($event, cluster.validity.end)">
+              </span>
             </div>
             <label class="col-xs-24 custom-danger validationMessageGral"
                    ng-if="!cluster.validity.end.date">
