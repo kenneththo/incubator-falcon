@@ -74,7 +74,10 @@
         date: { empty: "You need to select a date" },
         number: { empty: "You need to provide a number" },
         option: { empty: "You need to select an option" },
-        user: { empty: "Please enter your user name." },
+        user: {
+          empty: "Please enter your user name.",
+          patternInvalid: "The User has an invalid format."
+        },
         password: {
           empty: "Please enter your password.",
           patternInvalid: "The Password has an invalid format."

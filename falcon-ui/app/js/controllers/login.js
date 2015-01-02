@@ -30,10 +30,8 @@
 		$scope.showLoginVal = {show: false, userPassInvalid: false};
 
   	$scope.loggUser = function(form) {
-  		form.password.$setValidity("login", true);
-  		$scope.showLoginVal = {show: false};
   		if(form.$valid){
-  			$http.get('config/loginData.js').success(function(data) {
+  			$http.get('config/loginData.json').success(function(data) {
   	  		var user = data.user;
     	  	var password = data.password;
   	  		if($scope.login.user === user && $scope.login.password === password){
@@ -46,7 +44,6 @@
       		}else{
 						$scope.showLoginVal.show = true;
 						$scope.showLoginVal.userPassInvalid = true;
-      			//form.password.$setValidity("login", false);
       		}
   	  	});
   		}else{
