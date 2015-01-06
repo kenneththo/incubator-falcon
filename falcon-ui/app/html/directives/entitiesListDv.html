@@ -22,9 +22,9 @@
 
     <tr>
       <th colspan="3">
-        <div class="filtersBox">Name <input type="text" class="form-control" ng-model="simpleFilter.name"/></div>
+        <div class="filtersBox" ng-class="{clusterFilters: type === 'cluster'}">Name <input type="text" class="form-control" ng-model="simpleFilter.name"/></div>
 
-        <div class="filtersBox">Tags <input type="text" class="form-control" ng-model="simpleFilter.tags"/></div>
+        <div class="filtersBox" ng-class="{clusterFilters: type === 'cluster'}">Tags <input type="text" class="form-control" ng-model="simpleFilter.tags"/></div>
 
         <div ng-if="type !== 'cluster'" class="filtersSelectBox">Status
 
