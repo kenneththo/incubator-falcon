@@ -20,6 +20,9 @@
 .mt1 {
   margin-top: 1px;
 }
+.mt5 {
+  margin-top: 5px;
+}
 .mt10 {
   margin-top: 10px;
 }
@@ -310,6 +313,12 @@ select {
     margin-top: -2px;
     background-color: @gray;
     color: white;
+  }
+}
+
+@media screen and (max-width: @grid-float-breakpoint) {
+  .detailsBox {
+    float:none!important;
   }
 }
 .detailsBox {
