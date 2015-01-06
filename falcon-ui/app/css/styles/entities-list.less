@@ -127,17 +127,25 @@
   }
 
   .entityRow {
+    &:hover, &.rowSelected {
+      background: #F2F2F2;
+      td {
+        border-color: #E2E2E2;
+      }
+    }
 
     td {
-      padding: 3px 5px;
-      border-top: none;
+      padding: 3px 3px;
+      line-height: 22px;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
     }
     &.firstEntityRow {
-      td { padding-top: 8px; }
+      td { padding-top: 6px; }
     }
     &.lastEntityRow {
       td {
-        padding-bottom: 8px;
+        padding-bottom: 6px;
       }
     }
   }

@@ -75,11 +75,15 @@
       <td> There are no {{ type }}s </td>
     </tr>
     <tr ng-if="input.length !== 0"
-        ng-repeat="item in input | filter:{'name':simpleFilter.name} |
-                  filter:{'status':simpleFilter.status} | tagFilter | filter:{'list':simpleFilter.tags}"
-        class="entityRow" ng-class="{firstEntityRow:$first, lastEntityRow:$last}">
+          ng-repeat="item in input | filter:{'name':simpleFilter.name} | filter:{'status':simpleFilter.status} |
+                       tagFilter | filter:{'list':simpleFilter.tags}"
+          class="entityRow"
+          ng-class="{
+            firstEntityRow:$first, lastEntityRow:$last,
+            rowSelected:checkedRow(item.name)
+          }">
       <td class="checkboxCell">
-          <input type="checkbox" checklist-model="selectedRows"
+          <input type="checkbox" checklist-model="selectedRows" ng-model="$index"
                  checklist-value="{name:item.name, type:item.type, status:item.status}"
                  ng-change="checkButtonsToShow()"/>
       </td>
