@@ -108,6 +108,7 @@
       border-top: none;
       border-bottom: 1px solid @gray-lighter;
     }
+    margin-bottom: 8px;
 
   }
   .buttonCell {
@@ -124,14 +125,19 @@
       //margin: 3px 0 0 0;
     }
   }
+
   .entityRow {
+
     td {
-      padding: 1px 5px;
+      padding: 3px 5px;
       border-top: none;
     }
-    &:last-child {
+    &.firstEntityRow {
+      td { padding-top: 8px; }
+    }
+    &.lastEntityRow {
       td {
-        border-bottom: none;
+        padding-bottom: 8px;
       }
     }
   }
