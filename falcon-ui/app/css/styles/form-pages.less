@@ -32,11 +32,31 @@
 .formViewContainer {
   .mt10;
 }
-.feedBottomButtons {
-  .mt20; 
+
+@nextBtnBackground: #666666;
+@prevBtnBackground: #CCCCCC;
+.nextBtn, .prevBtn {
+  .transition(background, 0.3s, ease);
+  border: 0px none;
+  width: 90px;
+  border-radius: 7px;
+  padding: 10px;
+}
+.nextBtn {
+  background: @nextBtnBackground;
+  color: white;
+  &:hover {
+    background: darken(@nextBtnBackground, 10%);
+    color: white;
+  }
+}
+.prevBtn {
+  background: @prevBtnBackground;
+  &:hover {
+    background: darken(@prevBtnBackground, 10%);
+  }
 }
 .formPage {
-  
   h3 {
     font-weight: bold;
   }
@@ -69,6 +89,7 @@
   u {
     line-height: 30px;
     cursor: pointer;
+    margin: 5px 15px;
   }
   input, select {
     color: black;
@@ -78,18 +99,18 @@
     height:13px;
     border-radius:0;
   }
-  
+
 }
-select {  
-  .form-control;  
+select {
+  .form-control;
   padding:0;
 }
 #engineVersionField{ display: inline-block; width: auto; }
 .inlineInputsGroup {
-  input {   
-    display: inline-block;    
-    margin-right: 3px; 
-    &:last-child { margin-right:0;}   
+  input {
+    display: inline-block;
+    margin-right: 3px;
+    &:last-child { margin-right:0;}
   }
   input[type="text"] {
     width: 20px;
@@ -121,7 +142,7 @@ select {
     font-size: 35px;
     line-height: 9px;
   }
-  
+
 }
 .clusterSummaryRow {
   padding: 0 10px;
@@ -140,8 +161,8 @@ select {
     }
     margin-top: 5px;
   }
-  
-  
+
+
 }
 #feedPropertiesBox {
   label {
@@ -298,10 +319,10 @@ select {
   font-size: 12px;
   background-color: #ffffff;
   h4 {
-    font-weight: bold;    
+    font-weight: bold;
     margin:5px 0;
   }
-  h5 { 
+  h5 {
     font-weight: bold;
     margin-top:2px;
   }
@@ -320,7 +341,7 @@ select {
   &.processCluster {
     padding: 15px 4%;
     margin: 5px auto;
-    h5 { 
+    h5 {
       margin-top:15px;
       &:first-child {
         margin-top:0;

@@ -35,8 +35,8 @@
              id="frequencyQuantity"
              ng-required="true"
              ng-pattern="validations.patterns.twoDigits"/>
-             
-      <select 
+
+      <select
         ng-model="process.frequency.unit"
         ng-required="true">
         <option selected value="minutes">minutes</option>
@@ -95,7 +95,7 @@
              id="delayQuantity" ng-keydown="validations.acceptOnlyNumber($event)"
              ng-required="true"
              ng-pattern="validations.patterns.twoDigits"/>
-             
+
       <select ng-model="process.retry.delay.unit" ng-required="true" validation-message="{{validations.messages.option}}">
         <option value="" disabled selected style='display:none;'>-Select delay-</option>
         <option value="minutes">minutes</option>
@@ -106,17 +106,16 @@
     </div>
   </div>
 
-  <div class="col-xs-24">
-    <div class="feedBottomButtons row">
-      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.process.general')">
-        Previous
-      </div>
-      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.clusters')" >
-        Next
-      </div>
-      <u class="col-xs-3 pull-right" ui-sref="main">
-        Cancel
-      </u>
+  <div class="col-xs-24 mt20">
+    <div class="btn prevBtn" ng-click="goBack('forms.process.general')">
+      Previous
     </div>
+    <div class="btn nextBtn pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.clusters')" >
+      Next
+    </div>
+    <u class="pull-right" ui-sref="main">
+      Cancel
+    </u>
   </div>
+
 </form>

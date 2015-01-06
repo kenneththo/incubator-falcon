@@ -20,7 +20,7 @@
 <form name="clusterForm">
   <div class="col-sm-24">
     <label class="light">Name</label>
-    <input type="text" class="form-control nameInput" 
+    <input type="text" class="form-control nameInput"
     	ng-pattern="validations.patterns.name"
         ng-model="clusterEntity.clusterModel.cluster._name" ng-required="true"
         ng-keydown="validations.acceptNoSpaces($event)"
@@ -31,14 +31,14 @@
   </div>
   <div class="col-sm-12">
     <label class="light">Colo</label>
-    <input type="text" class="form-control" 
+    <input type="text" class="form-control"
     	ng-pattern="validations.patterns.freeText"
         ng-required="true" ng-disabled="xmlPreview.edit"
         ng-model="clusterEntity.clusterModel.cluster._colo" validation-message="{{validations.messages.colo}}"/>
   </div>
   <div class="col-sm-12">
     <label class="light">Description</label>
-    <input type="text" class="form-control" 
+    <input type="text" class="form-control"
     	ng-pattern="validations.patterns.freeText"
         ng-required="true" ng-disabled="xmlPreview.edit" validation-message="{{validations.messages.description}}"
         ng-model="clusterEntity.clusterModel.cluster._description" />
@@ -199,17 +199,16 @@
       <span class="entypo plus"></span> add location
     </div>
   </div>
-  <div class="col-xs-24">
-    <div class="row mt20">
-      <div class="btn btn-default col-xs-6 mt10" ui-sref="main">
-        Cancel
-      </div>
-      <div id="cluster.step1" class="btn btn-default col-xs-6 pull-right mt10" ng-disabled="xmlPreview.edit"
-           ng-click="goSummaryStep(clusterForm.$invalid)">
-        Next
-      </div>
+  <div class="col-xs-24 mt20">
 
+    <div id="cluster.step1" class="btn nextBtn pull-right" ng-disabled="xmlPreview.edit"
+         ng-click="goSummaryStep(clusterForm.$invalid)">
+      Next
     </div>
+    <u class="pull-right" ui-sref="main">
+      Cancel
+    </u>
+
   </div>
 
 </form>

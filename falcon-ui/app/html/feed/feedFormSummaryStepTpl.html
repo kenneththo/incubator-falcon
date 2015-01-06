@@ -146,14 +146,16 @@
   </div>
 </div>
 
-<div class="feedBottomButtons row">
-  <div id="feed.backToStep4" class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.clusters')" >
-    Previous
+<div class="row">
+  <div class="col-xs-24 mt20">
+    <div id="feed.backToStep4" class="btn prevBtn" ng-click="goBack('forms.feed.clusters')" >
+      Previous
+    </div>
+    <div id="feed.step5" class="btn nextBtn pull-right" ng-click="saveEntity()">
+      Save
+    </div>
+    <u class="pull-right" ui-sref="main">
+      Cancel
+    </u>
   </div>
-  <div id="feed.step5" class="btn btn-default col-xs-6 pull-right" ng-click="saveEntity()">
-    Save
-  </div>
-  <u class="col-xs-3 pull-right" ui-sref="main">
-    Cancel
-  </u>
 </div>

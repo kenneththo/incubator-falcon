@@ -153,21 +153,21 @@
       </div>
     </div>
   </div>
-
-  <div class="btn btn-default btn-xs" ng-click="addCluster()">
-    + add cluster
-  </div>
-  <div class="col-xs-24">
-    <div class="row feedBottomButtons">
-      <div id="feed.backToStep3" class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.location')" >
-        Previous
-      </div>
-      <div id="feed.step4" class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.summary')" >
-        Next
-      </div>
-      <u class="col-xs-3 pull-right" ui-sref="main">
-        Cancel
-      </u>
+  <div class="col-xs-24 mt10">
+    <div class="btn btn-default btn-xs" ng-click="addCluster()">
+      + add cluster
     </div>
+  </div>
+
+  <div class="col-xs-24 mt20">
+    <div id="feed.backToStep3" class="btn prevBtn" ng-click="goBack('forms.feed.location')" >
+      Previous
+    </div>
+    <div id="feed.step4" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.summary')" >
+      Next
+    </div>
+    <u class="pull-right" ui-sref="main">
+      Cancel
+    </u>
   </div>
 </form>
