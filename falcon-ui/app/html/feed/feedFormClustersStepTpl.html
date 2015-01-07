@@ -86,7 +86,7 @@
                 ng-model="cluster.validity.start.date"
                 is-open="cluster.validity.start.opened"
                 ng-click="openDatePicker($event, cluster.validity.start)"
-                ng-required="true">
+                ng-required="true" simple-date>
               <span class="entypo calendar dateInputIcon"
                     ng-click="openDatePicker($event, cluster.validity.start)">
               </span>
@@ -110,7 +110,7 @@
                      ng-model="cluster.validity.end.date"
                      is-open="cluster.validity.end.opened"
                      ng-click="openDatePicker($event, cluster.validity.end)"
-                     ng-required="true">
+                     ng-required="true" simple-date>
               <span class="entypo calendar dateInputIcon"
                     ng-click="openDatePicker($event, cluster.validity.end)">
               </span>
