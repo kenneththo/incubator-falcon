@@ -89,8 +89,8 @@
 
         if(input.date !== "") {
           var dateComponent =
-          input.date.getFullYear() + '/' +
-          pad(input.date.getMonth()+1) + '/' +
+          input.date.getFullYear() + '-' +
+          pad(input.date.getMonth()+1) + '-' +
           pad(input.date.getDate());
         }
         else {
