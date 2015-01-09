@@ -56,6 +56,8 @@
     responseSuccessMessage = {"status": "SUCCEEDED", "message": "default/successful (" + type + ") " + name + "\n\n","requestId":"default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"};
     responseFailedMessage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><result><status>FAILED</status><message>(' + type + ') '+ name +' already registered with configuration store. Can\'t be submitted again. Try removing before submitting.</message><requestId>586fffcd-10c1-4975-8dda-4b34a712f2f4</requestId></result>';
 
+    if(name.length < 3) { res.send(404, responseFailedMessage); return; }
+
     if (!mockData.definitions[type][name]) {
       mockData.definitions[type][name] = text;
       mockData.entitiesList[type.toLowerCase()].entity.push(

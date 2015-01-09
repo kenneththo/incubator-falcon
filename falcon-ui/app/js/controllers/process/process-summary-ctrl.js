@@ -60,6 +60,7 @@
           .error(function (err) {
             SpinnersFlag.show = false;
             Falcon.logResponse('error', err, false);
+            angular.element('body').animate({scrollTop: 0}, 300);
           });
       }
       else {
@@ -72,6 +73,8 @@
           })
           .error(function (err) {
             Falcon.logResponse('error', err, false);
+            SpinnersFlag.show = false;
+            angular.element('body').animate({scrollTop: 0}, 300);
           });
       }
 

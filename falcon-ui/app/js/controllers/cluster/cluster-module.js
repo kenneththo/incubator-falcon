@@ -27,7 +27,8 @@
   var clusterModule = angular.module('app.controllers.cluster', [ 'app.services' ]);
 
   clusterModule.controller('ClusterFormCtrl', [
-    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "ValidationService", "SpinnersFlag",
+    "$scope", "$interval", "Falcon", "EntityModel", "$state",
+    "X2jsService", "ValidationService", "SpinnersFlag",
     function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, validationService, SpinnersFlag) {
 
       $scope.clusterEntity = EntityModel;
@@ -249,8 +250,9 @@
            Falcon.logResponse('success', response, false);
            $state.go('main');
          }).error(function (err) {
-          SpinnersFlag.show = false;
+           SpinnersFlag.show = false;
            Falcon.logResponse('error', err, false);
+           angular.element('body').animate({scrollTop: 0}, 300);
          });
       };
 
