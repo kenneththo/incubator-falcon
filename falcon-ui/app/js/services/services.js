@@ -17,16 +17,24 @@
  */
 (function () {
   'use strict';
-  
-  angular.module('app.services', [
-    'app.services.falcon', 
-    'app.services.fileapi', 
+
+  var services = angular.module('app.services', [
+    'app.services.falcon',
+    'app.services.fileapi',
     'app.services.json.transformer',
     'app.services.x2js',
-    'app.services.validation',   
+    'app.services.validation',
     'app.services.entity.serializer',
     'app.services.entity.factory',
     'app.services.entity.model'
   ]);
 
-})();
+  services.factory('SpinnersFlag', function () {
+    return {
+      show: false,
+      backShow: false
+    };
+  });
+
+
+}());

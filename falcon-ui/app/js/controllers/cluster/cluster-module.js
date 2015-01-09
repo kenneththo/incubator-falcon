@@ -27,8 +27,8 @@
   var clusterModule = angular.module('app.controllers.cluster', [ 'app.services' ]);
 
   clusterModule.controller('ClusterFormCtrl', [
-    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "ValidationService",
-    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, validationService) {
+    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "ValidationService", "SpinnersFlag",
+    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, validationService, SpinnersFlag) {
 
       $scope.clusterEntity = EntityModel;
       $scope.xmlPreview = { edit: false };
@@ -208,9 +208,11 @@
       };
       //--------------------------------------//
       $scope.goSummaryStep = function (formInvalid) {
+        SpinnersFlag.show = true;
         if (!$scope.validations.nameAvailable || formInvalid) {
           validationService.displayValidations.show = true;
           validationService.displayValidations.nameShow = true;
+          SpinnersFlag.show = false;
           return;
         }
         cleanModel();
@@ -219,6 +221,7 @@
 
       };
       $scope.goGeneralStep = function () {
+        SpinnersFlag.backShow = true;
         $scope.secondStep = false;
         validationService.displayValidations.show = false;
         validationService.displayValidations.nameShow = false;
@@ -239,19 +242,21 @@
         }
       };
       $scope.saveCluster = function () {
+        SpinnersFlag.show = true;
         $scope.saveModelBuffer();
         Falcon.logRequest();
         Falcon.postSubmitEntity($scope.jsonString, "cluster").success(function (response) {
            Falcon.logResponse('success', response, false);
            $state.go('main');
          }).error(function (err) {
+          SpinnersFlag.show = false;
            Falcon.logResponse('error', err, false);
          });
       };
-    
+
       //--------------------------------------//
       //----------XML preview-----------------//
-    
+
       $scope.xmlPreview.editXML = function () {
         $scope.xmlPreview.edit = !$scope.xmlPreview.edit;
       };

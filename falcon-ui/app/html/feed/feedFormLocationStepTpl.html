@@ -92,11 +92,13 @@
 
   <div class="row">
     <div class="col-xs-24 mt20">
-      <div id="feed.backToStep2" class="btn prevBtn" ng-click="goBack('forms.feed.properties')" >
-        Previous
+      <div id="feed.backToStep2" class="btn prevBtn"
+           ng-click="goBack('forms.feed.properties')"
+           ng-disabled="buttonSpinners.backShow">
+        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
       </div>
       <div id="feed.step3" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
-        Next
+        Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
       </div>
       <u class="pull-right" ui-sref="main">
         Cancel

@@ -145,11 +145,13 @@
     </div>
   </div>
   <div class="col-xs-24 mt20">
-    <div id="feed.backToStep1" class="btn prevBtn" ng-click="goBack('forms.feed.general')">
-      Previous
+    <div id="feed.backToStep1" class="btn prevBtn"
+         ng-click="goBack('forms.feed.general')"
+         ng-disabled="buttonSpinners.backShow">
+      Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
     </div>
     <div id="feed.step2" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.location')">
-      Next
+      Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
     </div>
     <u class="pull-right" ui-sref="main">
       Cancel

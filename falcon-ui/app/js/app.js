@@ -23,11 +23,11 @@
   ]);
 
   app.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function ($stateProvider, $urlRouterProvider, $httpProvider) {
-  	
+
   	$httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content');
-  	
+
   	$httpProvider.defaults.headers.common["X-Requested-By"] = 'X-Requested-By';
-  	
+
     $urlRouterProvider.otherwise("/");
 
     $stateProvider
@@ -129,12 +129,12 @@
         templateUrl: 'html/process/processFormSummaryStepTpl.html',
         controller: 'ProcessSummaryCtrl'
       });
-    
+
   }]);
 
-  app.run(['$rootScope', '$state', '$location', '$http', '$stateParams', '$cookieStore', 
-           function ($rootScope, $state, $location, $http, $stateParams, $cookieStore) {	
-  	
+  app.run(['$rootScope', '$state', '$location', '$http', '$stateParams', '$cookieStore', 'SpinnersFlag',
+           function ($rootScope, $state, $location, $http, $stateParams, $cookieStore, SpinnersFlag) {
+
   	var location = $location.absUrl();
     var index = location.indexOf("views/");
     if(index !== -1){
@@ -142,9 +142,9 @@
       var path = location.substring(index);
       var servicePaths = path.split("/");
       $rootScope.serviceURI = '/api/v1/views/'+servicePaths[0]+'/versions/'+servicePaths[1]+'/instances/'+servicePaths[2]+'/resources/proxy';
-      
+
     }
-  	
+
   	$rootScope.ambariView = function () {
   		var location_call = $location.absUrl();
       var index_call = location_call.indexOf("views/");
@@ -154,7 +154,7 @@
       	return false;
       }
     };
-    
+
   	$rootScope.userLogged = function () {
       if($rootScope.ambariView()){
       	return true;
@@ -165,20 +165,23 @@
     		  return false;
     	  }
       }
-    };  
-    
+    };
+    $rootScope.$on('$stateChangeSuccess', function () {
+      SpinnersFlag.show = false;
+      SpinnersFlag.backShow = false;
+    });
     $rootScope.$on('$stateChangeError',
       function(event, toState, toParams, fromState, fromParams, error){
         console.log('Manual log of stateChangeError: ' + error);
       });
-    
-		$rootScope.$on('$stateChangeStart', 
-		  function(event, toState){ 
+
+		$rootScope.$on('$stateChangeStart',
+		  function(event, toState){
 				if(toState.name !== 'login'){
 					if($rootScope.ambariView()){
-						
+
 						if(angular.isDefined($cookieStore.get('userToken')) && $cookieStore.get('userToken') !== null){
-				  		
+
 				  	}else{
 				  		event.preventDefault();
 				  		$http.get($rootScope.serviceURI).success(function (data) {
@@ -188,14 +191,14 @@
 					 			$state.transitionTo('main');
 				  		});
 				  	}
-						
+
 					}else	if($rootScope.userLogged()){
-						
+
 		  			var userToken = $cookieStore.get('userToken');
 		  			var timeOut = new Date().getTime();
-		  			
+
 		  			timeOut = timeOut - userToken.timeOut;
-		  			
+
 		  			if(timeOut > userToken.timeOutLimit){
 		  				console.log("session expired");
 		  				$cookieStore.put('userToken', null);
@@ -205,9 +208,9 @@
 		  				userToken.timeOut = new Date().getTime();
 		  				$cookieStore.put('userToken', userToken);
 		  			}
-		  			
-		  			
-						
+
+
+
 			    }else{
 			    	console.log("Not logged, redirect to login");
 			 		  event.preventDefault();
@@ -215,7 +218,7 @@
 			    }
 				}
 		  });
-		
+
   }]);
 
 })();

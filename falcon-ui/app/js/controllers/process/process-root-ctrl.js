@@ -29,8 +29,9 @@
 
   feedModule.controller('ProcessRootCtrl', [
     '$scope', '$state', '$interval', '$controller', 'EntityFactory',
-    'EntitySerializer', 'X2jsService', 'ValidationService',
-    function ($scope, $state, $interval, $controller, entityFactory, serializer, X2jsService, validationService) {
+    'EntitySerializer', 'X2jsService', 'ValidationService', 'SpinnersFlag',
+    function ($scope, $state, $interval, $controller, entityFactory,
+              serializer, X2jsService, validationService, SpinnersFlag) {
 
       $scope.entityType = 'process';
 
@@ -97,9 +98,11 @@
 
       //---------------------------------//
       $scope.goNext = function (formInvalid, stateName) {
+        SpinnersFlag.show = true;
         if (!validationService.nameAvailable || formInvalid) {
           validationService.displayValidations.show = true;
           validationService.displayValidations.nameShow = true;
+          SpinnersFlag.show = false;
           return;
         }
         validationService.displayValidations.show = false;
@@ -107,6 +110,7 @@
         $state.go(stateName);
       };
       $scope.goBack = function (stateName) {
+        SpinnersFlag.backShow = true;
         validationService.displayValidations.show = false;
         validationService.displayValidations.nameShow = false;
         $state.go(stateName);

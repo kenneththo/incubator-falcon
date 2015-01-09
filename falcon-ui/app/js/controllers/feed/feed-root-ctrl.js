@@ -33,9 +33,11 @@
       'JsonTransformerFactory', 'EntityFactory',
       'EntitySerializer', '$interval',
       '$controller', "ValidationService",
+      "SpinnersFlag",
       function($scope, $state, $timeout, Falcon,
                X2jsService, transformerFactory, entityFactory,
-               serializer, $interval, $controller, validationService) {
+               serializer, $interval, $controller,
+               validationService, SpinnersFlag) {
 
         $scope.entityType = 'feed';
 
@@ -76,6 +78,8 @@
 
         $scope.saveEntity = function() {
           var type = $scope.entityType;
+          SpinnersFlag.show = true;
+
           if(!$scope.$parent.cloningMode) {
             Falcon.logRequest();
             Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
@@ -85,6 +89,7 @@
               })
               .error(function(err) {
                 Falcon.logResponse('error', err, false);
+                SpinnersFlag.show = false;
               });
           } else {
             Falcon.logRequest();
@@ -95,6 +100,7 @@
               })
               .error(function(err) {
                 Falcon.logResponse('error', err, false);
+                SpinnersFlag.show = false;
               });
           }
 
@@ -150,21 +156,25 @@
           $interval.cancel(xmlPreviewWorker);
         });
 
-        //$scope.nameValid = $scope.$parent.nameValid;
-        /*
-        * needed for validation
-        * */
         $scope.goNext = function (formInvalid, stateName) {
+
+          SpinnersFlag.show = true;
+
           if (!validationService.nameAvailable || formInvalid) {
             validationService.displayValidations.show = true;
             validationService.displayValidations.nameShow = true;
+            SpinnersFlag.show = false;
             return;
           }
           validationService.displayValidations.show = false;
           validationService.displayValidations.nameShow = false;
+
           $state.go(stateName);
+
+
         };
         $scope.goBack = function (stateName) {
+          SpinnersFlag.backShow = true;
           validationService.displayValidations.show = false;
           validationService.displayValidations.nameShow = false;
           $state.go(stateName);

@@ -27,8 +27,8 @@
    */
   var feedModule = angular.module('app.controllers.process');
 
-  feedModule.controller('ProcessSummaryCtrl', [ '$scope', '$state', '$timeout', '$filter', 'Falcon',
-                                                  function($scope, $state, $timeout, $filter, Falcon) {
+  feedModule.controller('ProcessSummaryCtrl', [ '$scope', '$state', '$timeout', '$filter', 'Falcon', 'SpinnersFlag',
+                                                  function($scope, $state, $timeout, $filter, Falcon, SpinnersFlag) {
 
     $scope.init = function() {
       if($scope.transform) {
@@ -47,28 +47,31 @@
 
     $scope.saveEntity = function() {
       var type = $scope.entityType;
-      if(!$scope.$parent.cloningMode) { 
+      SpinnersFlag.show = true;
+
+      if(!$scope.$parent.cloningMode) {
         Falcon.logRequest();
         Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
           .success(function (response) {
-             Falcon.logResponse('success', response, false); 
-             $state.go('main'); 
+             Falcon.logResponse('success', response, false);
+             $state.go('main');
 
           })
-          .error(function (err) {   
-            Falcon.logResponse('error', err, false);          
+          .error(function (err) {
+            SpinnersFlag.show = false;
+            Falcon.logResponse('error', err, false);
           });
-      } 
+      }
       else {
         Falcon.logRequest();
         Falcon.postSubmitEntity($scope.xml, $scope.entityType)
           .success(function (response) {
-             Falcon.logResponse('success', response, false); 
-             $state.go('main'); 
- 
+             Falcon.logResponse('success', response, false);
+             $state.go('main');
+
           })
-          .error(function (err) {   
-            Falcon.logResponse('error', err, false);          
+          .error(function (err) {
+            Falcon.logResponse('error', err, false);
           });
       }
 

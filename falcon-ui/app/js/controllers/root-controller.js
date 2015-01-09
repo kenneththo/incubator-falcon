@@ -21,11 +21,14 @@
   var app = angular.module('app.controllers.rootCtrl', ['app.services']);
 
   app.controller('RootCtrl', [
-    "$scope", "$timeout", "Falcon", "FileApi", "EntityModel", "$state", "X2jsService", "ValidationService",
-    function ($scope, $timeout, Falcon, FileApi, EntityModel, $state, X2jsService, validationService) {
+    "$scope", "$timeout", "Falcon", "FileApi", "EntityModel",
+    "$state", "X2jsService", "ValidationService", "SpinnersFlag",
+    function ($scope, $timeout, Falcon, FileApi,
+              EntityModel, $state, X2jsService, validationService, SpinnersFlag) {
 
       $scope.server = Falcon;
       $scope.validations = validationService;
+      $scope.buttonSpinners = SpinnersFlag;
       $scope.models = {};
 
       $scope.handleFile = function (evt) {
@@ -54,7 +57,7 @@
 
         Falcon.getEntities(type)
           .success(function (data) {
-            
+
             Falcon.logResponse('success', data, false, true);
             Falcon.responses.listLoaded[type] = true;
             $scope.lists[type + 'List'] = [];
@@ -62,7 +65,7 @@
             if (data === null) {
               $scope.lists[type + 'List'] = [];
             }else{
-              var typeOfData = Object.prototype.toString.call(data.entity);	
+              var typeOfData = Object.prototype.toString.call(data.entity);
         	  if (typeOfData === "[object Array]") {
                 $scope.lists[type + 'List'] = data.entity;
               } else if (typeOfData === "[object Object]") {

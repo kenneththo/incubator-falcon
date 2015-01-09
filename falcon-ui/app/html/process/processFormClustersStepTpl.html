@@ -94,11 +94,15 @@
     </div>
   </div>
   <div class="col-xs-24 mt20">
-    <div class="btn prevBtn" ng-click="goBack('forms.process.properties')" >
-      Previous
+    <div class="btn prevBtn"
+         ng-click="goBack('forms.process.properties')"
+         ng-disabled="buttonSpinners.backShow">
+      Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
     </div>
-    <div class="btn nextBtn pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.io')" >
-      Next
+    <div class="btn nextBtn pull-right"
+         ng-disabled="buttonSpinners.show"
+         ng-click="goNext(processForm.$invalid, 'forms.process.io')" >
+      Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
     </div>
     <u class="pull-right" ui-sref="main">
       Cancel

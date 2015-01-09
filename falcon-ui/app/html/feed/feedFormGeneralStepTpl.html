@@ -112,8 +112,10 @@
 
 
   <div class="col-xs-24 mt20">
-    <div id="feed.step1" class="btn nextBtn col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.properties')">
-      Next
+    <div id="feed.step1" class="btn nextBtn col-xs-6 pull-right"
+         ng-disabled="buttonSpinners.show"
+         ng-click="goNext(feedForm.$invalid, 'forms.feed.properties')">
+      Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
     </div>
     <u class="pull-right" ng-click="cancel()" ui-sref="main">
       Cancel

@@ -154,13 +154,15 @@
 
   <div class="row">
     <div class="col-xs-24 mt20">
-      <div class="btn prevBtn" ng-click="goBack('forms.process.io')">
-        Previous
+      <div class="btn prevBtn"
+           ng-click="goBack('forms.process.io')"
+           ng-disabled="buttonSpinners.backShow">
+        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
       </div>
       <div class="btn nextBtn pull-right"
-           ng-disabled="processForm.$invalid"
+           ng-disabled="processForm.$invalid || buttonSpinners.show"
            ng-click="saveEntity()">
-        Save
+        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
       </div>
       <u class="pull-right" ui-sref="main">
         Cancel
