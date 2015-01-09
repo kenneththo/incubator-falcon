@@ -252,7 +252,7 @@
          }).error(function (err) {
            SpinnersFlag.show = false;
            Falcon.logResponse('error', err, false);
-           angular.element('body').animate({scrollTop: 0}, 300);
+           angular.element('body, html').animate({scrollTop: 0}, 300);
          });
       };
 

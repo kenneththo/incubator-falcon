@@ -90,7 +90,7 @@
               .error(function(err) {
                 Falcon.logResponse('error', err, false);
                 SpinnersFlag.show = false;
-                angular.element('body').animate({scrollTop: 0}, 300);
+                angular.element('body, html').animate({scrollTop: 0}, 300);
               });
           } else {
             Falcon.logRequest();
@@ -102,7 +102,7 @@
               .error(function(err) {
                 Falcon.logResponse('error', err, false);
                 SpinnersFlag.show = false;
-                angular.element('body').animate({scrollTop: 0}, 300);
+                angular.element('body, html').animate({scrollTop: 0}, 300);
               });
           }
 
