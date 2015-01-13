@@ -59,6 +59,8 @@ public class FalconProxyServlet {
 	private static final String GET_METHOD = "GET";
 	private static final String POST_METHOD = "POST";
 	private static final String DELETE_METHOD = "DELETE";
+	
+	private static final String FALCON_ERROR = "<result><status>FAILED</status>";
 
 	@GET
 	@Path("/")
@@ -67,7 +69,7 @@ public class FalconProxyServlet {
 		String result;
 		try {
 			result = context.getUsername();
-			return Response.ok(result).type(MediaType.TEXT_PLAIN).build();
+			return Response.ok(result).type(defineType(result)).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			result = ex.toString();
@@ -83,7 +85,7 @@ public class FalconProxyServlet {
 		try {
 			String serviceURI = buildURI(ui);
 			result = consumeService(serviceURI, GET_METHOD, null);
-			return Response.ok(result).type(MediaType.TEXT_PLAIN).build();
+			return Response.ok(result).type(defineType(result)).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			result = ex.toString();
@@ -100,7 +102,10 @@ public class FalconProxyServlet {
 		try {
 			String serviceURI = buildURI(ui);
 			result = consumeService(serviceURI, POST_METHOD, xml);
-			return Response.ok(result).type(MediaType.TEXT_PLAIN).build();
+			if(result.contains(FALCON_ERROR)){
+				return Response.status(Status.BAD_REQUEST).entity(result).type(defineType(result)).build();
+			}
+			return Response.ok(result).type(defineType(result)).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			result = ex.toString();
@@ -116,7 +121,7 @@ public class FalconProxyServlet {
 		try {
 			String serviceURI = buildURI(ui);
 			result = consumeService(serviceURI, DELETE_METHOD, null);
-			return Response.ok(result).type(MediaType.TEXT_PLAIN).build();
+			return Response.ok(result).type(defineType(result)).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			result = ex.toString();
@@ -168,6 +173,17 @@ public class FalconProxyServlet {
 					ClientResponse.class);
 		}
 		return response.getEntity(String.class);
+	}
+	
+	private String defineType(String response){
+		if(response.startsWith("{")){
+//			return MediaType.APPLICATION_JSON;
+			return MediaType.TEXT_PLAIN;
+		}else if(response.startsWith("<")){
+			return MediaType.TEXT_XML;
+		}else{
+			return MediaType.TEXT_PLAIN;
+		}
 	}
 
 }
