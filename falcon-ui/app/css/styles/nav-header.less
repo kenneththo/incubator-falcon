@@ -47,12 +47,13 @@
     font-weight: bold;
     margin: 2px 0;
   }
-  > div {
+  > button {
     padding: 5px 10px;
     border: 1px solid white;
     border-radius: 3px;
     display: inline-block;
     cursor: pointer;
+    background-color: transparent;
   }
   .disabled {
     color: lighten(@headerNavBG, 10%);
@@ -63,24 +64,56 @@
 .uploadNavWrapper {
   > div {
     min-width:183px;
+    padding: 5px 10px;
+    border: 1px solid white;
+    border-radius: 3px;
+    display: inline-block;
+    cursor: pointer;
+    &.fakeFocus {
+      .box-shadow(0 0 2px white);
+    }
   }
 }
-
 .loginHeaderBox {
   margin: 0;
   display: inline-block;
   //width: 100%;
   text-align:right;
   .pull-right;
+  > button {
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    background-color: transparent;
+  }
   div {
     display: inline-block;
     margin-right: 10px;
+  }
+  a {
+    color: white;
+    cursor: pointer;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: top               ;
+    padding: 1px 6px;
+    background-color: transparent;
+    &:hover {
+      text-decoration: none;
+    }
+    &:focus {
+      text-decoration: none;
+    }
+    /*.entypo {
+      font-size: 20px;
+
+    }*/
   }
 }
 
 @media screen and (min-width:976px) {
   .loginHeaderBox {
-    margin-top: 36px;
+    margin-top: 32px;
   }
 }
 @media screen and (max-width:976px) {
@@ -91,7 +124,7 @@
 }
 @media screen and (max-width:815px) {
   .loginHeaderBox {
-    //margin-top: 40px;
+    margin-top: 3px;
     width: 100%;
   }
 }

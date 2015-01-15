@@ -28,6 +28,8 @@
     '$rootScope', '$scope', '$state', '$cookieStore', 'EntityModel', 'ValidationService',
     function ($rootScope, $scope, $state, $cookieStore, EntityModel, validationService) {
 
+      $scope.fake = { focus: false }; //used in upload button to fake the focus borders
+
       $scope.resetCluster = function () {
         validationService.displayValidations = {show: false, nameShow: false};
         EntityModel.clusterModel = { cluster: { tags: "", interfaces: { interface: [
@@ -53,7 +55,7 @@
         $scope.cloningMode = true;
         $state.go("forms.feed.general");
       };
-      
+
       $scope.userLogged = function () {
     	  if($rootScope.userLogged()){
     	  	if(angular.isDefined($cookieStore.get('userToken')) && $cookieStore.get('userToken') !== null){
@@ -69,12 +71,12 @@
     		  return false;
     	  }
       };
-      
+
       $scope.logOut = function() {
       	$cookieStore.put('userToken', null);
       	$state.transitionTo('login');
       };
-        
+
     }]);
 
 })();

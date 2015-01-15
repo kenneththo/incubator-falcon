@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 -->
-<form name="clusterForm">
+<form novalidate name="clusterForm">
   <div class="col-sm-24">
     <label class="light">Name</label>
     <input type="text" class="form-control nameInput"
@@ -59,17 +59,17 @@
                ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" validation-optional-message="{{validations.messages.value}}"/>
       </div>
       <div class="col-xs-3">
-        <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
+        <button class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
           <span class="entypo minus"></span> delete
-        </div>
+        </button>
       </div>
     </div>
   </div>
 
   <div class="col-xs-24 mt5">
-    <div class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit">
+    <button class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit">
       <span class="entypo plus"></span> add tag
-    </div>
+    </button>
   </div>
   <h4 class="col-sm-24"> Access Control List </h4>
   <div class="col-sm-8">
@@ -141,17 +141,17 @@
              ng-disabled="xmlPreview.edit" ng-required="property._name" placeholder="value" />
     </div>
     <div class="col-xs-2 dynamic-table-spacer">
-      <div class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
+      <button class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
            ng-disabled="xmlPreview.edit">
         <span class="entypo minus"></span> delete
-      </div>
+      </button>
     </div>
     <div class="clearfix hidden-md"></div>
   </div>
   <div class="col-xs-24 dynamic-table-spacer">
-    <div class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit">
+    <button class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit">
       <span class="entypo plus"></span> add property
-    </div>
+    </button>
   </div>
 
   <h4 class="col-xs-24"> Location </h4>
@@ -184,10 +184,10 @@
                ng-disabled="xmlPreview.edit" ng-required="location._name" placeholder="path" />
       </div>
       <div class="col-xs-2 dynamic-table-spacer">
-        <div class="btn btn-default btn-xs" ng-click="removeLocation($index)" ng-if="$index>3"
+        <button class="btn btn-default btn-xs" ng-click="removeLocation($index)" ng-if="$index>3"
              ng-disabled="xmlPreview.edit" >
           <span class="entypo minus"></span> delete
-        </div>
+        </button>
       </div>
       <div class="clearfix hidden-md"></div>
     </div>
@@ -195,16 +195,16 @@
   </div>
 
   <div class="col-xs-24 dynamic-table-spacer">
-    <div class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit">
+    <button class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit">
       <span class="entypo plus"></span> add location
-    </div>
+    </button>
   </div>
   <div class="col-xs-24 mt20">
 
-    <div id="cluster.step1" class="btn nextBtn pull-right" ng-disabled="xmlPreview.edit"
+    <button type="button" id="cluster.step1" class="btn nextBtn pull-right" ng-disabled="xmlPreview.edit || buttonSpinners.show"
          ng-click="goSummaryStep(clusterForm.$invalid)">
-      Next
-    </div>
+      Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+    </button>
     <u class="pull-right" ui-sref="main">
       Cancel
     </u>

@@ -67,17 +67,17 @@
 
 <div class="row clusterSummaryRow">
   <div class="col-xs-24 mt20">
-    <div id="cluster.backToStep1"
+    <button id="cluster.backToStep1"
          class="btn prevBtn"
          ui-sref="forms.cluster.general"
          ng-click="goGeneralStep()"
          ng-disabled="buttonSpinners.backShow">
       Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-    </div>
+    </button>
 
-    <div id="cluster.step2" class="btn btn-default nextBtn pull-right"
+    <button id="cluster.step2" class="btn btn-default nextBtn pull-right"
          ng-click="saveCluster()" ng-disabled="xmlPreview.edit || buttonSpinners.show">
       Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-    </div>
+    </button>
   </div>
 </div>

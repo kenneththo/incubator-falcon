@@ -26,22 +26,29 @@
 
       <div class="createNavWrapper" ng-show="userLogged()">
         <h4>Create an entity</h4>
-        <div id="cluster.create" ng-click="resetCluster()">
+        <button type="button" id="cluster.create" ng-click="resetCluster()">
           <span class="entypo archive"></span> Cluster
-        </div>
-        <div id="feed.create" ng-click="resetFeed()">
+        </button>
+        <button type="button" id="feed.create" ng-click="resetFeed()">
           <span class="entypo download"></span> Feed
-        </div>
-        <div id="process.create" ng-click="resetProcess()">
+        </button>
+        <button type="button" id="process.create" ng-click="resetProcess()">
           <span class="entypo cycle"></span> Process
-        </div>
+        </button>
       </div>
 
       <div class="uploadNavWrapper" ng-show="userLogged()">
         <h4>Upload an entity</h4>
-        <div class="btn-file">
+        <div class="btn-file" ng-class="{fakeFocus: fake.focus}">
           <span class="entypo up"></span>
-          <input type="file" id="files" name="files[]" multiple fileinput-change="handleFile" ng-model="fileJson">
+          <input type="file"
+                 id="files"
+                 ng-focus="fake.focus = true"
+                 ng-blur="fake.focus = false"
+                 name="files[]"
+                 multiple
+                 fileinput-change="handleFile"
+                 ng-model="fileJson">
           Browse for the XML file
         </div>
       </div>
@@ -52,11 +59,11 @@
         <div ng-show="userLogged()">
           <span class="entypo user"></span> <strong>{{userToken}}</strong>
         </div>
-        <div ng-show="userLogged() && !ambariView()" ng-click="logOut()">
+        <button ng-show="userLogged() && !ambariView()" ng-click="logOut()">
           <span class="entypo logout pointer"></span><strong class="pointer">Logout</strong>
-        </div>
+        </button>
         <div>
-          <span class="entypo circled-help"></span>Help
+          <a href="http://hortonworks.com/hadoop/falcon/"><span class="entypo circled-help"></span>Help</a>
         </div>
       </div>
 
