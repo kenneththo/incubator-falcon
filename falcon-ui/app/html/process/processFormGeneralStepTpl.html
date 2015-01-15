@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 -->
-<form name="processForm" class="mt10">
+<form name="processForm" class="mt10" novalidate>
 
     <div class="col-xs-24">
       <label class="light">Name</label>
@@ -45,17 +45,17 @@
                    ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key"/>
           </div>
           <div class="col-xs-3">
-            <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-if="$index>0">
+            <button class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-if="$index>0">
               <span class="entypo minus"></span> delete
-            </div>
+            </button>
           </div>
         </div>
       </div>
     </div>
     <div class="col-xs-24 mt10 mb10">
-      <div class="btn btn-default btn-xs" ng-click="addTag()">
+      <button class="btn btn-default btn-xs" ng-click="addTag()">
         <span class="entypo plus"></span> add tag
-      </div>
+      </button>
     </div>
 
   <h4 class="col-xs-24">Workflow</h4>
@@ -120,14 +120,14 @@
   </div>
 
   <div class="col-xs-24 mt20">
-    <div id="nextButton" class="btn nextBtn pull-right"
+    <button id="nextButton" class="btn nextBtn pull-right"
          ng-disabled="buttonSpinners.show"
          ng-click="goNext(processForm.$invalid, 'forms.process.properties')" >
       Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-    </div>
-    <u class="pull-right" ng-click="cancel()" ui-sref="main">
+    </button>
+    <a class="pull-right" ng-click="cancel()" ui-sref="main">
       Cancel
-    </u>
+    </a>
   </div>
 
 </form>

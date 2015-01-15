@@ -42,7 +42,7 @@
   .transition(background, 0.3s, ease);
   border: 0px none;
   width: 90px;
-  border-radius: 7px;
+  border-radius: 7px!important;
   padding: 10px;
 }
 .nextBtn {
@@ -51,12 +51,22 @@
   &:hover {
     background: darken(@nextBtnBackground, 10%);
     color: white;
+    outline: hidden;
+    border-radius: 7px!important;
+  }
+  &:focus, &:active, &:visited {
+    background: darken(@nextBtnBackground, 10%);
+    color: white;
+    outline: hidden;
+    border-radius: 10px!important;
   }
 }
 .prevBtn {
   background: @prevBtnBackground;
-  &:hover {
+  &:hover, &:focus, &:active, &:visited {
     background: darken(@prevBtnBackground, 10%);
+    outline: hidden;
+    border-radius: 10px!important;
   }
 }
 //-----------------------------------------------------//
@@ -90,13 +100,18 @@
   .light {
     font-weight: normal;
   }
-  u {
+  a {
     line-height: 30px;
     cursor: pointer;
     margin: 5px 15px;
+    text-decoration: underline;
+    color: black;
+    &:focus {
+      color: red;
+    }
   }
   input, select {
-    color: black;
+    color: @gray-darker;
     font-size: 13px;
   }
   .input-group-addon {
@@ -216,12 +231,34 @@ select {
   }
   .feedLocationNav {
     color: black;
+
     .btn {
-      background-color: @gray-light;
+      position: relative;
+      background-color: lighten(@gray-light2, 20%);
+      border-radius: 5px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      padding: 4px 20px;
+
+      &:last-child {
+        margin-right: -12px;
+      }
     }
     .active {
       color: white;
-      background-color: @gray-dark;
+      background-color:lighten(@gray, 20%);
+      z-index: 1234;
+    }
+    &.disabled {
+      .btn {
+        background-color: lighten(@gray-light2, 30%);
+        opacity:1;
+        color: @gray-light2;
+      }
+      .active {
+        background-color:lighten(@gray, 30%);
+        color: white;
+      }
     }
   }
 

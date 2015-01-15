@@ -27,9 +27,15 @@
    */
   var feedModule = angular.module('app.controllers.feed');
 
-  feedModule.controller('FeedClustersController', ["$scope","clustersList", "EntityFactory",
+  feedModule.controller('FeedClustersController', [ "$scope", "clustersList", "EntityFactory", "$timeout",
+                                            function($scope, clustersList, entityFactory, $timeout) {
 
-    function($scope, clustersList, entityFactory) {
+      function focusOnElement () {
+        $timeout(function () {
+          angular.element('#clusterNameSelect').trigger('focus');
+        }, 500);
+      }
+      focusOnElement();
 
       unwrapClusters(clustersList);
 

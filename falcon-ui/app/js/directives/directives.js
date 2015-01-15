@@ -87,7 +87,7 @@
       templateUrl: 'html/directives/timeZoneSelectDv.html'
     };
   });
-  
+
   directivesModule.directive('simpleDate', ['$filter', function($filter) {
   	return {
 	    require: 'ngModel',

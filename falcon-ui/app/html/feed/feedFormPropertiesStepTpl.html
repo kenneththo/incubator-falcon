@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 -->
-<form name="feedForm">
+<form name="feedForm" novalidate>
 
     <h5 class="col-xs-24 mb10">Timing</h5>
 
@@ -25,7 +25,7 @@
       <div class="light">Frequency</div>
       <span>Every</span>
       <input type="text" class="form-control" validation-message="{{validations.messages.number}}"
-             ng-model="feed.frequency.quantity"
+             ng-model="feed.frequency.quantity" autofocus
              ng-required="true"
              ng-keydown="validations.acceptOnlyNumber($event)"
              ng-pattern="validations.patterns.twoDigits"/>
@@ -131,30 +131,30 @@
               ng-required="property.key"/>
           </div>
           <div class="col-xs-4 mt10">
-            <div class="btn btn-default btn-xs mt1" ng-click="removeCustomProperty($index)" ng-if="$index>0">
+            <button type="button" class="btn btn-default btn-xs mt1" ng-click="removeCustomProperty($index)" ng-if="$index>0">
               <span class="entypo minus"></span> delete
-            </div>
+            </button>
           </div>
         </div>
       </div>
       <div class="col-xs-24 mt10">
-        <div class="btn btn-default btn-xs" ng-click="addCustomProperty()">
+        <button type="button" class="btn btn-default btn-xs" ng-click="addCustomProperty()">
           <span class="entypo plus"></span> add property
-        </div>
+        </button>
       </div>
     </div>
   </div>
   <div class="col-xs-24 mt20">
-    <div id="feed.backToStep1" class="btn prevBtn"
+    <button id="feed.backToStep1" class="btn prevBtn" type="button"
          ng-click="goBack('forms.feed.general')"
          ng-disabled="buttonSpinners.backShow">
       Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-    </div>
-    <div id="feed.step2" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.location')">
+    </button>
+    <button id="feed.step2" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.location')">
       Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-    </div>
-    <u class="pull-right" ui-sref="main">
+    </button>
+    <a class="pull-right" ui-sref="main">
       Cancel
-    </u>
+    </a>
   </div>
 </form>

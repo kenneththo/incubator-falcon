@@ -104,10 +104,12 @@
         key = theEvent.keyCode || theEvent.which,
         BACKSPACE = 8,
         DEL = 46,
+        ENTER = 13,
         ARROW_KEYS = {left: 37, right: 39},
+        TAB = 9,
         regex = /[0-9]|\./;
 
-      if (key === BACKSPACE || key === DEL || key === ARROW_KEYS.left || key === ARROW_KEYS.right) {
+      if (key === BACKSPACE || key === DEL || key === ARROW_KEYS.left || key === ARROW_KEYS.right || key === TAB || key === ENTER) {
         return true;
       }
 
