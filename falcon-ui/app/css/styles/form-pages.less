@@ -63,7 +63,12 @@
 }
 .prevBtn {
   background: @prevBtnBackground;
-  &:hover, &:focus, &:active, &:visited {
+  &:hover {
+    background: darken(@prevBtnBackground, 10%);
+    outline: hidden;
+    border-radius: 7px!important;
+  }
+  &:focus, &:active, &:visited {
     background: darken(@prevBtnBackground, 10%);
     outline: hidden;
     border-radius: 10px!important;

@@ -30,6 +30,10 @@
   feedModule.controller('ProcessSummaryCtrl', [ '$scope', '$state', '$timeout', '$filter', 'Falcon', 'SpinnersFlag',
                                                   function($scope, $state, $timeout, $filter, Falcon, SpinnersFlag) {
 
+    $timeout(function () {
+      angular.element('.nextBtn').trigger('focus');
+    }, 500);
+
     $scope.init = function() {
       if($scope.transform) {
         $scope.transform();

@@ -26,7 +26,10 @@
         <div class="row">
           <div class="col-xs-24">
             <label class="light">Name</label>
-            <select ng-model="cluster.name" ng-required="true" class="form-control padding0" validation-message="{{validations.messages.cluster}}">
+            <select ng-model="cluster.name" ng-class="{firstSelectClusterStep: $index === 0}"
+                    ng-required="true"
+                    class="form-control padding0"
+                    validation-message="{{validations.messages.cluster}}">
               <option value="" disabled selected style='display:none;'>-Select cluster-</option>
               <option ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
             </select>
@@ -77,9 +80,9 @@
             </label>
           </div>
           <div class="col-xs-24 mt10">
-            <div class="btn btn-default pull-right btn-xs" ng-click="removeCluster($index)" ng-if="!$first">
+            <button type="button" class="btn btn-default pull-right btn-xs" ng-click="removeCluster($index)" ng-if="!$first">
               - delete
-            </div>
+            </button>
           </div>
         </div>
 
@@ -89,24 +92,24 @@
     </div>
   </div>
   <div class="col-xs-24 mt10">
-    <div class="btn btn-default btn-xs" ng-click="addCluster()">
+    <button type="button" class="btn btn-default btn-xs" ng-click="addCluster()">
       + add cluster
-    </div>
+    </button>
   </div>
   <div class="col-xs-24 mt20">
-    <div class="btn prevBtn"
+    <button class="btn prevBtn" type="button"
          ng-click="goBack('forms.process.properties')"
          ng-disabled="buttonSpinners.backShow">
       Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-    </div>
-    <div class="btn nextBtn pull-right"
+    </button>
+    <button class="btn nextBtn pull-right"
          ng-disabled="buttonSpinners.show"
          ng-click="goNext(processForm.$invalid, 'forms.process.io')" >
       Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-    </div>
-    <u class="pull-right" ui-sref="main">
+    </button>
+    <a class="pull-right" ui-sref="main">
       Cancel
-    </u>
+    </a>
   </div>
 
 </form>

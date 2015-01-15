@@ -29,7 +29,9 @@
           <div class="row">
             <div class="col-xs-24">
               <label class="light">Name</label>
-              <input type="text" class="form-control" validation-message="{{validations.messages.name}}"
+              <input type="text" class="form-control"
+                     ng-class="{firstInput: $index === 0}"
+                     validation-message="{{validations.messages.name}}"
                      ng-model="input.name"
                      ng-required="true"
                      ng-maxlength="39"
@@ -72,17 +74,17 @@
             </div>
 
             <div class="col-xs-24 mt10">
-              <div class="btn btn-default pull-right btn-xs" ng-click="removeInput($index)">
-                - delete
-              </div>
+              <button type="button" class="btn btn-default pull-right btn-xs" ng-click="removeInput($index)">
+                <span class="entypo minus"></span> delete
+              </button>
             </div>
           </div>
       </div>
     </div>
 
-    <div class="btn btn-default btn-xs mt10 mb10" ng-click="addInput()">
-      + add input
-    </div>
+    <button type="button" class="btn btn-default btn-xs mt10 mb10 addInputButton" ng-click="addInput()">
+      <span class="entypo plus"></span> add input
+    </button>
 
     <h4 ng-if="process.outputs.length === 0">Outputs</h4>
 
@@ -93,7 +95,10 @@
         <div class="row">
           <div class="col-xs-24">
             <label class="light">Name</label>
-            <input type="text" class="form-control" validation-message="{{validations.messages.name}}"
+            <input type="text"
+                   ng-class="{firstOutput: $index === 0}"
+                   class="form-control"
+                   validation-message="{{validations.messages.name}}"
                    ng-model="output.name"
                    ng-required="true"
                    ng-maxlength="39"
@@ -123,33 +128,33 @@
           </div>
         </div>
         <div class="row mt10">
-          <div class="btn btn-default pull-right btn-xs" ng-click="removeOutput($index)">
-            - delete
-          </div>
+          <button type="button" class="btn btn-default pull-right btn-xs" ng-click="removeOutput($index)">
+            <span class="entypo minus"></span> delete
+          </button>
         </div>
 
       </div>
     </div>
 
-    <div class="btn btn-default btn-xs mb10 mt10" ng-click="addOutput()">
-      + add output
-    </div>
+    <button type="button" class="btn btn-default btn-xs mb10 mt10" ng-click="addOutput()">
+      <span class="entypo plus"></span> add output
+    </button>
   </div>
   <div class="row">
     <div class="col-xs-24 mt20">
-      <div class="btn prevBtn"
+      <button class="btn prevBtn" type="button"
            ng-click="goBack('forms.process.clusters')"
            ng-disabled="buttonSpinners.backShow">
         Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-      </div>
-      <div class="btn nextBtn pull-right"
+      </button>
+      <button class="btn nextBtn pull-right"
            ng-disabled="buttonSpinners.show"
            ng-click="goNext(processForm.$invalid, 'forms.process.summary')" >
         Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-      </div>
-      <u class="pull-right" ui-sref="main">
+      </button>
+      <a class="pull-right" ui-sref="main">
         Cancel
-      </u>
+      </a>
     </div>
   </div>
 </form>

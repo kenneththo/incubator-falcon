@@ -59,7 +59,7 @@
                ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" validation-optional-message="{{validations.messages.value}}"/>
       </div>
       <div class="col-xs-3">
-        <button class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
+        <button type="button" class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
           <span class="entypo minus"></span> delete
         </button>
       </div>
@@ -67,7 +67,7 @@
   </div>
 
   <div class="col-xs-24 mt5">
-    <button class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit">
+    <button type="button" class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit">
       <span class="entypo plus"></span> add tag
     </button>
   </div>
@@ -141,7 +141,7 @@
              ng-disabled="xmlPreview.edit" ng-required="property._name" placeholder="value" />
     </div>
     <div class="col-xs-2 dynamic-table-spacer">
-      <button class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
+      <button type="button" class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
            ng-disabled="xmlPreview.edit">
         <span class="entypo minus"></span> delete
       </button>
@@ -149,7 +149,7 @@
     <div class="clearfix hidden-md"></div>
   </div>
   <div class="col-xs-24 dynamic-table-spacer">
-    <button class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit">
+    <button type="button" class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit">
       <span class="entypo plus"></span> add property
     </button>
   </div>
@@ -195,13 +195,13 @@
   </div>
 
   <div class="col-xs-24 dynamic-table-spacer">
-    <button class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit">
+    <button type="button" class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit">
       <span class="entypo plus"></span> add location
     </button>
   </div>
   <div class="col-xs-24 mt20">
 
-    <button type="button" id="cluster.step1" class="btn nextBtn pull-right" ng-disabled="xmlPreview.edit || buttonSpinners.show"
+    <button id="cluster.step1" class="btn nextBtn pull-right" ng-disabled="xmlPreview.edit || buttonSpinners.show"
          ng-click="goSummaryStep(clusterForm.$invalid)">
       Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
     </button>

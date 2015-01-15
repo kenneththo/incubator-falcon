@@ -23,7 +23,7 @@
 
   <div class="col-xs-24 mb10">
     <label class="light">Timezone</label>
-    <time-zone-select ng-model="process.timezone"></time-zone-select>
+    <time-zone-select ng-model="process.timezone" id="timeZoneSelect"></time-zone-select>
   </div>
 
   <div class="col-xs-9">
@@ -107,17 +107,20 @@
   </div>
 
   <div class="col-xs-24 mt20">
-    <div class="btn prevBtn"
+    <button class="btn prevBtn"
+         type="button"
          ng-click="goBack('forms.process.general')"
          ng-disabled="buttonSpinners.backShow">
       Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-    </div>
-    <div class="btn nextBtn pull-right" ng-disabled="buttonSpinners.show" ng-click="goNext(processForm.$invalid, 'forms.process.clusters')" >
+    </button>
+    <button class="btn nextBtn pull-right"
+         ng-disabled="buttonSpinners.show"
+         ng-click="goNext(processForm.$invalid, 'forms.process.clusters')" >
       Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-    </div>
-    <u class="pull-right" ui-sref="main">
+    </button>
+    <a class="pull-right" ui-sref="main">
       Cancel
-    </u>
+    </a>
   </div>
 
 </form>

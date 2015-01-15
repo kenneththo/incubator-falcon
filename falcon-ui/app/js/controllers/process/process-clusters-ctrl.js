@@ -27,8 +27,12 @@
    */
   var feedModule = angular.module('app.controllers.process');
 
-  feedModule.controller('ProcessClustersCtrl',
-    ['$scope', 'clustersList', 'EntityFactory', function($scope, clustersList, entityFactory) {
+  feedModule.controller('ProcessClustersCtrl', ['$scope', 'clustersList', 'EntityFactory', '$timeout',
+                                              function($scope, clustersList, entityFactory, $timeout) {
+
+    $timeout(function () {
+      angular.element('.firstSelectClusterStep').trigger('focus');
+    }, 500);
 
     $scope.init = function() {
       $scope.dateFormat = 'MM/dd/yyyy';

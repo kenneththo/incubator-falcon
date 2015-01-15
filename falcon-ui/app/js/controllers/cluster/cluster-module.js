@@ -26,10 +26,10 @@
    */
   var clusterModule = angular.module('app.controllers.cluster', [ 'app.services' ]);
 
-  clusterModule.controller('ClusterFormCtrl', [
-    "$scope", "$interval", "Falcon", "EntityModel", "$state",
-    "X2jsService", "ValidationService", "SpinnersFlag",
-    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, validationService, SpinnersFlag) {
+  clusterModule.controller('ClusterFormCtrl', [ "$scope", "$interval", "Falcon", "EntityModel", "$state",
+                                                "X2jsService", "ValidationService", "SpinnersFlag", "$timeout",
+                                              function ($scope, $interval, Falcon, EntityModel, $state,
+                                                        X2jsService, validationService, SpinnersFlag, $timeout) {
 
       $scope.clusterEntity = EntityModel;
       $scope.xmlPreview = { edit: false };
@@ -219,6 +219,9 @@
         cleanModel();
         $scope.secondStep = true;
         $state.go("forms.cluster.summary");
+        $timeout(function () {
+          angular.element('.nextBtn').trigger('focus');
+        }, 500);
 
       };
       $scope.goGeneralStep = function () {
