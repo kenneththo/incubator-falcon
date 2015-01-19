@@ -88,6 +88,25 @@
       $scope.closeAlert = function (index) {
         Falcon.removeMessage(index);
       };
+      $scope.cancel = function (type) {
+        var cancelInfo = {
+          state: $state.current.name,
+          message: type + ' edition canceled '
+        };
+        Falcon.logResponse('cancel', cancelInfo, type, false);
+
+        $state.go('main');
+
+      };
+      $scope.restore = function (cancelInfo) {
+        //console.log(type);
+        console.log(cancelInfo);
+
+        $state.go(cancelInfo.status);
+        //console.log($state.current.name);
+
+
+      };
 
     }]);
 

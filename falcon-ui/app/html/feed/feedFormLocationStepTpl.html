@@ -104,7 +104,7 @@
         <button id="feed.step3" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
           Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
         </button>
-        <a class="pull-right" ui-sref="main">
+        <a class="pull-right" ng-click="feedCancel()">
           Cancel
         </a>
       </div>

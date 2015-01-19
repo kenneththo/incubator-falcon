@@ -157,7 +157,11 @@
         $scope.$on('$destroy', function () {
           $interval.cancel(xmlPreviewWorker);
         });
-
+        $scope.feedCancel = function () {
+          $interval.cancel(xmlPreviewWorker);
+          $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
+          $scope.$parent.cancel('feed');
+        };
         $scope.goNext = function (formInvalid, stateName) {
 
           SpinnersFlag.show = true;

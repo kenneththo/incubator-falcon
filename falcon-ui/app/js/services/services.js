@@ -35,6 +35,11 @@
       backShow: false
     };
   });
-
+  services.factory('SpinnersFlag', function () {
+    return {
+      show: false,
+      backShow: false
+    };
+  });
 
 }());

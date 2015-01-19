@@ -18,14 +18,30 @@
  */
 -->
 <div class="col-xs-24 messages-to-show" ng-show="server.responses.display">
-    
-    <div ng-repeat="message in server.responses.queue" class="alert repeat-animation" 
-      ng-class="{'bg-success': message.success, 'bg-danger': !message.success}">
-      
-      <span ng-class="{'text-success': message.success, 'text-danger': !message.success}">{{ message.status }}</span> 
-      {{ message.message }} 
-      <div class="entypo cross" ng-class="{'text-success': message.success, 'text-danger': !message.success}" ng-click="closeAlert($index)"></div>
-      
-    </div> 
+
+    <div ng-repeat="message in server.responses.queue" class="repeat-animation">
+      <div class="alert"
+           ng-class="{ 'bg-success': message.success === true,
+                     'bg-warning': message.success === 'cancel',
+                     'bg-danger': message.success === false }">
+
+
+        <span ng-if="!message.success === 'cancel'"
+              ng-class="{'text-success': message.success, 'text-danger': !message.success}">
+          {{ message.status }}
+        </span>
+
+        {{ message.message }}
+
+        <a ng-if="message.success === 'cancel'" ng-click="restore(message)">UNDO</a>
+
+        <div class="entypo cross"
+             ng-class="{ 'text-success': message.success === true,
+                         'text-danger': message.success === false,
+                         'text-warning': message.success === 'cancel' }"
+             ng-click="closeAlert($index)">
+        </div>
+      </div>
+    </div>
 </div>
 
