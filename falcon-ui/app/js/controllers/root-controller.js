@@ -98,11 +98,9 @@
         $state.go('main');
 
       };
-      $scope.restore = function (cancelInfo) {
-        //console.log(type);
-        console.log(cancelInfo);
-
+      $scope.restore = function (cancelInfo, index) {
         $state.go(cancelInfo.status);
+        $scope.closeAlert(index);
         //console.log($state.current.name);
 
 

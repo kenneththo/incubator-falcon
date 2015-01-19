@@ -33,7 +33,7 @@
 
         {{ message.message }}
 
-        <a ng-if="message.success === 'cancel'" ng-click="restore(message)">UNDO</a>
+        <a ng-if="message.success === 'cancel'" ng-click="restore(message, $index)">UNDO</a>
 
         <div class="entypo cross"
              ng-class="{ 'text-success': message.success === true,
