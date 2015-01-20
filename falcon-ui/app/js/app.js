@@ -166,9 +166,14 @@
     	  }
       }
     };
-    $rootScope.$on('$stateChangeSuccess', function () {
+    $rootScope.previousState;
+    $rootScope.currentState;
+    $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
       SpinnersFlag.show = false;
       SpinnersFlag.backShow = false;
+
+      $rootScope.previousState = from.name;
+      $rootScope.currentState = to.name;
     });
     $rootScope.$on('$stateChangeError',
       function(event, toState, toParams, fromState, fromParams, error){

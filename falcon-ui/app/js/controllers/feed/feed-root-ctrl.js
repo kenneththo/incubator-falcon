@@ -33,11 +33,11 @@
       'JsonTransformerFactory', 'EntityFactory',
       'EntitySerializer', '$interval',
       '$controller', "ValidationService",
-      "SpinnersFlag",
+      "SpinnersFlag", "$rootScope",
       function($scope, $state, $timeout, Falcon,
                X2jsService, transformerFactory, entityFactory,
                serializer, $interval, $controller,
-               validationService, SpinnersFlag) {
+               validationService, SpinnersFlag, $rootScope) {
 
         $scope.entityType = 'feed';
 
@@ -156,12 +156,14 @@
 
         $scope.$on('$destroy', function () {
           $interval.cancel(xmlPreviewWorker);
+          $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
+          $scope.$parent.cancel('feed', $rootScope.previousState);
         });
-        $scope.feedCancel = function () {
+        /*$scope.feedCancel = function () {
           $interval.cancel(xmlPreviewWorker);
           $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
           $scope.$parent.cancel('feed');
-        };
+        };*/
         $scope.goNext = function (formInvalid, stateName) {
 
           SpinnersFlag.show = true;

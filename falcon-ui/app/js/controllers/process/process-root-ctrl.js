@@ -29,9 +29,9 @@
 
   feedModule.controller('ProcessRootCtrl', [
     '$scope', '$state', '$interval', '$controller', 'EntityFactory',
-    'EntitySerializer', 'X2jsService', 'ValidationService', 'SpinnersFlag',
+    'EntitySerializer', 'X2jsService', 'ValidationService', 'SpinnersFlag', '$rootScope',
     function ($scope, $state, $interval, $controller, entityFactory,
-              serializer, X2jsService, validationService, SpinnersFlag) {
+              serializer, X2jsService, validationService, SpinnersFlag, $rootScope) {
 
       $scope.entityType = 'process';
 
@@ -94,13 +94,10 @@
 
       $scope.$on('$destroy', function() {
         $interval.cancel(xmlPreviewWorker);
-
-      });
-      $scope.processCancel = function () {
-        $interval.cancel(xmlPreviewWorker);
         $scope.$parent.models['processModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
-        $scope.$parent.cancel('process');
-      };
+        $scope.$parent.cancel('process', $rootScope.previousState);
+      });
+
       //---------------------------------//
       $scope.goNext = function (formInvalid, stateName) {
         SpinnersFlag.show = true;
