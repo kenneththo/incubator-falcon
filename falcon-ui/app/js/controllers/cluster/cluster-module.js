@@ -250,6 +250,7 @@
         $scope.saveModelBuffer();
         Falcon.logRequest();
         Falcon.postSubmitEntity($scope.jsonString, "cluster").success(function (response) {
+           $scope.skipUndo = true;
            Falcon.logResponse('success', response, false);
            $state.go('main');
          }).error(function (err) {
@@ -304,9 +305,12 @@
       }
       var refresher = $interval(xmlPreviewCallback, 1000);
 
-      $scope.$on('$destroy', function() {
-        $interval.cancel(refresher);
-        $scope.$parent.cancel('cluster', $rootScope.previousState);
+      $scope.skipUndo = false;
+      $scope.$on('$destroy', function () {
+        if (!$scope.skipUndo) {
+          $interval.cancel(refresher);
+          $scope.$parent.cancel('cluster', $rootScope.previousState);
+        }
       });
 
       //------------init------------//

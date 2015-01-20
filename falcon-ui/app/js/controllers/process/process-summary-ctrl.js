@@ -57,6 +57,7 @@
         Falcon.logRequest();
         Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
           .success(function (response) {
+             $scope.$parent.skipUndo = true;
              Falcon.logResponse('success', response, false);
              $state.go('main');
 
@@ -71,6 +72,7 @@
         Falcon.logRequest();
         Falcon.postSubmitEntity($scope.xml, $scope.entityType)
           .success(function (response) {
+             $scope.$parent.skipUndo = true;
              Falcon.logResponse('success', response, false);
              $state.go('main');
 

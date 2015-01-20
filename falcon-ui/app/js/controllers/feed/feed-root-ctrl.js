@@ -84,6 +84,7 @@
             Falcon.logRequest();
             Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
               .success(function (response) {
+                $scope.skipUndo = true;
                 Falcon.logResponse('success', response, false);
                 $state.go('main');
               })
@@ -96,6 +97,7 @@
             Falcon.logRequest();
             Falcon.postSubmitEntity($scope.xml, $scope.entityType)
               .success(function (response) {
+                $scope.skipUndo = true;
                 Falcon.logResponse('success', response, false);
                 $state.go('main');
               })
@@ -153,17 +155,14 @@
         };
 
         var xmlPreviewWorker = $interval(xmlPreviewCallback, 1000);
-
+        $scope.skipUndo = false;
         $scope.$on('$destroy', function () {
           $interval.cancel(xmlPreviewWorker);
-          $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
-          $scope.$parent.cancel('feed', $rootScope.previousState);
+          if (!$scope.skipUndo) {
+            $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
+            $scope.$parent.cancel('feed', $rootScope.previousState);
+          }
         });
-        /*$scope.feedCancel = function () {
-          $interval.cancel(xmlPreviewWorker);
-          $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
-          $scope.$parent.cancel('feed');
-        };*/
         $scope.goNext = function (formInvalid, stateName) {
 
           SpinnersFlag.show = true;

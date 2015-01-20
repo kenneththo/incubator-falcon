@@ -91,11 +91,13 @@
       };
 
       var xmlPreviewWorker = $interval(xmlPreviewCallback, 1000);
-
+      $scope.skipUndo = false;
       $scope.$on('$destroy', function() {
         $interval.cancel(xmlPreviewWorker);
-        $scope.$parent.models['processModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
-        $scope.$parent.cancel('process', $rootScope.previousState);
+        if (!$scope.skipUndo) {
+          $scope.$parent.models['processModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
+          $scope.$parent.cancel('process', $rootScope.previousState);
+        }
       });
 
       //---------------------------------//
