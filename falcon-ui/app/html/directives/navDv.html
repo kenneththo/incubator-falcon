@@ -27,13 +27,25 @@
 
       <div class="createNavWrapper" ng-show="userLogged()">
         <h4>Create an entity</h4>
-        <button type="button" id="cluster.create" ng-click="resetCluster()">
+        <button type="button"
+                id="cluster.create"
+                ng-click="resetCluster()"
+                ng-disabled="isInForm('cluster')"
+                ng-class="{disabled:isInForm('cluster')}">
           <span class="entypo archive"></span> Cluster
         </button>
-        <button type="button" id="feed.create" ng-click="resetFeed()">
+        <button type="button"
+                id="feed.create"
+                ng-click="resetFeed()"
+                ng-disabled="isInForm('feed')"
+                ng-class="{disabled:isInForm('feed')}">
           <span class="entypo download"></span> Feed
         </button>
-        <button type="button" id="process.create" ng-click="resetProcess()">
+        <button type="button"
+                id="process.create"
+                ng-click="resetProcess()"
+                ng-disabled="isInForm('process')"
+                ng-class="{disabled:isInForm('process')}">
           <span class="entypo cycle"></span> Process
         </button>
       </div>

@@ -30,6 +30,14 @@
 
       $scope.fake = { focus: false }; //used in upload button to fake the focus borders
 
+      $scope.isInForm = function (type) {
+        if($rootScope.currentState) {
+          var currState = $rootScope.currentState.split('.'),
+            formType = currState[1];
+          return type === formType;
+        }
+      };
+
       $scope.resetCluster = function () {
         validationService.displayValidations = {show: false, nameShow: false};
         EntityModel.clusterModel = { cluster: { tags: "", interfaces: { interface: [
@@ -47,12 +55,14 @@
       $scope.resetProcess = function () {
         validationService.displayValidations = {show: false, nameShow: false};
         $scope.cloningMode = true;
+        $scope.models['processModel'] = null;
         $state.go("forms.process.general");
       };
 
       $scope.resetFeed = function () {
         validationService.displayValidations = {show: false, nameShow: false};
         $scope.cloningMode = true;
+        $scope.models['feedModel'] = null;
         $state.go("forms.feed.general");
       };
 

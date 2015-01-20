@@ -94,7 +94,6 @@
           message: type + ' edition canceled '
         };
         Falcon.logResponse('cancel', cancelInfo, type, false);
-        //$state.go('main');
       };
       $scope.restore = function (cancelInfo, index) {
         $state.go(cancelInfo.status);
