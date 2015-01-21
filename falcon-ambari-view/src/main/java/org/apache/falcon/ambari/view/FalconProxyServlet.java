@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.ambari.view.falcon;
+package org.apache.falcon.ambari.view;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -44,9 +44,6 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
-/**
- * The calculator resource.
- */
 public class FalconProxyServlet {
 
 	@Inject
