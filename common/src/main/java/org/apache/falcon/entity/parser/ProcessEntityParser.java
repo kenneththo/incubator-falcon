@@ -166,6 +166,7 @@ public class ProcessEntityParser extends EntityParser<Process> {
                 throw new ValidationException("Lib path: " + libPath + " does not exists in HDFS: " + nameNode);
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new FalconException("Error validating workflow path " + workflowPath, e);
         }
     }
