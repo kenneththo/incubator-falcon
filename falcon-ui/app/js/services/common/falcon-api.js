@@ -79,13 +79,18 @@
       }
       if(type === 'error') {
 
-        if(messageObject.slice(0,6) !== "Cannot") {
-          var errorMessage = X2jsService.xml_str2json(messageObject),
-             message = { success: false, status: errorMessage.result.status, message: errorMessage.result.message, requestId: errorMessage.result.requestId};
+        if(messageObject.status !== undefined){
+          var message = { success: false, status: messageObject.status, message: messageObject.message, requestId: messageObject.requestId};
+        }else{
+          if(messageObject.slice(0,6) !== "Cannot") {
+          var errorMessage = X2jsService.xml_str2json(messageObject);
+          var message = { success: false, status: errorMessage.result.status, message: errorMessage.result.message, requestId: errorMessage.result.requestId};
+          }
+          else {
+            var message = { success: false, status: "No connection", message: messageObject, requestId: "no ID"};
+          }
         }
-        else {
-          var message = { success: false, status: "No connection", message: messageObject, requestId: "no ID"};
-        }
+
         Falcon.responses.queue.push(message);
         Falcon.responses.count.error = Falcon.responses.count.error +1;
         Falcon.responses.count.pending = Falcon.responses.count.pending -1;
