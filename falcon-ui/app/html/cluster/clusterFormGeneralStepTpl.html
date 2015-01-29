@@ -132,13 +132,14 @@
     <div class="col-xs-7 dynamic-table-spacer">
       <input type="text" class="form-control" ng-model="property._name"
              validation-optional-message="{{validations.messages.name}}"
-             ng-pattern="validations.patterns.alpha" ng-disabled="xmlPreview.edit"
+             ng-disabled="xmlPreview.edit"
              ng-required="property._value" placeholder="name" />
     </div>
     <div class="col-xs-15 dynamic-table-spacer">
-      <input type="text" class="form-control" ng-model="property._value" validation-optional-message="{{validations.messages.value}}"
-             ng-pattern="validations.patterns.alpha"
-             ng-disabled="xmlPreview.edit" ng-required="property._name" placeholder="value" />
+      <input type="text" class="form-control" ng-model="property._value"
+             validation-optional-message="{{validations.messages.value}}"
+             ng-disabled="xmlPreview.edit"
+             ng-required="property._name" placeholder="value" />
     </div>
     <div class="col-xs-2 dynamic-table-spacer">
       <button type="button" class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
