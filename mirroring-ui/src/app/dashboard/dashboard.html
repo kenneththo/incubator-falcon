@@ -1,8 +1,18 @@
-<div id="dashboardBox" class="col-xs-24">
+<div id="dashboardBox" class="row">
+  <div class="col-sm-12" id="graphBox">
+    <button id="newDatasetButton"
+            class="btn dashboardBtn pull-right"
+            ng-click="newDataset()" >
+      New Dataset <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+    </button>
 
-  <h3>dashboard</h3>
+  </div>
+  <!-- -->
+  <div class="col-sm-12" id="gridBox">
 
-  <p>lorem ipsum</p>
+
+
+  </div>
 
 </div>
 

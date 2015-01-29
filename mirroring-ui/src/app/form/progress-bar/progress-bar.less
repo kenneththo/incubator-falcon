@@ -1,0 +1,251 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.progressBox {
+  height: 75px;
+  .pr;
+}
+.progressBar {
+  overflow: hidden;
+  padding: 10px 35px;
+  height: 100px;
+
+  h6 {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+}
+
+.fir, .sec, .thi {
+  .pa;
+  .transition(border, 0.4s, ease);
+  .transition(background, 0.4s, ease);
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+
+  border: 3px solid @gray-light;
+  border-radius: 20px;
+  color: white;
+  line-height: 34px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  span {
+    display: none;
+  }
+  h6 { .m0; .pa; top: 40px; color: black; }
+
+}
+.fir {
+  left:0;
+  h6 {
+    left: -5%;
+  }
+}
+.sec {
+  left: 50%;
+  margin-left: -20px;
+  z-index: 4;
+  h6 {
+    left: -56%;
+  }
+}
+.thi {
+  right: 0;
+  h6 {
+    left: -10%;
+  }
+}
+.bar1, .bar2 {
+  .transition(all, 0.4s, ease);
+  .pa;
+  z-index: 3;
+  top:23px;
+  height: 10px;
+  background-color: @gray-light;
+}
+.bar1 {
+  z-index: 5;
+  left: 38px;
+  right: 52%;
+}
+.bar2 {
+  right: 30px;
+  left:50%;
+}
+.general {
+  .bar1, .bar2 { background-color: @gray-light; }
+  .fir {
+    background-color: @gray-dark;
+    h6 { font-weight: bold; }
+  }
+  .sec, .thi {
+    background-color: @gray-light;
+    h6 { font-weight: normal; }
+  }
+
+}
+.timing {
+  .bar1 { background-color: @gray-dark; }
+  .fir {
+    span {
+      display: inline-block;
+    }
+    b {
+      display: none;
+    }
+    h6 { font-weight: normal; }
+    border-color: @gray-dark;
+    .bar {
+      width: 33%;
+    }
+  }
+  .fir, .sec {
+    background-color: @gray-dark;
+  }
+  .sec{
+    span {
+      display: none;
+    }
+    b {
+      display: inline-block;
+    }
+    h6 { font-weight: bold; }
+  }
+  .thi {
+    background-color: @gray-light;
+    h6 { font-weight: normal; }
+  }
+}
+.summary {
+  .bar1, .bar2 { background-color: @gray-dark; }
+  .fir, .sec {
+    h6 { font-weight: normal; }
+    background-color: @gray-dark;
+    border-color: @gray-dark;
+    span {
+      display: inline-block;
+    }
+    b {
+      display: none;
+    }
+  }
+  .thi {
+    h6 { font-weight: bold; }
+    background-color: @gray-dark;
+  }
+}
+
+
+
+.feedProgressBox {
+  font-size: 14px;
+  .progressBar {
+    padding: 10px 6% 0 6%;
+    >div {
+      >span {
+        display: inline-block;
+        width: 24%;
+        margin: -11px 0 0 0;
+        &:first-child {
+          margin: -10px 0 0 -4%;
+          h6 {
+            font-weight: normal;
+          }
+        }
+        &:last-child {
+          margin: -10px -21% 0 0;
+        }
+        div {
+          background-color: @gray-dark;
+        }
+      }
+      div {
+        border-color: @gray-light;
+      }
+      h6 {
+        margin-left: -7px;
+        font-weight: normal;
+      }
+    }
+  }
+  &.general {
+    .fir {
+      background-color: @gray-dark;
+      & + h6 { font-weight: bold!important; }
+    }
+    .sec, .thi, .fou, .fif {
+      background-color: @gray-light;
+    }
+
+  }
+  &.properties {
+    .fir {
+      .entypo {display: block;}
+      border-color: @gray-dark;
+      color: @gray-dark;
+    }
+    .sec + h6 { font-weight: bold; }
+    .fir, .sec {
+      background-color: @gray-dark;
+    }
+    .thi, .fou, .fif {
+      background-color: @gray-light;
+    }
+  }
+  &.location {
+    .thi + h6 { font-weight: bold; }
+    .fir, .sec {
+      .entypo {display: block;}
+      border-color: @gray-dark;
+      color: @gray-dark;
+    }
+    .fir, .sec, .thi {
+      background-color: @gray-dark;
+    }
+    .fou, .fif {
+      background-color: @gray-light;
+    }
+  }
+  &.clusters {
+    .fou + h6 { font-weight: bold; }
+    .fir, .sec, .thi {
+      .entypo {display: block;}
+      border-color: @gray-dark;
+      color: @gray-dark;
+    }
+    .fir, .sec, .thi, .fou {
+      background-color: @gray-dark;
+    }
+    .fif {
+      background-color: @gray-light;
+    }
+  }
+  &.summary {
+    .fif + h6 { font-weight: bold; }
+    .fir, .sec, .thi, .fou {
+      .entypo {display: block;}
+      border-color: @gray-dark;
+      color: @gray-dark;
+    }
+    .fir, .sec, .thi, .fou, .fif {
+      background-color: @gray-dark;
+    }
+  }
+}

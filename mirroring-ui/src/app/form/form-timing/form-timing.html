@@ -1,9 +1,24 @@
-<div id="form-timingBox" class="foo">
-  
-  <h3>form-timing</h3>
-    
-  <p>lorem ipsum</p>
+<form id="formTimingBox" name="timingForm" class="col-xs-24">
 
-</div>
+  <div class="row">
+    <div class="col-xs-24">
+      <button type="button"
+              id="timingBack" class="btn prevBtn"
+              ng-click="goBack('form.general')"
+              ng-disabled="buttonSpinners.backShow">
+        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+      </button>
+      <button id="timingNext"
+              class="btn nextBtn pull-right"
+              ng-click="goNext(timingForm.$invalid, 'form.summary')" >
+        Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      </button>
+      <a class="pull-right" ui-sref="main">
+        Cancel
+      </a>
+    </div>
+  </div>
+
+</form>
 
 

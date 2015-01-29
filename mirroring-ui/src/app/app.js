@@ -20,7 +20,7 @@
 
   var app = angular.module('mirroring-app', [
     'ui.bootstrap', 'ui.router', 'ngCookies', 'ngAnimate', 'ngMessages', 'checklist-model',
-    'form-module', 'dashboard-module', 'login-module'
+    'form-module', 'dashboard-module', 'login-module', 'rest-api-module', 'dataset-model-module'
   ]);
 
   app.config(["$stateProvider", "$urlRouterProvider", "$httpProvider",
@@ -44,7 +44,7 @@
       })
       .state('form', {
         templateUrl: 'html/form.html',
-        controller: 'FormRootCtrl'
+        controller: 'FormCtrl'
       })
       .state('form.general', {
         controller: 'FormGeneralCtrl',
@@ -54,7 +54,7 @@
         controller: 'FormTimingCtrl',
         templateUrl: 'html/form-timing.html'
       })
-      .state('forms.summary', {
+      .state('form.summary', {
         controller: 'FormSummaryCtrl',
         templateUrl: 'html/form-summary.html'
       });
@@ -94,10 +94,10 @@
           }
         }
       };
+
       $rootScope.previousState;
       $rootScope.currentState;
       $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
-
         $rootScope.previousState = from.name;
         $rootScope.currentState = to.name;
       });

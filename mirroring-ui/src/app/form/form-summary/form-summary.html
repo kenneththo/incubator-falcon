@@ -1,8 +1,23 @@
-<div id="form-summaryBox" class="foo">
-  
-  <h3>form-summary</h3>
-    
-  <p>lorem ipsum</p>
+<div id="formSummaryBox" class="col-xs-24">
+
+  <div class="row">
+    <div class="col-xs-24">
+      <button type="button"
+              id="summaryBack" class="btn prevBtn"
+              ng-click="goBack('form.timing')"
+              ng-disabled="buttonSpinners.backShow">
+        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+      </button>
+      <button id="summarySave"
+              class="btn nextBtn pull-right"
+              ng-click="save()" >
+        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      </button>
+      <a class="pull-right" ui-sref="main">
+        Cancel
+      </a>
+    </div>
+  </div>
 
 </div>
 

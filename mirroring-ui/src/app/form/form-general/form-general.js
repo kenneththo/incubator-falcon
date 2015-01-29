@@ -4,12 +4,13 @@
 	var formGeneralModule = angular.module('form-general-module', []);
 
   formGeneralModule.controller('FormGeneralCtrl', [ "$scope", function($scope) {
-    $scope.foo = {bar:null, baz:null};
-    $scope.test = function () {
-      console.log("bar = " + $scope.foo.bar);
-      console.log("baz = " + $scope.foo.baz);
+    $scope.newTag = {value:"", key:""};
+    $scope.addTag = function () {
+      $scope.model.tags.push($scope.newTag);
+      $scope.newTag = {value:"", key:""};
+      console.log($scope.model.tags);
+      console.log($scope.$parent.model.tags);
     };
-    $scope.test();
   }]);
 
 })();

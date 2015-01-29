@@ -1,9 +1,67 @@
-<div id="formGeneralBox" class="col-xs-24">
+<form id="formGeneralBox" name="generalForm" class="col-xs-24">
 
-  <h3>form-general</h3>
+  <div class="row">
+    <div class="col-xs-24">
+      <div>
+        <label> Dataset Source Name </label>
+      </div>
+      <input type="text" class="form-control"/>
 
-  <p>lorem ipsum</p>
+    </div>
 
-</div>
+
+    <div class="col-xs-24">
+      <div>
+        <label>Tags</label>
+      </div>
+      <div ng-repeat="tag in model.tags" class="row">
+        <div class="col-xs-10">
+          <input type="text" class="form-control" ng-model="tag.key" placeholder="key"
+                 ng-pattern="" ng-required="tag.value"/>
+        </div>
+        <div class="col-xs-10">
+          <input type="text" class="form-control" ng-disabled="xmlPreview.edit" placeholder="value"
+                 ng-model="tag.value" ng-pattern="" ng-required="tag.key" />
+        </div>
+        <div class="col-xs-4">
+          <button type="button" class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="false">
+            <span class="glyphicon glyphicon-minus"></span> delete
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-10">
+          <input type="text" class="form-control" ng-model="newTag.key" placeholder="key"
+                 ng-pattern="" ng-required="newTag.value" />
+        </div>
+        <div class="col-xs-10">
+          <input type="text" class="form-control" ng-model="newTag.value" placeholder="value"
+                 ng-pattern="" ng-required="newTag.key" />
+        </div>
+        <div class="col-xs-4">
+          <button type="button" class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="false">
+            <span class="glyphicon glyphicon-plus"></span> add tag
+          </button>
+          </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="row">
+    <div class="col-xs-24">
+      <button id="generalNext"
+              class="btn nextBtn pull-right"
+              ng-click="goNext(generalForm.$invalid, 'form.timing')" >
+        Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      </button>
+      <a class="pull-right" ui-sref="main">
+        Cancel
+      </a>
+    </div>
+  </div>
+
+</form>
 
 

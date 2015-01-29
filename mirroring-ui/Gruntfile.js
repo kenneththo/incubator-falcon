@@ -44,6 +44,13 @@
           dest: 'bin/html',
           expand: true,
           flatten: true
+        },
+        fonts: {
+          cwd: 'src/common',
+          src: ['fonts/*.*'],
+          dest: 'bin/css/fonts',
+          expand: true,
+          flatten: true
         }
       },
 
@@ -62,9 +69,12 @@
             'bin/js/main.min.js': [
               'src/app/dashboard/dashboard.js',
               'src/app/form/form.js',
+              'src/app/form/progress-bar/progress-bar.js',
               'src/app/form/form-general/form-general.js',
               'src/app/form/form-timing/form-timing.js',
               'src/app/form/form-summary/form-summary.js',
+              'src/app/rest-api/rest-api.js',
+              'src/app/model/model.js',
               'src/app/login/login.js',
               'src/app/app.js'
             ]
@@ -110,43 +120,6 @@
           files: {
             'bin/css/main.css': 'src/less/main.less'
           }
-        }
-      },
-
-      watch: {
-        less: {
-          files: ['**/*.less', '!src/less/bootstrap/**/*.less'],
-          tasks: ['less'],
-          options: {
-            nospawn: true,
-            livereload: true
-          }
-        },
-        index: {
-          options: {
-            livereload: true
-          },
-          files: ['src/index.html'],
-          tasks: ['copy:index']
-        },
-        html: {
-          options: {
-            livereload: true
-          },
-          files: ['!src/index.html', 'src/**/*.html'],
-          tasks: ['copy:index']
-        },
-
-        specs: {
-          options: {
-            livereload: true
-          },
-          files: ['**/*Spec.js'],
-          tasks: ['jshint', 'karma:unit:run' ]
-        },
-        server: {
-          files: ['server.js'],
-          tasks: ['express']
         }
       },
 
@@ -253,24 +226,57 @@
         all: ['protractor:firefoxAll', 'protractor:chromeAll'],
         dashboard: ['protractor:firefoxDashboard', 'protractor:chromeDashboard'],
         form: ['protractor:firefoxForm', 'protractor:chromeForm']
+      },
+
+      watch: {
+        options: {
+          livereload: true
+        },
+        less: {
+          files: ['**/*.less', '!src/less/bootstrap/**/*.less'],
+          tasks: ['less'],
+          options: {
+            nospawn: true,
+            livereload: true
+          }
+        },
+        index: {
+          files: ['src/index.html'],
+          tasks: ['copy:index']
+        },
+        html: {
+          files: ['!src/index.html', 'src/**/*.html'],
+          tasks: ['copy:html']
+        },
+        js: {
+          files: ['src/**/*.js', '!**/*Spec.js'],
+          tasks: ['jshint', 'karma:unit:run', 'uglify']
+        },
+        specs: {
+          files: ['**/*Spec.js'],
+          tasks: ['jshint', 'karma:unit:run' ]
+        },
+        server: {
+          files: ['server.js'],
+          tasks: ['jshint', 'express']
+        }
       }
 
     });
 
+    grunt.registerTask('build', [
+      'clean', 'concat:vendor', 'uglify', 'less', 'copy:fonts',
+      'copy:index', 'copy:html', 'karma:unit:start'
+    ]);
+
     grunt.registerTask('dev', [
-      'express', 'clean', 'concat:vendor', 'uglify', 'less', 'copy:index', 'copy:html',
-      'karma:unit:start', 'karma:continuous', 'watch'
+      'express', 'build', 'karma:continuous', 'watch'
     ]);
 
-    grunt.registerTask('test', [
-      'express', 'karma:unit:start', 'karma:continuous'
-    ]);
-
-
+    grunt.registerTask('test', [ 'express', 'karma:unit:start', 'karma:continuous' ]);
     grunt.registerTask('testE2E', ['express', 'concurrent:all']);
     grunt.registerTask('testDashboardE2E', ['express', 'concurrent:dashboard']);
     grunt.registerTask('testFormE2E', ['express', 'concurrent:form']);
-
 
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
