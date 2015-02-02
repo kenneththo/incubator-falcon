@@ -303,7 +303,7 @@
 
     grunt.registerTask('resources', ['copy:resources']);
     grunt.registerTask('dependencies', ['copy:dependencies']);
-    grunt.registerTask('test', ['karma:continuous']);
+    grunt.registerTask('test', ['karma:unit:start']);
     grunt.registerTask('build', ['clean', 'concat:vendor', 'uglify', 'less', 'resources', 'dependencies']);
     grunt.registerTask('w', ['build', 'karma:unit:start', 'watch']);
     grunt.registerTask('server', ['express', 'w']);
