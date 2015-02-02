@@ -5,11 +5,24 @@
 @nextBtnBackground: #666666;
 @prevBtnBackground: #CCCCCC;
 
+
 #formBox {
   .formBoxWrapper {
-    border: 1px solid @gray-lighter;
-    border-radius:3px;
-    .p20;
+    width: 500px;
+  }
+
+  label {
+    font-weight: normal;
+    font-size: 11px;
+    max-width: none;
+    display: block;
+  }
+  input[type="text"], select {
+    .p0;
+    padding-left: 1px;
+    font-size: 13px;
+    line-height: 15px;
+    height: 25px;
   }
   a {
     line-height: 30px;
@@ -21,8 +34,84 @@
       color: red;
     }
   }
-  .nextBtn, .prevBtn {
+  h4 {
+    font-size: 14px;
+    font-weight: 700;
+  }
 
+  .formTitol {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    h1 {
+      font-size: 22px;
+      font-weight: bold;
+      margin:0;
+    }
+    a {
+      font-size: 12px;
+      line-height: 12px;
+      margin:0;
+      letter-spacing: 0.5px;
+    }
+  }
+  .tagsBox, .alertsBox {
+    .btn {
+      border-radius: 5px;
+      padding: 1px;
+      border-color: @gray;
+      height: 25px;
+      width: 65px;
+      line-height: 23px;
+      .glyphicon {
+        font-size: 8px;
+        line-height: 8px;
+        top:0;
+        color: @gray;
+      }
+    }
+  }
+
+  .typeButtonsBox {
+    background-color: @gray-lighter;
+    width: 317px;
+    padding:5px;
+    border-radius: 5px;
+    .btn {
+      padding: 5px 20px;
+      border-radius: 5px;
+      background-color: @gray-lighter;
+      border: none;
+      &.active {
+        background-color: @gray;
+        color: white;
+      }
+    }
+  }
+
+  .formBoxWrapper {
+    border: 1px solid @gray-lighter;
+    border-radius:3px;
+    .p20;
+  }
+
+  .clusterBox {
+    border: 1px solid @gray-light;
+    border-radius: 5px;
+    .mt20;
+    .mb10;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      display: inline-block;
+      top: -30px;
+      position: absolute;
+      background-color: white;
+    }
+  }
+  //------------------next, back btns---//
+  .nextBtn, .prevBtn {
     .transition(background, 0.3s, ease);
     border: 0px none;
     width: 90px;
@@ -59,4 +148,138 @@
       //border-radius: 7px!important;
     }
   }
+
+}
+#formTimingBox {
+
+  .timingBox {
+    > div {
+      display: inline-block;
+    }
+    .startOnBox {
+      width: 25%;
+    }
+    .timeBox {
+      width: 13%;
+    }
+    .tzBox {
+      width: 60%;
+      select {
+        margin-bottom:-8px;
+        right:0;
+      }
+
+    }
+  }
+  .frequencyBox, .repeatsBox {
+    display: inline-block;
+    input, select {
+      display: inline-block;
+    }
+    input {
+      width: 20px;
+    }
+    select {
+      width: 80px;
+    }
+  }
+
+
+  .maxSnapshotBox, .maxNumberSlotsBox, .maxBandwidthBox, .unitRadioBox {
+    display: inline-block;
+    width: 24%;
+  }
+  .maxNumberSlotsBox {
+
+  }
+  .maxBandwidthBox {
+
+  }
+  .unitRadioBox {
+    label {
+      display: inline-block;
+    }
+  }
+  .othersBox {
+    .runJobAsBox {
+      width: 68%;
+      display: inline-block;
+    }
+    .dataPermissions {
+      display: inline-block;
+      width: 30%;
+    }
+    .onErrorBox {
+      .p10;
+      .mt20;
+      border: 1px solid @gray-light;
+      position: relative;
+      border-radius: 5px;
+      padding-top: 20px;
+      .onErrorHeaderBox {
+        position: absolute;
+        display: inline-block;
+        top: -18px;
+        left: 5px;
+        padding: 5px;
+        background-color: white;
+        label {
+          display: inline-block;
+        }
+      }
+      .policyBox {
+        label {
+          display: inline-block;
+        }
+      }
+      .retryBox {
+        .retryEveryBox {
+          vertical-align: top;
+          padding: 1px 5px;
+          display: inline-block;
+          input {
+            display: inline-block;
+            width: 20px;
+          }
+          select {
+            display: inline-block;
+            width: 80px;
+          }
+        }
+        .stopOnBox {
+          padding: 1px 5px;
+          display: inline-block;
+          input {
+            display: inline-block;
+            width: 30px;
+
+          }
+          select{
+            display: inline-block;
+            width:80px
+          };
+        }
+      }
+    }
+  }
+
+  .alertsBox {
+    .mt20;
+    h4 {
+      margin: 0;
+    }
+    .to {
+      padding-right: 5px;
+      width: 40%;
+      display: inline-block;
+    }
+    .on {
+      width: 56%;
+      display: inline-block;
+      label {
+        display: inline-block;
+      }
+    }
+  }
+
 }

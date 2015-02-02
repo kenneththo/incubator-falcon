@@ -4,15 +4,15 @@
 	var formModule = angular.module('form-module', [
     'form-general-module', 'form-timing-module',
     'form-summary-module', 'progress-bar-module',
-    'dataset-model-module'
+    'dataset-model-module', 'validation-module'
   ]);
 
-	formModule.controller('FormCtrl', [ "$scope", "$state", "$timeout", "datasetModel", function($scope, $state, $timeout, datasetModel) {
+	formModule.controller('FormCtrl', [ "$scope", "$state", "$timeout", "datasetModel", "ValidationSvc",
+                                      function($scope, $state, $timeout, datasetModel, ValidationSvc) {
 
+    $timeout(function () { angular.element('body').removeClass('preload'); }, 1000);
 
-
-    $timeout(function () { angular.element('body').removeClass('preload'); }, 300);
-
+    $scope.validation = ValidationSvc;
     $scope.model = datasetModel;
 
     $scope.save = function () {
@@ -20,11 +20,14 @@
       console.log("baz = " + $scope.foo.baz);
     };
 
+
     $scope.isActive = function(route) {
       return $state.current.name === route;
     };
 
     $scope.goNext = function (formInvalid, stateName) {
+
+      console.log();
 
 /*
       SpinnersFlag.show = true;
@@ -38,8 +41,13 @@
       validationService.displayValidations.show = false;
       validationService.displayValidations.nameShow = false;
 */
+      if (formInvalid) {
+        $scope.validation.show = true;
+      } else {
+        $state.go(stateName);
+      }
 
-      $state.go(stateName);
+
 
 
     };

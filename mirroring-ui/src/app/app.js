@@ -20,7 +20,8 @@
 
   var app = angular.module('mirroring-app', [
     'ui.bootstrap', 'ui.router', 'ngCookies', 'ngAnimate', 'ngMessages', 'checklist-model',
-    'form-module', 'dashboard-module', 'login-module', 'rest-api-module', 'dataset-model-module'
+    'form-module', 'dashboard-module', 'login-module', 'rest-api-module', 'dataset-model-module',
+    'validation-module'
   ]);
 
   app.config(["$stateProvider", "$urlRouterProvider", "$httpProvider",

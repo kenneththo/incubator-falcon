@@ -20,7 +20,10 @@
   display: none !important;
 }
 //----------------mozilla outline hack-------------------//
-input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus {
+input[type="file"]:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus,
+.btn:focus, .btn:active, .btn:active:focus, .btn.active:focus, .btn:visited {
   outline: none;
   outline-offset: 0;
 }
@@ -35,7 +38,8 @@ input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focu
 html, body, section { height: 100%; }
 body { }
 .mainUIView {
-  width: 100%;
+ // width: 100%;
+  //background-color: yellow;
   height:100%;
 }
 

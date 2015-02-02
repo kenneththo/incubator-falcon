@@ -8,7 +8,7 @@
     var dataset = {
       name: "",
       tags: [{"key":'ddd', "value": "ssd"}],
-      type: "",
+      type: "HDFS",
       clusters: {
         source_cluster: {
           name: "",
@@ -36,7 +36,7 @@
       run_as: "",
       permission: "",
       on_error: {
-        action: "",
+        action: "abort",
         options: {}
       },
       alerts: [

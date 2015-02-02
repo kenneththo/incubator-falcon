@@ -73,6 +73,7 @@
               'src/app/form/form-general/form-general.js',
               'src/app/form/form-timing/form-timing.js',
               'src/app/form/form-summary/form-summary.js',
+              'src/app/validation/validation.js',
               'src/app/rest-api/rest-api.js',
               'src/app/model/model.js',
               'src/app/login/login.js',

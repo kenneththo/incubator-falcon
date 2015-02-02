@@ -1,56 +1,191 @@
-<form id="formGeneralBox" name="generalForm" class="col-xs-24">
+<form id="formGeneralBox" name="generalForm" class="col-xs-24" ng-class="{displayValidations:validation.show}">
+  <div class="row">
 
+    <div class="col-xs-24">
+      <label> Dataset Source Name
+        <input type="text"
+               name="nameInput"
+               class="form-control"
+               ng-model="model.name"
+               placeholder=""
+               ng-pattern="validation.patterns.name" ng-required="true"/>
+      </label>
+      {{generalForm.nameInput.$error}}
+      <div class="validationError" ng-if="generalForm.nameInput.$error.pattern"> {{validation.messages.name.patternInvalid}}</div>
+      <div class="validationError" ng-if="generalForm.nameInput.$error.required && validation.show"> {{validation.messages.name.empty}}</div>
+
+    </div>
+
+    <div class="col-xs-24 tagsBox">
+      <label>Tags
+
+        <div class="row mb10">
+          <div class="col-xs-10">
+            <input type="text"
+                   name="newTagKeyInput"
+                   class="form-control"
+                   ng-model="newTag.key"
+                   placeholder="key"
+                   ng-pattern="validation.patterns.alpha" ng-required="newTag.value" />
+
+            <div class="validationError" ng-if="generalForm.newTagKeyInput.$error.pattern"> {{validation.messages.key.patternInvalid}}</div>
+            <div class="validationError" ng-if="generalForm.newTagKeyInput.$error.required && validation.show"> {{validation.messages.key.empty}}</div>
+
+          </div>
+          <div class="col-xs-10">
+            <input type="text"
+                   name="newTagValueInput"
+                   class="form-control"
+                   ng-model="newTag.value"
+                   placeholder="value"
+                   ng-pattern="validation.patterns.alpha"
+                   ng-required="newTag.key" />
+            <div class="validationError" ng-if="generalForm.newTagValueInput.$error.pattern"> {{validation.messages.key.patternInvalid}}</div>
+            <div class="validationError" ng-if="generalForm.newTagValueInput.$error.required && validation.show"> {{validation.messages.key.empty}}</div>
+          </div>
+          <div class="col-xs-4">
+            <button type="button"
+                    class="btn btn-default btn-xs"
+                    ng-click="addTag()"
+                    ng-disabled="!newTag.key || !newTag.value"
+                    ng-disabled="false">
+              <span class="glyphicon glyphicon-plus"></span> add tag
+            </button>
+            </div>
+        </div>
+
+        <div ng-repeat="tag in model.tags" class="row">
+          <div class="col-xs-10">
+            <h6>{{tag.key}}</h6>
+          </div>
+          <div class="col-xs-10">
+            <h6>{{tag.value}}</h6>
+          </div>
+          <div class="col-xs-4">
+            <button type="button"
+                    class="btn btn-default btn-xs"
+                    ng-click="removeTag($index)"
+                    ng-disabled="false">
+              <span class="glyphicon glyphicon-minus"></span> delete
+            </button>
+          </div>
+        </div>
+
+      </label>
+    </div>
+  </div>
   <div class="row">
     <div class="col-xs-24">
-      <div>
-        <label> Dataset Source Name </label>
-      </div>
-      <input type="text" class="form-control"/>
-
-    </div>
-
-
-    <div class="col-xs-24">
-      <div>
-        <label>Tags</label>
-      </div>
-      <div ng-repeat="tag in model.tags" class="row">
-        <div class="col-xs-10">
-          <input type="text" class="form-control" ng-model="tag.key" placeholder="key"
-                 ng-pattern="" ng-required="tag.value"/>
-        </div>
-        <div class="col-xs-10">
-          <input type="text" class="form-control" ng-disabled="xmlPreview.edit" placeholder="value"
-                 ng-model="tag.value" ng-pattern="" ng-required="tag.key" />
-        </div>
-        <div class="col-xs-4">
-          <button type="button" class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="false">
-            <span class="glyphicon glyphicon-minus"></span> delete
+      <label>Dataset type
+        <div class="typeButtonsBox">
+          <button type="button"
+                  ng-class="{active:model.type === 'HDFS'}"
+                  class="btn btn-default btn-xs"
+                  ng-click="model.type = 'HDFS'">
+            HDFS(File System)
+          </button>
+          <button type="button"
+                  ng-class="{active:model.type === 'HIVE'}"
+                  class="btn btn-default btn-xs"
+                  ng-click="model.type = 'HIVE'">
+            HIVE(catalog Storage)
           </button>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-10">
-          <input type="text" class="form-control" ng-model="newTag.key" placeholder="key"
-                 ng-pattern="" ng-required="newTag.value" />
-        </div>
-        <div class="col-xs-10">
-          <input type="text" class="form-control" ng-model="newTag.value" placeholder="value"
-                 ng-pattern="" ng-required="newTag.key" />
-        </div>
-        <div class="col-xs-4">
-          <button type="button" class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="false">
-            <span class="glyphicon glyphicon-plus"></span> add tag
-          </button>
-          </div>
-      </div>
+      </label>
     </div>
-
-
   </div>
 
   <div class="row">
-    <div class="col-xs-24">
+    <div class="col-xs-24 clusterBox">
+      <h3>Source cluster</h3>
+      <select ng-model="model.clusters.source_cluster.name"
+              ng-required="true" class="col-xs-24 form-control" id="sourceClusterSelect">
+        <option value="" disabled selected style='display:none;'>-Select cluster-</option>
+        <option id="cluster_" ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
+      </select>
+      <div class="locationBox">
+        <label>Location:
+          <input type="radio"
+                 id="sourceHDFSRadio"
+                 ng-model="model.clusters.source_cluster.location.type"
+                 value="HDFS"
+                 ng-required="!model.clusters.source_cluster.location.type"/> HDFS
+          <input type="radio"
+                 id="sourceAzureRadio"
+                 ng-model="model.clusters.source_cluster.location.type"
+                 value="azure"
+                 ng-required="!model.clusters.source_cluster.location.type"/> Azure
+        </label>
+      </div>
+      <div ng-if="model.clusters.source_cluster.location.type === 'HDFS'">
+        <label>Path
+          <input type="text"
+                 class="form-control"
+                 ng-model="model.clusters.source_cluster.location.src"
+                 placeholder="Path"
+                 ng-pattern=""
+                 ng-required="model.clusters.source_cluster.location.type === 'HDFS'" />
+        </label>
+      </div>
+      <div ng-if="model.clusters.source_cluster.location.type === 'azure'">
+        <label>URL
+          <input type="text"
+                 class="form-control"
+                 ng-model="model.clusters.source_cluster.location.src"
+                 placeholder="URL"
+                 ng-pattern=""
+                 ng-required="model.clusters.source_cluster.location.type === 'azure'" />
+        </label>
+      </div>
+    </div>
+
+    <div class="col-xs-24 clusterBox">
+      <h3>Target cluster</h3>
+      <select ng-model="model.clusters.target_cluster.name"
+              ng-required="true" class="col-xs-24 form-control" id="targetClusterSelect">
+        <option value="" disabled selected style='display:none;'>-Select cluster-</option>
+        <option id="cluster_" ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
+      </select>
+      <div class="locationBox">
+        <label>Location:
+          <input type="radio"
+                 id="targetHDFSRadio"
+                 ng-model="model.clusters.target_cluster.location.type"
+                 value="HDFS"
+                 ng-required="!model.clusters.target_cluster.location.type"/> HDFS
+
+          <input type="radio"
+                 id="targetAzureRadio"
+                 ng-model="model.clusters.target_cluster.location.type"
+                 value="azure"
+                 ng-required="!model.clusters.target_cluster.location.type"/> Azure
+        </label>
+      </div>
+      <div ng-if="model.clusters.target_cluster.location.type === 'HDFS'">
+        <label>Path
+          <input type="text"
+                 class="form-control"
+                 ng-model="model.clusters.target_cluster.location.src"
+                 placeholder="Path"
+                 ng-pattern=""
+                 ng-required="model.clusters.target_cluster.location.type === 'HDFS'" />
+        </label>
+      </div>
+      <div ng-if="model.clusters.target_cluster.location.type === 'azure'">
+        <label>URL
+          <input type="text"
+                 class="form-control"
+                 ng-model="model.clusters.target_cluster.location.src"
+                 placeholder="URL"
+                 ng-pattern=""
+                 ng-required="model.clusters.target_cluster.location.type === 'azure'" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-24 mt20">
       <button id="generalNext"
               class="btn nextBtn pull-right"
               ng-click="goNext(generalForm.$invalid, 'form.timing')" >

@@ -1,0 +1,21 @@
+input.ng-invalid-pattern {
+  border-color: @brand-danger;
+  .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px @{brand-danger}");
+  &:focus {
+    border-color: @brand-danger;
+    .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px @{brand-danger}");
+  }
+}
+.displayValidations {
+  .ng-invalid {
+    border-color: @brand-danger;
+    &:focus {
+      .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px @{brand-danger}");
+    }
+  }
+}
+
+.validationError {
+  color: @brand-danger;
+  font-size: 12px;
+}

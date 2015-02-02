@@ -11,6 +11,9 @@
       console.log($scope.model.tags);
       console.log($scope.$parent.model.tags);
     };
+    $scope.removeTag = function (index) {
+      $scope.model.tags.splice(index, 1);
+    };
   }]);
 
 })();
