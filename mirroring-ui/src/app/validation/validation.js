@@ -87,6 +87,9 @@
         password: {
           empty: "Please enter your password.",
           patternInvalid: "The Password has an invalid format."
+        },
+        user_password: {
+          invalid: "The user/password you have entered is invalid."
         }
 
       },

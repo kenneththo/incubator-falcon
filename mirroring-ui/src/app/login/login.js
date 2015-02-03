@@ -24,11 +24,12 @@
    * @requires EntityModel the entity model to copy the feed entity from
    * @requires Falcon the falcon service to talk with the Falcon REST API
    */
-  var loginModule = angular.module('login-module', ['ngMessages']);
+  var loginModule = angular.module('login-module', ['validation-module']);
 
-  loginModule.controller('LoginFormCtrl', ['$scope', '$state', '$cookieStore', '$http',
-                                          function($scope, $state, $cookieStore, $http) {
+  loginModule.controller('LoginFormCtrl', ['$scope', '$state', '$cookieStore', '$http', "ValidationSvc",
+                                          function($scope, $state, $cookieStore, $http, ValidationSvc) {
 
+    $scope.validations = ValidationSvc;
 		$scope.showLoginVal = {show: false, userPassInvalid: false};
 
   	$scope.loggUser = function(form) {
@@ -44,12 +45,12 @@
       			$cookieStore.put('userToken', userToken);
       			$state.go('main');
       		}else{
-						$scope.showLoginVal.show = true;
+						$scope.validations.show = true;
 						$scope.showLoginVal.userPassInvalid = true;
       		}
   	  	});
   		}else{
-				$scope.showLoginVal.show = true;
+        $scope.validations.show = true;
   		}
     };
 
