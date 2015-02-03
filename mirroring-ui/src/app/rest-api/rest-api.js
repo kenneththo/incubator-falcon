@@ -5,6 +5,11 @@
 
   restApiModule.factory('restApi', ["$http", function($http) {
     var restApi = {};
+
+    restApi.getClusters = function () {
+      return $http.get('/api/clusters');
+    };
+
     //----------methods----------------------------//
     restApi.getIinstances = function () {
       return $http.get('/api/items');

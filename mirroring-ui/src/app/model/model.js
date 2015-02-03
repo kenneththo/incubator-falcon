@@ -6,22 +6,22 @@
   modelModule.factory('datasetModel', ["$http", function($http) {
 
     var dataset = {
-      name: "",
+      name: "Test",
       tags: [{"key":'ddd', "value": "ssd"}],
       type: "HDFS",
       clusters: {
         source_cluster: {
-          name: "",
+          name: "TEST",
           location: {
             type: "HDFS",
-            src: ""
+            src: "TEST"
           }
         },
         target_cluster: {
-          name: "",
+          name: "TEST",
           location: {
             type: "HDFS",
-            src: ""
+            src: "TEST"
           }
         }
       },

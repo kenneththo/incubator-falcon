@@ -16,189 +16,35 @@
  * limitations under the License.
  */
 (function () {
-  'use strict';  
-  
+  'use strict';
+
   function findByNameInList(type, name) {
     var i;
-    for (i = 0; i < entitiesList[type].entity.length; i++) {
-      if (entitiesList[type].entity[i]["name"] === name) {       
-        return i;     
+    for (i = 0; i < clusterList.length; i++) {
+      if (clusterList[i]["name"] === name) {
+        return i;
       }
-    } 
+    }
   }
 
-  var entitiesList = {
-    cluster : {
-      "entity":[
-        {"type":"cluster","name":"completeCluster","status":"SUBMITTED","list":{"tag":["uruguay=mvd","argentina=bsas","mexico=mex", "usa=was"]}},
-        {"type":"cluster","name":"primaryCluster","status":"SUBMITTED"}
-      ]
-    },
-    feed: {
-      "entity":[
-        {"type":"FEED","name":"feedOne","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
-        {"type":"FEED","name":"feedTwo","status":"RUNNING","list":{"tag":["owner=USMarketing","classification=Secure","externalSource=USProdEmailServers","externalTarget=BITools"]}}
-      ]
-    },
-    process:{"entity":[
-      {"type":"process","name":"processOne","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","montevideo=mvd"]}},
-      {"type":"process","name":"processTwo","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","externalSystem=USWestEmailServers"]}}]}
-    },
-    definitions = {
-      CLUSTER: {
-        completeCluster : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<cluster name="completeCluster" description="desc" colo="colo" xmlns="uri:falcon:cluster:0.1">' +
-            '<tags>uruguay=mvd,argentina=bsas</tags>' +
-            '<interfaces>' +
-              '<interface type="readonly" endpoint="hftp://sandbox.hortonworks.com:50070" version="2.2.0"/>' +
-              '<interface type="write" endpoint="hdfs://sandbox.hortonworks.com:8020" version="2.2.0"/>' +
-              '<interface type="execute" endpoint="sandbox.hortonworks.com:8050" version="2.2.0"/>' +
-              '<interface type="workflow" endpoint="http://sandbox.hortonworks.com:11000/oozie/" version="4.0.0"/>' +
-              '<interface type="messaging" endpoint="tcp://sandbox.hortonworks.com:61616?daemon=true" version="5.1.6"/>' +
-              '<interface type="registry" endpoint="thrift://localhost:9083" version="0.11.0"/>' +
-            '</interfaces>' +
-            '<locations>' +
-              '<location name="staging" path="/apps/falcon/backupCluster/staging"/>' +
-              '<location name="temp" path="/tmp"/>' +
-              '<location name="working" path="/apps/falcon/backupCluster/working"/>' +
-            '</locations>' +
-            '<ACL owner="ambari-qa" group="users" permission="0755"/>' +
-            '<properties>' +
-              '<property name="this" value="property"/>' +
-            '</properties>' +   
-          '</cluster>',
-        primaryCluster: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<cluster name="primaryCluster" description="oregonHadoopCluster" colo="USWestOregon" xmlns="uri:falcon:cluster:0.1">' +
-            '<interfaces>' +
-              '<interface type="readonly" endpoint="hftp://sandbox.hortonworks.com:50070" version="2.2.0"/>' +
-              '<interface type="write" endpoint="hdfs://sandbox.hortonworks.com:8020" version="2.2.0"/>' +
-              '<interface type="execute" endpoint="sandbox.hortonworks.com:8050" version="2.2.0"/>' +
-              '<interface type="workflow" endpoint="http://sandbox.hortonworks.com:11000/oozie/" version="4.0.0"/>' +
-              '<interface type="messaging" endpoint="tcp://sandbox.hortonworks.com:61616?daemon=true" version="5.1.6"/>' +
-            '</interfaces>' +
-            '<locations>' +
-              '<location name="staging" path="/apps/falcon/primaryCluster/staging"/>' +
-              '<location name="temp" path="/tmp"/>' +
-              '<location name="working" path="/apps/falcon/primaryCluster/working"/>' +
-            '</locations>' +
-          '</cluster>'
-      },
-      FEED: {
-        feedOne: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<feed name="feedOne" description="Raw customer email feed" xmlns="uri:falcon:feed:0.1">' +
-            '<tags>externalSystem=USWestEmailServers,classification=secure</tags>' +
-            '<frequency>hours(1)</frequency>' +
-            '<timezone>UTC</timezone>' +
-            '<late-arrival cut-off="hours(4)"/>' +
-            '<clusters>' +
-              '<cluster name="primaryCluster" type="source">' +
-                '<validity start="2014-02-28T00:00Z" end="2016-04-01T00:00Z"/>' +
-                '<retention limit="days(90)" action="delete"/>' +
-                '<locations>' +
-                  '<location type="data" path="/"/>' +
-                  '<location type="stats" path="/"/>' +
-                  '<location type="meta" path="/"/>' +
-                '</locations>' +
-              '</cluster>' +
-            '</clusters>' +
-            '<locations>' +
-              '<location type="data" path="hdfs://sandbox.hortonworks.com:8020/"/>' +
-              '<location type="stats" path="/none"/>' +
-              '<location type="meta" path="/none"/>' +
-            '</locations>' +
-            '<ACL owner="ambari-qa" group="users" permission="0755"/>' +
-            '<schema location="/none" provider="none"/>' +
-            '<properties>' +
-              '<property name="queueName" value="default"/>' +
-              '<property name="jobPriority" value="NORMAL"/>' +
-              '<property name="timeout" value="hours(1)"/>' +
-              '<property name="parallel" value="3"/>' +
-              '<property name="maxMaps" value="8"/>' +
-              '<property name="mapBandwidthKB" value="1024"/>' +
-            '</properties>' +
-          '</feed>',
-        feedTwo: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<feed name="feedTwo" description="Cleansed customer emails" xmlns="uri:falcon:feed:0.1">' +
-            '<tags>owner=USMarketing,classification=Secure,externalSource=USProdEmailServers,externalTarget=BITools</tags>' +
-            '<groups>churnAnalysisDataPipeline</groups>' +
-            '<frequency>hours(1)</frequency>' +
-            '<timezone>UTC</timezone>' +
-            '<clusters>' +
-              '<cluster name="primaryCluster" type="source">' +
-                '<validity start="2014-02-28T00:00Z" end="2016-04-01T00:00Z"/>' +
-                '<retention limit="days(90)" action="delete"/>' +
-                '<locations>' +
-                  '<location type="data" path="/user/ambari-qa/falcon/demo/primary/processed/enron/${YEAR}-${MONTH}-${DAY}-${HOUR}"/>' +
-                '</locations>' +
-              '</cluster>' +
-              '<cluster name="backupCluster" type="target">' +
-                '<validity start="2014-02-28T00:00Z" end="2016-04-01T00:00Z"/>' +
-                '<retention limit="months(36)" action="delete"/>' +
-                '<locations>' +
-                  '<location type="data" path="/falcon/demo/bcp/processed/enron/${YEAR}-${MONTH}-${DAY}-${HOUR}"/>' +
-                '</locations>' +
-              '</cluster>' +
-            '</clusters>' +
-            '<locations>' +
-              '<location type="data" path="/user/ambari-qa/falcon/demo/processed/enron/${YEAR}-${MONTH}-${DAY}-${HOUR}"/>' +
-            '</locations>' +
-            '<ACL owner="ambari-qa" group="users" permission="0755"/>' +
-            '<schema location="/none" provider="none"/>' +
-            '<properties>' +
-              '<property name="queueName" value="default"/>' +
-              '<property name="jobPriority" value="NORMAL"/>' +
-              '<property name="timeout" value="hours(1)"/>' +
-              '<property name="parallel" value="3"/>' +
-              '<property name="maxMaps" value="8"/>' +
-              '<property name="mapBandwidthKB" value="1024"/>' +
-            '</properties>' +
-          '</feed>'
-      },
-      PROCESS: {
-        processOne: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<process name="processOne" xmlns="uri:falcon:process:0.1">' +
-            '<tags>pipeline=churnAnalysisDataPipeline,owner=ETLGroup,montevideo=mvd</tags>' +
-            '<clusters>' +
-              '<cluster name="primaryCluster">' +
-                '<validity start="2014-02-28T00:00Z" end="2016-04-01T00:00Z"/>' +
-              '</cluster>' +
-            '</clusters>' +
-            '<parallel>1</parallel>' +
-            '<order>FIFO</order>' +
-            '<frequency>hours(1)</frequency>' +
-            '<timezone>GMT-12:00</timezone>' +
-            '<inputs>' +
-              '<input name="input" feed="rawEmailFeed" start="now(0,0)" end="now(0,0)"/>' +
-            '</inputs>' +
-            '<outputs>' +
-              '<output name="output" feed="cleansedEmailFeed" instance="now(0,0)"/>' +
-            '</outputs>' +
-            '<workflow name="emailCleanseWorkflow2" version="pig-0.10.0" engine="pig" path="/user/ambari-qa/falcon/demo/apps/pig/id.pig"/>' +
-            '<retry policy="periodic" delay="minutes(15)" attempts="3"/>' +
-          '</process>',
-        processTwo: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<process name="processTwo" xmlns="uri:falcon:process:0.1">' +
-            '<tags>pipeline=churnAnalysisDataPipeline,owner=ETLGroup,externalSystem=USWestEmailServers</tags>' +
-            '<clusters>' +
-              '<cluster name="primaryCluster">' +
-                '<validity start="2014-02-28T00:00Z" end="2016-03-31T00:00Z"/>' +
-              '</cluster>' +
-            '</clusters>' +
-            '<parallel>1</parallel>' +
-            '<order>FIFO</order>' +
-            '<frequency>hours(1)</frequency>' +
-            '<timezone>UTC</timezone>' +
-            '<outputs>' +
-              '<output name="output" feed="rawEmailFeed" instance="now(0,0)"/>' +
-            '</outputs>' +
-            '<workflow name="emailIngestWorkflow" version="2.0.0" engine="oozie" path="/user/ambari-qa/falcon/demo/apps/ingest/fs"/>' +
-            '<retry policy="periodic" delay="minutes(15)" attempts="3"/>' +
-          '</process>'
-        }
-      };
-  
+  var clusterList = [
+    {"id":"d29dd782-038f-42d0-9ede-10ce09ff08ec","name":"cluster1"},
+    {"id":"485cb7ab-64ba-4ab9-928e-c7bc96b38f8f","name":"cluster2"},
+    {"id":"cf8d00a8-f9c4-40c7-a3f0-86daedbea2d6","name":"cluster3"},
+    {"id":"c06f5f43-c1da-4d31-b790-9d1d8b459537","name":"cluster4"},
+    {"id":"b01aa770-22fe-47c2-bd46-f76ed26c1393","name":"cluster5"},
+    {"id":"d8a32b27-1fc2-4ac9-b6db-1367c76f2519","name":"cluster7"},
+    {"id":"a6f33616-f553-4b2d-bebb-5978f81bece7","name":"cluster8"},
+    {"id":"2bfe1d86-bc62-4f3d-9c7e-d00924504a86","name":"cluster9"},
+    {"id":"a1e37af1-91b5-4f99-95a3-be3abca1e65c","name":"cluster10"},
+    {"id":"1f29031c-ddb5-44ab-aae1-8f1794f0529d","name":"cluster11"},
+    {"id":"30b77cce-0135-4d8b-ade8-5b11a860ae13","name":"cluster12"},
+    {"id":"9a126663-972a-4318-89e8-01d3d0bb4388","name":"cluster13"},
+    {"id":"86476e26-771a-4a79-9139-73e69aba0670","name":"cluster14"},
+    {"id":"86b37de5-849b-42b2-95a2-a4ff031e8668","name":"cluster15"}
+  ];
+
   exports.findByNameInList = findByNameInList;
-  exports.entitiesList = entitiesList;
-  exports.definitions = definitions;
-  
+  exports.clusterList = clusterList;
+
 })();

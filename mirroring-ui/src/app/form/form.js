@@ -4,17 +4,27 @@
 	var formModule = angular.module('form-module', [
     'form-general-module', 'form-timing-module',
     'form-summary-module', 'progress-bar-module',
-    'dataset-model-module', 'validation-module'
+    'dataset-model-module', 'validation-module',
+    'rest-api-module', 'time-zone-module'
   ]);
 
-	formModule.controller('FormCtrl', [ "$scope", "$state", "$timeout", "datasetModel", "ValidationSvc",
-                                      function($scope, $state, $timeout, datasetModel, ValidationSvc) {
+	formModule.controller('FormCtrl', [
+    "$scope", "$state", "$timeout", "datasetModel", "ValidationSvc", "restApi",
+    function($scope, $state, $timeout, datasetModel, ValidationSvc, restApi) {
 
     $timeout(function () { angular.element('body').removeClass('preload'); }, 1000);
 
     $scope.validation = ValidationSvc;
     $scope.model = datasetModel;
+    $scope.clusterList = [];
 
+
+    restApi.getClusters()
+      .success(function (data) {
+        $scope.clusterList = data;
+      }).error(function (err) {
+        console.log(err);
+      });
     $scope.save = function () {
       console.log("bar = " + $scope.foo.bar);
       console.log("baz = " + $scope.foo.baz);

@@ -27,9 +27,9 @@
           unavailable: "The name you choosed is not available",
           empty: "You need to specify a name"
         },
-        colo: {
-          empty: "You need to provide a colo",
-          patternInvalid: "The Colo has an invalid format. "
+        url: {
+          empty: "You need to provide a URL",
+          patternInvalid: "The URL has an invalid format. "
         },
         description: {
           empty: "You need to provide a description",
@@ -94,6 +94,7 @@
         unixId: new RegExp("^([a-z_][a-z0-9-_\\.\\-]{0,30})$"),
         unixPermissions: new RegExp("^((([0-7]){1,4})|(\\*))$"),
         osPath: new RegExp("^[^\\0 ]+$"),
+        url: new RegExp("^[^\\0 ]+\\.[a-zA-Z0-9]{1,3}$"),
         twoDigits: new RegExp("^([0-9]){1,2}$"),
         tableUri: new RegExp("^[^\\0]+$"),
         versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$")

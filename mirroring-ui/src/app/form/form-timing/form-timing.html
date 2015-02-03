@@ -4,22 +4,38 @@
     <div class="col-xs-24 timingBox">
       <div class="startOnBox">
         <label>Start on
-          <input type="text" class="form-control" />
+          <input type="text"
+                 class="form-control dateInput"
+                 placeholder="mm/dd/yyyy"
+                 datepicker-popup="{{dateFormat}}"
+                 ng-model="date.start"
+                 is-open="opened"
+                 ng-click="openDatePicker($event, date.start)"
+                 ng-change="constructDate()"
+                 ng-required="true" simple-date>
         </label>
       </div>
       <div class="timeBox">
         <label>Time
-          <input type="text" class="form-control" />
+          <timepicker ng-change="constructDate()"
+                      ng-model="date.time"
+                      hour-step="1"
+                      minute-step="1"
+                      show-meridian="true">
+          </timepicker>
         </label>
       </div>
       <div class="tzBox">
-        <select ng-model="model.clusters.target_cluster.name"
-                ng-required="true" class="col-xs-24 form-control" id="targetClusterSelect">
-          <option value="" disabled selected style='display:none;'>-Select cluster-</option>
-          <option id="cluster_" ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
-        </select>
+        <time-zone-select
+                ng-model="date.tz"
+                class=""
+                ng-change="constructDate()">
+        </time-zone-select>
       </div>
     </div>
+    <br />
+
+
     <div class="col-xs-24">
       <div class="frequencyBox">
         <div>

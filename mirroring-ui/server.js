@@ -25,6 +25,9 @@
     res.json(mockLogin);
   });
 
+  server.get('/api/clusters', function (req, res) {
+    res.json(mockData.clusterList);
+  });
 
   server.get('/api/entities/list/:type', function (req, res) {
     var type = req.params.type;

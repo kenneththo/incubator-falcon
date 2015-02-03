@@ -1,4 +1,4 @@
-<form id="formGeneralBox" name="generalForm" class="col-xs-24" ng-class="{displayValidations:validation.show}">
+<form id="formGeneralBox" name="generalForm" class="col-xs-24" ng-class="{displayValidations:validation.show}" novalidate>
   <div class="row">
 
     <div class="col-xs-24">
@@ -8,11 +8,18 @@
                class="form-control"
                ng-model="model.name"
                placeholder=""
-               ng-pattern="validation.patterns.name" ng-required="true"/>
+               ng-pattern="validation.patterns.name"
+               ng-required="true"/>
       </label>
-      {{generalForm.nameInput.$error}}
-      <div class="validationError" ng-if="generalForm.nameInput.$error.pattern"> {{validation.messages.name.patternInvalid}}</div>
-      <div class="validationError" ng-if="generalForm.nameInput.$error.required && validation.show"> {{validation.messages.name.empty}}</div>
+
+      <div class="validationError"
+           ng-if="generalForm.nameInput.$error.pattern">
+        {{validation.messages.name.patternInvalid}}
+      </div>
+      <div class="validationError"
+           ng-if="generalForm.nameInput.$error.required && validation.show">
+        {{validation.messages.name.empty}}
+      </div>
 
     </div>
 
@@ -28,8 +35,14 @@
                    placeholder="key"
                    ng-pattern="validation.patterns.alpha" ng-required="newTag.value" />
 
-            <div class="validationError" ng-if="generalForm.newTagKeyInput.$error.pattern"> {{validation.messages.key.patternInvalid}}</div>
-            <div class="validationError" ng-if="generalForm.newTagKeyInput.$error.required && validation.show"> {{validation.messages.key.empty}}</div>
+            <div class="validationError"
+                 ng-if="generalForm.newTagKeyInput.$error.pattern">
+              {{validation.messages.key.patternInvalid}}
+            </div>
+            <div class="validationError"
+                 ng-if="generalForm.newTagKeyInput.$error.required && validation.show">
+              {{validation.messages.key.empty}}
+            </div>
 
           </div>
           <div class="col-xs-10">
@@ -40,8 +53,15 @@
                    placeholder="value"
                    ng-pattern="validation.patterns.alpha"
                    ng-required="newTag.key" />
-            <div class="validationError" ng-if="generalForm.newTagValueInput.$error.pattern"> {{validation.messages.key.patternInvalid}}</div>
-            <div class="validationError" ng-if="generalForm.newTagValueInput.$error.required && validation.show"> {{validation.messages.key.empty}}</div>
+
+            <div class="validationError"
+                 ng-if="generalForm.newTagValueInput.$error.pattern">
+              {{validation.messages.key.patternInvalid}}
+            </div>
+            <div class="validationError"
+                 ng-if="generalForm.newTagValueInput.$error.required && validation.show">
+              {{validation.messages.key.empty}}
+            </div>
           </div>
           <div class="col-xs-4">
             <button type="button"
@@ -98,11 +118,20 @@
   <div class="row">
     <div class="col-xs-24 clusterBox">
       <h3>Source cluster</h3>
+
       <select ng-model="model.clusters.source_cluster.name"
+              name="sourceClusterSelect"
               ng-required="true" class="col-xs-24 form-control" id="sourceClusterSelect">
         <option value="" disabled selected style='display:none;'>-Select cluster-</option>
-        <option id="cluster_" ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
+
+        <option id="cluster_" ng-repeat="cluster in clusterList">{{cluster.name}}</option>
       </select>
+
+      <div class="validationError"
+           ng-if="generalForm.sourceClusterSelect.$error.required && validation.show">
+        {{validation.messages.cluster.empty}}
+      </div>
+
       <div class="locationBox">
         <label>Location:
           <input type="radio"
@@ -120,32 +149,56 @@
       <div ng-if="model.clusters.source_cluster.location.type === 'HDFS'">
         <label>Path
           <input type="text"
+                 name="sourceClusterPathInput"
                  class="form-control"
                  ng-model="model.clusters.source_cluster.location.src"
                  placeholder="Path"
-                 ng-pattern=""
+                 ng-pattern="validation.patterns.osPath"
                  ng-required="model.clusters.source_cluster.location.type === 'HDFS'" />
         </label>
+        <div class="validationError"
+             ng-if="generalForm.sourceClusterPathInput.$error.pattern">
+          {{validation.messages.path.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="generalForm.sourceClusterPathInput.$error.required && validation.show">
+          {{validation.messages.path.empty}}
+        </div>
+
       </div>
       <div ng-if="model.clusters.source_cluster.location.type === 'azure'">
         <label>URL
           <input type="text"
+                 name="sourceClusterUrlInput"
                  class="form-control"
                  ng-model="model.clusters.source_cluster.location.src"
                  placeholder="URL"
-                 ng-pattern=""
+                 ng-pattern="validation.patterns.url"
                  ng-required="model.clusters.source_cluster.location.type === 'azure'" />
         </label>
+        <div class="validationError"
+             ng-if="generalForm.sourceClusterUrlInput.$error.pattern">
+          {{validation.messages.url.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="generalForm.sourceClusterUrlInput.$error.required && validation.show">
+          {{validation.messages.url.empty}}
+        </div>
       </div>
     </div>
 
     <div class="col-xs-24 clusterBox">
       <h3>Target cluster</h3>
       <select ng-model="model.clusters.target_cluster.name"
+              name="targetClusterSelect"
               ng-required="true" class="col-xs-24 form-control" id="targetClusterSelect">
         <option value="" disabled selected style='display:none;'>-Select cluster-</option>
         <option id="cluster_" ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
       </select>
+      <div class="validationError"
+           ng-if="generalForm.targetClusterSelect.$error.required && validation.show">
+        {{validation.messages.cluster.empty}}
+      </div>
       <div class="locationBox">
         <label>Location:
           <input type="radio"
@@ -164,22 +217,40 @@
       <div ng-if="model.clusters.target_cluster.location.type === 'HDFS'">
         <label>Path
           <input type="text"
+                 name="targetClusterPathInput"
                  class="form-control"
                  ng-model="model.clusters.target_cluster.location.src"
                  placeholder="Path"
-                 ng-pattern=""
+                 ng-pattern="validation.patterns.osPath"
                  ng-required="model.clusters.target_cluster.location.type === 'HDFS'" />
         </label>
+        <div class="validationError"
+             ng-if="generalForm.targetClusterPathInput.$error.pattern">
+          {{validation.messages.path.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="generalForm.targetClusterPathInput.$error.required && validation.show">
+          {{validation.messages.path.empty}}
+        </div>
       </div>
       <div ng-if="model.clusters.target_cluster.location.type === 'azure'">
         <label>URL
           <input type="text"
+                 name="targetClusterUrlInput"
                  class="form-control"
                  ng-model="model.clusters.target_cluster.location.src"
                  placeholder="URL"
-                 ng-pattern=""
+                 ng-pattern="validation.patterns.url"
                  ng-required="model.clusters.target_cluster.location.type === 'azure'" />
         </label>
+        <div class="validationError"
+             ng-if="generalForm.targetClusterUrlInput.$error.pattern">
+          {{validation.messages.url.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="generalForm.targetClusterUrlInput.$error.required && validation.show">
+          {{validation.messages.url.empty}}
+        </div>
       </div>
     </div>
   </div>

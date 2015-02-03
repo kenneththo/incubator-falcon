@@ -160,10 +160,33 @@
       width: 25%;
     }
     .timeBox {
-      width: 13%;
+      width: 15%;
+      vertical-align: top;
+      input {
+        width: 20px;
+      }
+      table {
+        tr {
+          &:first-child {
+            display: none;
+          }
+          &:last-child {
+            display: none;
+          }
+        }
+      }
+      button {
+        border-radius: 0;
+        width: 25px;
+        height: 25px;
+        padding:0;
+      }
+      a {
+        display: none!important;
+      }
     }
     .tzBox {
-      width: 60%;
+      width: 58%;
       select {
         margin-bottom:-8px;
         right:0;
