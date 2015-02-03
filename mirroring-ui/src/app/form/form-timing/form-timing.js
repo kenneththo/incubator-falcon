@@ -9,21 +9,10 @@
     $scope.date = {
       start: undefined,
       time: new Date(2015, 1, 1, 0, 0, 0, 0),
-      tz: undefined
+      tz: "+00:00"
     };
     $scope.constructDate = function () {
-
-
-
       if ($scope.date.start && $scope.date.time && $scope.date.tz) {
-        console.log($scope.date.start);
-        //console.log($scope.date.start.slice(0, 10));
-        /*$scope.$parent.model.start =  $scope.date.start.getMonth() + '/' +
-                                      $scope.date.start.getDate() + '/' +
-                                      $scope.date.start.getFullYear() + 'T' +
-                                      $scope.date.time.getHours() +
-                                      $scope.date.time.getMinutes() +
-                                      $scope.date.tz;*/
 
         $scope.$parent.model.start = new Date(Date.UTC(
           $scope.date.start.getUTCFullYear(),
@@ -32,8 +21,8 @@
           $scope.date.time.getHours(),
           $scope.date.time.getMinutes(),
           0, 0)).toUTCString() + $scope.date.tz;
-      }
 
+      }
     };
 
     $scope.openDatePicker = function($event) {

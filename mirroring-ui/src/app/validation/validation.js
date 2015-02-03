@@ -71,8 +71,14 @@
         engine: { empty: "You need to select an engine" },
         cluster: { empty: "You need to select a cluster" },
         feed: { empty: "You need to select a feed" },
-        date: { empty: "You need to select a date" },
-        number: { empty: "You need to provide a number" },
+        date: {
+          empty: "You need to select a start date",
+          patternInvalid: "The start Date has an invalid format. "
+        },
+        number: {
+          empty: "You need to provide a number",
+          patternInvalid: "The number needs to be one or two digits "
+        },
         option: { empty: "You need to select an option" },
         user: {
           empty: "Please enter your user name.",

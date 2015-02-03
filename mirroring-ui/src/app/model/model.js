@@ -26,8 +26,14 @@
         }
       },
       start: "",// date with time and tz
-      frequency: "",
-      repeats: "",
+      frequency: {
+        every: "",
+        unit: "hours"
+      },
+      repeats: {
+        every: "",
+        unit: "hours"
+      },
       allocation: {
         max_snapshots: "",
         max_number_slots: "",
