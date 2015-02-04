@@ -181,10 +181,9 @@
 
       scp: {
         options: {
-          host: '127.0.0.1',
+          host: 'sandbox.hortonworks.com',
           username: 'root',
-          password: 'hadoop',
-          port: 2222
+          password: 'hadoop'
         },
 
         sandbox: {
@@ -322,7 +321,7 @@
 
     grunt.registerTask('ambariview', [
       'clean', 'concat:vendor', 'uglify', 'less', 'resources',
-      'dependencies', 'karma:unit', 'copy:ambariview']);
+      'dependencies', 'copy:ambariview']);
 
     grunt.registerTask('testE2E', ['express', 'concurrent:all']);
     grunt.registerTask('testClusterE2E', ['express', 'concurrent:cluster']);

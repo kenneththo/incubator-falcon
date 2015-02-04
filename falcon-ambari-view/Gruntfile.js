@@ -7,10 +7,9 @@
 
       scp: {
         options: {
-          host: '127.0.0.1',
+          host: 'sandbox.hortonworks.com',
           username: 'root',
-          password: 'hadoop',
-          port: 2222
+          password: 'hadoop'
         },
 
         sandbox: {

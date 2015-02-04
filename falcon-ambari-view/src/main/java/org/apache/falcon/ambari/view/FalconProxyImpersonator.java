@@ -20,10 +20,7 @@ package org.apache.falcon.ambari.view;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.apache.ambari.view.HttpImpersonator;
