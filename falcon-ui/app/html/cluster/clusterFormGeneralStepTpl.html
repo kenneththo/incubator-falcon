@@ -108,10 +108,10 @@
        ng-repeat="_interface in clusterEntity.clusterModel.cluster.interfaces.interface">
     <div class="row">
       <div class="col-xs-4">
-        <label>
+
           <input type="checkbox" ng-checked="registry.check" ng-model="registry.check"
                  ng-if="_interface._type === 'registry'" ng-disabled="xmlPreview.edit"/> {{_interface._type}}
-        </label>
+
       </div>
       <div class="col-xs-16">
         <input type="text" class="form-control" ng-pattern="validations.patterns.osPath"

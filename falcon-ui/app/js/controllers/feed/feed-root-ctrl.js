@@ -159,7 +159,7 @@
         $scope.$on('$destroy', function () {
           $interval.cancel(xmlPreviewWorker);
           if (!$scope.skipUndo) {
-            $scope.$parent.models['feedModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
+            $scope.$parent.models.feedModel = angular.copy(X2jsService.xml_str2json($scope.xml));
             $scope.$parent.cancel('feed', $rootScope.previousState);
           }
         });

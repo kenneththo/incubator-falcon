@@ -166,17 +166,19 @@
     	  }
       }
     };
-    $rootScope.previousState;
-    $rootScope.currentState;
-    $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
+
+    //$rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
+    $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from) {
       SpinnersFlag.show = false;
       SpinnersFlag.backShow = false;
 
       $rootScope.previousState = from.name;
       $rootScope.currentState = to.name;
     });
+
     $rootScope.$on('$stateChangeError',
-      function(event, toState, toParams, fromState, fromParams, error){
+      //function(event, toState, toParams, fromState, fromParams, error){
+      function(event, toState, toParams, fromState, error){
         console.log('Manual log of stateChangeError: ' + error);
       });
 

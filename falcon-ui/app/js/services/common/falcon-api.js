@@ -26,16 +26,17 @@
         NUMBER_OF_RESULTS = 50;
 
     function buildURI(uri){
-    	if($rootScope.ambariView()){
-    		uri = uri.substring(2);
-    		uri = $rootScope.serviceURI + uri;
-    	}
-    	uri = add_user(uri);
-    	return uri;
+      if($rootScope.ambariView()){
+        uri = uri.substring(2);
+    	uri = $rootScope.serviceURI + uri;
+      }else{
+        uri = add_user(uri);
+      }
+      return uri;
     }
 
     function add_user(uri) {
-    	var userToken = $cookieStore.get('userToken');
+      var userToken = $cookieStore.get('userToken');
       var paramSeparator = (uri.indexOf('?') !== -1) ? '&' : '?';
       uri = uri + paramSeparator + 'user.name=' + userToken.user;
       return uri;

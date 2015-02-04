@@ -55,14 +55,14 @@
       $scope.resetProcess = function () {
         validationService.displayValidations = {show: false, nameShow: false};
         $scope.cloningMode = true;
-        $scope.models['processModel'] = null;
+        $scope.models.processModel = null;
         $state.go("forms.process.general");
       };
 
       $scope.resetFeed = function () {
         validationService.displayValidations = {show: false, nameShow: false};
         $scope.cloningMode = true;
-        $scope.models['feedModel'] = null;
+        $scope.models.feedModel = null;
         $state.go("forms.feed.general");
       };
 

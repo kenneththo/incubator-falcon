@@ -95,7 +95,7 @@
       $scope.$on('$destroy', function() {
         $interval.cancel(xmlPreviewWorker);
         if (!$scope.skipUndo) {
-          $scope.$parent.models['processModel'] = angular.copy(X2jsService.xml_str2json($scope.xml));
+          $scope.$parent.models.processModel = angular.copy(X2jsService.xml_str2json($scope.xml));
           $scope.$parent.cancel('process', $rootScope.previousState);
         }
       });
