@@ -3,26 +3,24 @@
 
 	var formTimingModule = angular.module('form-timing-module', []);
 
-  formTimingModule.controller('FormTimingCtrl', [ "$scope", "$filter", function($scope, $filter) {
+  formTimingModule.controller('FormTimingCtrl', [ "$scope", "$timeout", function($scope, $timeout) {
 
     //----------------- DATE INPUT -------------------//
+    $timeout(function () { //imports date if exists
+      if ($scope.model.start) {
+        $scope.importDate();
+      }
+    }, 30);
+
     $scope.dateFormat = 'MM/dd/yyyy';
+
     $scope.date = {
-      start: undefined/*new Date("02/02/2015")*/,
+      start: undefined,
       time: new Date(2015, 1, 1, 0, 0, 0, 0),
       tz: "+00:00"
     };
 
-
-
-    $scope.digestDate = function () {
-
-      console.log($scope.date.start);
-
-
-      //var filtered = $filter('date')(digestedDate, $scope.dateFormat);
-
-      console.log($scope.date);
+    $scope.importDate = function () {
 
       var rawDateString = $scope.model.start,
           timezone = rawDateString.slice(-6),
@@ -30,23 +28,23 @@
           dateUTC = Date.parse(dateString),
           rawDate = new Date(dateUTC);
 
-
-
-      console.log(dateString);
-      console.log(rawDate);
-      console.log(timezone);
-
       $scope.date = {
         start: new Date(
           rawDate.getUTCFullYear(),
           rawDate.getUTCMonth(),
           rawDate.getUTCDate(), 0, 0, 0, 0
         ),
-        time: new Date(2015, 1, 1, rawDate.getUTCHours(), rawDate.getUTCMinutes(), 0, 0),
+        time: new Date(
+          2015, 1, 1,
+          rawDate.getUTCHours(),
+          rawDate.getUTCMinutes(),
+          0, 0
+        ),
         tz: timezone
       };
-      console.log($scope.date);
+
     };
+
     $scope.constructDate = function () {
       if ($scope.date.start && $scope.date.time && $scope.date.tz) {
 
@@ -68,6 +66,10 @@
     };
 
     //----------- ON ERROR COMPOUND INPUT -----------//
+    $timeout(function () { //imports ERROR COMPOUND fields if exists
+      $scope.onErrorImport();
+    }, 30);
+
     $scope.abortOptions = {
       policy: 'back-off'
     };
@@ -78,7 +80,6 @@
       },
       stop_on: {
         value: 'attempts',
-
         attempts: {
           number: ''
         },
@@ -117,6 +118,31 @@
         console.log('neither abort or retry');
       }
     };
+
+    $scope.onErrorImport = function () {
+      if ($scope.model.on_error.action === 'abort') {
+        $scope.abortOptions.policy = $scope.model.on_error.options;
+
+      } else if ($scope.model.on_error.action === 'retry') {
+
+        $scope.retryOptions.retry_every = $scope.model.on_error.options.retry_every;
+
+        if ($scope.model.on_error.options.stop_on.without_response) {
+          $scope.retryOptions.stop_on.without_response = $scope.model.on_error.options.stop_on.without_response;
+          $scope.retryOptions.stop_on.value = 'without_response';
+        }
+        if ($scope.model.on_error.options.stop_on.attempts) {
+          $scope.retryOptions.stop_on.value = 'attempts';
+          $scope.retryOptions.stop_on.attempts.number = $scope.model.on_error.options.stop_on.attempts;
+        }
+        if ($scope.model.on_error.options.stop_on === 'never') {
+          $scope.retryOptions.stop_on.value = 'never';
+        }
+
+      } else {
+        console.log('neither abort or retry');
+      }
+    }
 
     //----------- Alerts -----------//
     $scope.emailAlert = {

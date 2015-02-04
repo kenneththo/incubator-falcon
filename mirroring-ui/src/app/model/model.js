@@ -25,7 +25,7 @@
           }
         }
       },
-      start: "",// date with time and tz
+      start: "",// date string with time and tz
       frequency: {
         every: "",
         unit: "hours"
@@ -44,9 +44,7 @@
       permission: "*",
       on_error: {
         action: "abort",
-        options: {
-
-        }
+        options: "back-off"
       },
       alerts: [
         {
@@ -61,7 +59,7 @@
     };
 
     return dataset;
-  }]);
 
+  }]);
 
 }());
