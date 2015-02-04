@@ -214,6 +214,7 @@
   .maxSnapshotBox, .maxNumberSlotsBox, .maxBandwidthBox, .unitRadioBox {
     display: inline-block;
     width: 24%;
+    vertical-align: top;
   }
   .maxNumberSlotsBox {
 
@@ -222,16 +223,19 @@
 
   }
   .unitRadioBox {
+    margin-top: 20px;
     label {
       display: inline-block;
     }
   }
   .othersBox {
     .runJobAsBox {
+      vertical-align: top;
       width: 68%;
       display: inline-block;
     }
     .dataPermissions {
+      vertical-align: top;
       display: inline-block;
       width: 30%;
     }
@@ -300,10 +304,27 @@
       display: inline-block;
     }
     .on {
+      margin-left: 10px;
       width: 56%;
       display: inline-block;
       label {
         display: inline-block;
+      }
+      button {
+        float: right;
+      }
+    }
+    .emailArrayRow {
+      height: 25px;
+      font-size: 12px;
+      line-height: 25px;
+      margin-bottom: 5px;
+      span {
+        font-weight: bold;
+      }
+      button {
+        float: right;
+        margin-right: 5px;
       }
     }
   }

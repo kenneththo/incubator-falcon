@@ -5,7 +5,7 @@
     'form-general-module', 'form-timing-module',
     'form-summary-module', 'progress-bar-module',
     'dataset-model-module', 'validation-module',
-    'rest-api-module', 'time-zone-module'
+    'rest-api-module', 'time-zone-module', 'date-filter-module'
   ]);
 
 	formModule.controller('FormCtrl', [
@@ -17,6 +17,7 @@
     $scope.validation = ValidationSvc;
     $scope.model = datasetModel;
     $scope.clusterList = [];
+    $scope.usersList = [];
 
 
     restApi.getClusters()
@@ -25,6 +26,13 @@
       }).error(function (err) {
         console.log(err);
       });
+    restApi.getUsers()
+      .success(function (data) {
+        $scope.usersList = data;
+      }).error(function (err) {
+        console.log(err);
+      });
+
     $scope.save = function () {
       console.log("bar = " + $scope.foo.bar);
       console.log("baz = " + $scope.foo.baz);

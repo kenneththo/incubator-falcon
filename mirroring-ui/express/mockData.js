@@ -43,8 +43,16 @@
     {"id":"86476e26-771a-4a79-9139-73e69aba0670","name":"cluster14"},
     {"id":"86b37de5-849b-42b2-95a2-a4ff031e8668","name":"cluster15"}
   ];
+  var usersList = [
+    {"id":"d29dd782-038f-42d0-9ede-10ce09ff08ec","name":"ambari-something"},
+    {"id":"485cb7ab-64ba-4ab9-928e-c7bc96b38f8f","name":"ambari-admin"},
+    {"id":"cf8d00a8-f9c4-40c7-a3f0-86daedbea2d6","name":"ambari-user"},
+    {"id":"c06f5f43-c1da-4d31-b790-9d1d8b459537","name":"some-other-user"},
+  ];
+
 
   exports.findByNameInList = findByNameInList;
   exports.clusterList = clusterList;
+  exports.usersList = usersList;
 
 })();

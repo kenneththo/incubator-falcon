@@ -55,22 +55,12 @@
           empty: "You need to provide a provider",
           patternInvalid: "The provider has an invalid format. "
         },
-        acl: {
-          owner: {
-            empty: "You need to provide an owner",
-            patternInvalid: "The Owner has an invalid format. "
-          },
-          group: {
-            empty: "You need to provide a group",
-            patternInvalid: "The Group has an invalid format. "},
-          permission: {
-            empty: "You need to provide a Permission",
-            patternInvalid: "The Permission has an invalid format. "
-          }
+        permission: {
+          empty: "You need to provide a Permission",
+          patternInvalid: "The Permission has an invalid format. "
         },
-        engine: { empty: "You need to select an engine" },
         cluster: { empty: "You need to select a cluster" },
-        feed: { empty: "You need to select a feed" },
+
         date: {
           empty: "You need to select a start date",
           patternInvalid: "The start Date has an invalid format. "
@@ -78,6 +68,10 @@
         number: {
           empty: "You need to provide a number",
           patternInvalid: "The number needs to be one or two digits "
+        },
+        allocationNumber: {
+          empty: "You need to provide a number",
+          patternInvalid: "The number you provided is invalid "
         },
         option: { empty: "You need to select an option" },
         user: {
@@ -90,6 +84,9 @@
         },
         user_password: {
           invalid: "The user/password you have entered is invalid."
+        },
+        email: {
+          patternInvalid: "The email is invalid."
         }
 
       },
@@ -105,8 +102,10 @@
         osPath: new RegExp("^[^\\0 ]+$"),
         url: new RegExp("^[^\\0 ]+\\.[a-zA-Z0-9]{1,3}$"),
         twoDigits: new RegExp("^([0-9]){1,2}$"),
+        number: new RegExp("^([0-9]){1,40}$"),
         tableUri: new RegExp("^[^\\0]+$"),
-        versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$")
+        versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"),
+        email: new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$")
       };
 
     function acceptOnlyNumber(evt) {
@@ -117,9 +116,19 @@
         ENTER = 13,
         ARROW_KEYS = {left: 37, right: 39},
         TAB = 9,
+        ctrlKey = 17,
+        vKey = 86,
+        cKey = 67,
         regex = /[0-9]|\./;
 
-      if (key === BACKSPACE || key === DEL || key === ARROW_KEYS.left || key === ARROW_KEYS.right || key === TAB || key === ENTER) {
+      if (key === ctrlKey ||
+          key === vKey ||
+          key === cKey ||
+          key === BACKSPACE ||
+          key === DEL ||
+          key === ARROW_KEYS.left ||
+          key === ARROW_KEYS.right ||
+          key === TAB || key === ENTER) {
         return true;
       }
 

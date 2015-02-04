@@ -69,6 +69,7 @@
             'bin/js/main.min.js': [
               'src/app/dashboard/dashboard.js',
               'src/app/form/form.js',
+              'src/app/form/date-filter/simple-date.js',
               'src/app/form/progress-bar/progress-bar.js',
               'src/app/form/form-general/form-general.js',
               'src/app/form/form-timing/form-timing.js',

@@ -11,14 +11,14 @@
       type: "HDFS",
       clusters: {
         source_cluster: {
-          name: "TEST",
+          name: "cluster1",
           location: {
             type: "HDFS",
             src: "TEST"
           }
         },
         target_cluster: {
-          name: "TEST",
+          name: "cluster1",
           location: {
             type: "HDFS",
             src: "TEST"
@@ -32,18 +32,21 @@
       },
       repeats: {
         every: "",
-        unit: "hours"
+        unit: "days"
       },
       allocation: {
         max_snapshots: "",
         max_number_slots: "",
-        max_bandwidth: ""
+        max_bandwidth: "",
+        measure: "Kb"
       },
-      run_as: "",
-      permission: "",
+      run_as: "default",
+      permission: "*",
       on_error: {
         action: "abort",
-        options: {}
+        options: {
+
+        }
       },
       alerts: [
         {

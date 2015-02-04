@@ -3,7 +3,7 @@
       class="col-xs-24"
       ng-class="{displayValidations:validation.show}"
       novalidate>
-
+<button ng-click="digestDate()">digestDate</button>
   <div class="row">
     <h4 class="col-xs-24">Timing</h4>
     <div class="col-xs-24 timingBox">
@@ -87,17 +87,30 @@
         <div>
           <label>
             Every
-            <input type="text">
-            <select ng-model="n"
+            <input type="text"
+                   name="repeatsEveryInput"
+                   ng-model="model.repeats.every"
+                   ng-pattern="validation.patterns.twoDigits"
+                   ng-required="true"
+                   ng-keydown="validation.acceptOnlyNumber($event)"
+                   class="form-control"/>
+            <select ng-model="model.repeats.unit"
                     ng-required="true"
                     class="form-control">
-              <!--<option value="" disabled selected style='display:none;'>-Select cluster-</option>-->
               <option selected value="days">Days</option>
               <option value="weeks">Weeks</option>
               <option value="months">Months</option>
               <option value="years">Years</option>
             </select>
           </label>
+          <div class="validationError"
+               ng-if="timingForm.repeatsEveryInput.$error.pattern">
+            {{validation.messages.number.patternInvalid}}
+          </div>
+          <div class="validationError"
+               ng-if="timingForm.repeatsEveryInput.$error.required && validation.show">
+            {{validation.messages.number.empty}}
+          </div>
         </div>
       </div>
     </div>
@@ -108,33 +121,81 @@
     <div class="col-xs-24">
       <div class="maxSnapshotBox">
         <label>Max snapshots
-          <input type="text" class="form-control" />
+          <input type="text"
+                 name="maxSnapshotsInput"
+                 ng-model="model.allocation.max_snapshots"
+                 ng-pattern="validation.patterns.number"
+                 ng-required="true"
+                 ng-keydown="validation.acceptOnlyNumber($event)"
+                 class="form-control"/>
         </label>
+        <div class="validationError"
+             ng-if="timingForm.maxSnapshotsInput.$error.pattern">
+          {{validation.messages.allocationNumber.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="timingForm.maxSnapshotsInput.$error.required && validation.show">
+          {{validation.messages.allocationNumber.empty}}
+        </div>
       </div>
 
       <div class="maxNumberSlotsBox">
         <label>Max number of slots
-          <input type="text" class="form-control" />
+          <input type="text"
+                 name="maxSlotsInput"
+                 ng-model="model.allocation.max_number_slots"
+                 ng-pattern="validation.patterns.number"
+                 ng-required="true"
+                 ng-keydown="validation.acceptOnlyNumber($event)"
+                 class="form-control"/>
         </label>
+        <div class="validationError"
+             ng-if="timingForm.maxSlotsInput.$error.pattern">
+          {{validation.messages.allocationNumber.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="timingForm.maxSlotsInput.$error.required && validation.show">
+          {{validation.messages.allocationNumber.empty}}
+        </div>
       </div>
 
       <div class="maxBandwidthBox">
         <label>Max bandwidth
-          <input type="text" class="form-control" />
+          <input type="text"
+                 name="maxBandwidthInput"
+                 ng-model="model.allocation.max_bandwidth"
+                 ng-pattern="validation.patterns.number"
+                 ng-required="true"
+                 ng-keydown="validation.acceptOnlyNumber($event)"
+                 class="form-control"/>
         </label>
+        <div class="validationError"
+             ng-if="timingForm.maxBandwidthInput.$error.pattern">
+          {{validation.messages.allocationNumber.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="timingForm.maxBandwidthInput.$error.required && validation.show">
+          {{validation.messages.allocationNumber.empty}}
+        </div>
       </div>
 
       <div class="unitRadioBox">
         <label>
-          <input type="radio" />
+          <input type="radio"
+                 value="Kb"
+                 ng-model="model.allocation.measure" />
           Kb
         </label>
         <label>
-          <input type="radio" />
+          <input type="radio"
+                 value="Mb"
+                 ng-model="model.allocation.measure" />
           Mb
         </label>
         <label>
-          <input type="radio" />
+          <input type="radio"
+                 value="Gb"
+                 ng-model="model.allocation.measure" />
           Gb
         </label>
       </div>
@@ -146,31 +207,48 @@
     <div class="col-xs-24 othersBox">
       <div class="runJobAsBox">
         <label>Run job as
-          <select ng-model="n"
+          <select ng-model="model.run_as"
                   ng-required="true"
                   class="form-control">
-            <!--<option value="" disabled selected style='display:none;'>-Select cluster-</option>-->
-            <option selected value="days">Days</option>
-            <option value="weeks">Weeks</option>
-            <option value="months">Months</option>
-            <option value="years">Years</option>
+            <option value="default" selected>defaultUser</option>
+            <option ng-repeat="user in usersList" value="{{user.name}}">{{user.name}}</option>
           </select>
         </label>
       </div>
       <div class="dataPermissions">
         <label>Data permissions
-          <input type="text" class="form-control" />
+          <input type="text"
+                 name="dataPermissionInput"
+                 ng-model="model.permission"
+                 ng-pattern="validation.patterns.unixPermissions"
+                 ng-required="true"
+                 ng-keydown="validation.acceptOnlyNumber($event)"
+                 class="form-control"/>
         </label>
+        <div class="validationError"
+             ng-if="timingForm.dataPermissionInput.$error.pattern">
+          {{validation.messages.permission.patternInvalid}}
+        </div>
+        <div class="validationError"
+             ng-if="timingForm.dataPermissionInput.$error.required && validation.show">
+          {{validation.messages.permission.empty}}
+        </div>
       </div>
       <div class="onErrorBox">
         <div class="onErrorHeaderBox">
           <label>On error:
             <label>
-              <input type="radio" ng-model="model.on_error.action" value="abort"/>
+              <input type="radio"
+                     ng-model="model.on_error.action"
+                     value="abort"
+                     ng-change="onErrorTransform()"/>
               Abort
             </label>
             <label>
-              <input type="radio" ng-model="model.on_error.action" value="retry"/>
+              <input type="radio"
+                     ng-model="model.on_error.action"
+                     value="retry"
+                     ng-change="onErrorTransform()"/>
               Retry
             </label>
           </label>
@@ -179,61 +257,113 @@
         <div class="policyBox" ng-if="model.on_error.action === 'abort'">
           <div><label>Policy</label></div>
           <label>
-            <input type="radio" />
+            <input type="radio" value="back-off" ng-change="onErrorTransform()" ng-model="abortOptions.policy"/>
             Back off
           </label>
           <label>
-            <input type="radio" />
+            <input type="radio" value="exp-back-off" ng-change="onErrorTransform()" ng-model="abortOptions.policy"/>
             Exp back off
           </label>
         </div>
         <div class="retryBox" ng-if="model.on_error.action === 'retry'">
           <div class="retryEveryBox">
             <label>Retry every</label>
-            <input type="text"/>
-            <select ng-model="n"
-                    ng-required="true">
-              <!--<option value="" disabled selected style='display:none;'>-Select cluster-</option>-->
-              <option selected value="seconds">Days</option>
-              <option selected value="minutes">Minutes</option>
-              <option selected value="hours">Hours</option>
-              <option selected value="days">Days</option>
+            <input type="text"
+                   name="retryEveryInput"
+                   ng-model="retryOptions.retry_every.number"
+                   ng-pattern="validation.patterns.twoDigits"
+                   ng-required="model.on_error.action === 'retry'"
+                   ng-change="onErrorTransform()"
+                   ng-keydown="validation.acceptOnlyNumber($event)"
+                   class="form-control"/>
+            <select ng-model="retryOptions.retry_every.unit"
+                    ng-change="onErrorTransform()"
+                    ng-required="true"
+                    class="form-control">
+              <option value="seconds">Seconds</option>
+              <option value="minutes">Minutes</option>
+              <option value="hours">Hours</option>
+              <option value="days">Days</option>
               <option value="weeks">Weeks</option>
               <option value="months">Months</option>
-              <option value="years">Years</option>
             </select>
+            <div class="validationError"
+                 ng-if="timingForm.retryEveryInput.$error.pattern">
+              {{validation.messages.number.patternInvalid}}
+            </div>
+            <div class="validationError"
+                 ng-if="timingForm.retryEveryInput.$error.required && validation.show">
+              {{validation.messages.number.empty}}
+            </div>
           </div>
           <div class="stopOnBox">
             <label>Stop on</label>
             <div>
               <label>
-                <input type="radio" />
-                <input type="text" class="form-control"/>
+                <input type="radio" value="attempts" ng-model="retryOptions.stop_on.value" ng-change="onErrorTransform()"/>
+                <input type="text"
+                       name="attemptsNumberInput"
+                       ng-model="retryOptions.stop_on.attempts.number"
+                       ng-pattern="validation.patterns.number"
+                       ng-required="model.on_error.action === 'retry' && retryOptions.stop_on.value === 'attempts'"
+                       ng-change="onErrorTransform()"
+                       ng-keydown="validation.acceptOnlyNumber($event)"
+                       class="form-control"/>
                 attempts
               </label>
+              <div class="validationError"
+                   ng-if="timingForm.attemptsNumberInput.$error.pattern">
+                {{validation.messages.number.patternInvalid}}
+              </div>
+              <div class="validationError"
+                   ng-if="timingForm.attemptsNumberInput.$error.required && validation.show">
+                {{validation.messages.number.empty}}
+              </div>
             </div>
             <div>
               <label>
-                <input type="radio" />
-                <input type="text" class="form-control"/>
-                <select ng-model="n"
+
+                <input type="radio"
+                       value="without_response"
+                       ng-model="retryOptions.stop_on.value"
+                       ng-change="onErrorTransform()"/>
+
+                <input type="text"
+                       name="withoutResponseNumberInput"
+                       ng-model="retryOptions.stop_on.without_response.number"
+                       ng-pattern="validation.patterns.twoDigits"
+                       ng-required="model.on_error.action === 'retry' && retryOptions.stop_on.value === 'without_response'"
+                       ng-change="onErrorTransform()"
+                       ng-keydown="validation.acceptOnlyNumber($event)"
+                       class="form-control"/>
+
+                <select ng-model="retryOptions.stop_on.without_response.unit"
                         ng-required="true"
+                        ng-change="onErrorTransform()"
                         class="form-control">
-                  <!--<option value="" disabled selected style='display:none;'>-Select cluster-</option>-->
-                  <option selected value="seconds">Days</option>
-                  <option selected value="minutes">Minutes</option>
-                  <option selected value="hours">Hours</option>
-                  <option selected value="days">Days</option>
+                  <option value="seconds">Seconds</option>
+                  <option value="minutes">Minutes</option>
+                  <option value="hours">Hours</option>
+                  <option value="days">Days</option>
                   <option value="weeks">Weeks</option>
                   <option value="months">Months</option>
                   <option value="years">Years</option>
                 </select>
+
                 without response
               </label>
+              <div class="validationError"
+                   ng-if="timingForm.withoutResponseNumberInput.$error.pattern">
+                {{validation.messages.number.patternInvalid}}
+              </div>
+              <div class="validationError"
+                   ng-if="timingForm.withoutResponseNumberInput.$error.required && validation.show">
+                {{validation.messages.number.empty}}
+              </div>
             </div>
             <div>
               <label>
-                <input type="radio" />
+                <input type="radio" value="never" ng-model="retryOptions.stop_on.value" ng-change="onErrorTransform()"/>
                 Never
               </label>
             </div>
@@ -249,28 +379,55 @@
     <div class="col-xs-24 alertsBox">
       <div class="to">
         <label> <h4>Send alerts to </h4>
-          <input class="form-control" type="text">
+          <input class="form-control"
+                 name="emailAlertInput"
+                 ng-model="emailAlert.email"
+                 type="text"
+                 placeholder="Email"
+                 ng-pattern="validation.patterns.email">
         </label>
       </div>
       <div class="on">
         <h4>on </h4>
         <label>
-          <input type="checkbox" />
+          <input type="checkbox" ng-model="emailAlert.start"/>
           Start
         </label>
         <label>
-          <input type="checkbox" />
+          <input type="checkbox" ng-model="emailAlert.finish"/>
           Finish
         </label>
         <label>
-          <input type="checkbox" />
+          <input type="checkbox" ng-model="emailAlert.fail"/>
           Fail
         </label>
         <label>
-          <input type="checkbox" />
+          <input type="checkbox" ng-model="emailAlert.abort"/>
           Abort
         </label>
-        <button class="btn btn-default btn-xs" type="button"><span class="glyphicon glyphicon-plus"></span>add alert</button>
+        <button class="btn btn-default btn-xs"
+                ng-disabled="(!emailAlert.start&&!emailAlert.finish&&!emailAlert.fail&&!emailAlert.abort) || !emailAlert.email"
+                type="button"
+                ng-click="addAlert()">
+          <span class="glyphicon glyphicon-plus"></span>add alert
+        </button>
+      </div>
+      <div class="validationError"
+           ng-if="timingForm.emailAlertInput.$error.pattern">
+        {{validation.messages.email.patternInvalid}}
+      </div>
+
+      <div class="emailArrayRow" ng-repeat="email in model.alerts">
+        <span>{{email.email}}</span> on
+        <span ng-if="email.start">Start</span>
+        <span ng-if="email.finish">Finish</span>
+        <span ng-if="email.fail">Fail</span>
+        <span ng-if="email.abort">Abort</span>
+        <button class="btn btn-default btn-xs"
+                type="button"
+                ng-click="removeAlert()">
+          <span class="glyphicon glyphicon-minus"></span> delete
+        </button>
       </div>
 
     </div>

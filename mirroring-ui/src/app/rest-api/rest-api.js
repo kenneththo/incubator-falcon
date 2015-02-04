@@ -9,6 +9,9 @@
     restApi.getClusters = function () {
       return $http.get('/api/clusters');
     };
+    restApi.getUsers = function () {
+      return $http.get('/api/users');
+    };
 
     //----------methods----------------------------//
     restApi.getIinstances = function () {
