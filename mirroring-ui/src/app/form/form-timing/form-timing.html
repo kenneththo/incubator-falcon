@@ -3,7 +3,7 @@
       class="col-xs-24"
       ng-class="{displayValidations:validation.show}"
       novalidate>
-<button ng-click="importDate()">digestDate</button>
+
   <div class="row">
     <h4 class="col-xs-24">Timing</h4>
     <div class="col-xs-24 timingBox">
@@ -18,7 +18,8 @@
                  is-open="opened"
                  ng-click="openDatePicker($event, date.start)"
                  ng-change="constructDate()"
-                 ng-required="true" simple-date>
+                 ng-required="true"
+                 simple-date>
         </label>
       </div>
       <div class="timeBox">
@@ -50,7 +51,7 @@
     <br />
 
 
-    <div class="col-xs-24">
+    <div class="col-xs-24 mt10">
       <div class="frequencyBox">
         <div>
           <label>Frequency</label>
@@ -117,7 +118,7 @@
   </div>
 
   <div class="row">
-    <h4 class="col-xs-24">Allocation</h4>
+    <h4 class="col-xs-24 mt20">Allocation</h4>
     <div class="col-xs-24">
       <div class="maxSnapshotBox">
         <label>Max snapshots
@@ -203,7 +204,7 @@
   </div>
 
   <div class="row">
-    <h4 class="col-xs-24">Others</h4>
+    <h4 class="col-xs-24 mt20">Others</h4>
     <div class="col-xs-24 othersBox">
       <div class="runJobAsBox">
         <label>Run job as
@@ -451,8 +452,6 @@
       </a>
     </div>
   </div>
-
-
 
 </form>
 

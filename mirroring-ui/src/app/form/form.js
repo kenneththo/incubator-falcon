@@ -34,8 +34,13 @@
       });
 
     $scope.save = function () {
-      console.log("bar = " + $scope.foo.bar);
-      console.log("baz = " + $scope.foo.baz);
+      restApi.postDataset(angular.toJson($scope.model))
+        .success(function (data) {
+          console.log('success + ');
+          console.log(data);
+        }).error(function (err) {
+          console.log(err);
+        });
     };
 
 
@@ -44,8 +49,6 @@
     };
 
     $scope.goNext = function (formInvalid, stateName) {
-
-      console.log();
 
 /*
       SpinnersFlag.show = true;
@@ -61,9 +64,13 @@
 */
       if (formInvalid) {
         $scope.validation.show = true;
+        angular.element('body, html').animate({scrollTop: 0}, 500);
       } else {
+        $scope.validation.show = false;
         $state.go(stateName);
+        angular.element('body, html').animate({scrollTop: 0}, 500);
       }
+
 
 
 
@@ -73,7 +80,9 @@
 /*      SpinnersFlag.backShow = true;
       validationService.displayValidations.show = false;
       validationService.displayValidations.nameShow = false;*/
+      $scope.validation.show = false;
       $state.go(stateName);
+      angular.element('body, html').animate({scrollTop: 0}, 500);
     };
 
     $scope.$on('$destroy', function () {

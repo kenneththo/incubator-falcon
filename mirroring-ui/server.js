@@ -32,6 +32,21 @@
     res.json(mockData.usersList);
   });
 
+  server.post('/api/datasets', function (req, res) {
+
+    var json = req.body;
+
+    if(mockData.findIndexByName(json.name) === false) {
+      mockData.datasetsList.push(json);
+      res.send(200, {status: 'suceeded', message: json.name + ' saved succesfully'});
+    }
+    else {
+      res.send(409, {status: 'failed', message: json.name + ' already exists'});
+    }
+
+  });
+ /* //----------------------------------//
+
   server.get('/api/entities/list/:type', function (req, res) {
     var type = req.params.type;
     res.json(mockData.entitiesList[type]);
@@ -129,10 +144,10 @@
       indexInArray = mockData.findByNameInList(type, name);
     mockData.entitiesList[type].entity.splice(indexInArray, 1);
     res.json(200, responseMessage);
-  });
+  });*/
 
   server.listen(PORT, function () {
-    console.log('Dev server listening on port ' + PORT);
+    console.log('Express server listening on port ' + PORT);
   });
 
 }());

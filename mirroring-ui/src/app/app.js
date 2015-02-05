@@ -98,7 +98,7 @@
 
       $rootScope.previousState;
       $rootScope.currentState;
-      $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
+      $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from) {
         $rootScope.previousState = from.name;
         $rootScope.currentState = to.name;
       });

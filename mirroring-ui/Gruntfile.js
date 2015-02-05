@@ -51,6 +51,13 @@
           dest: 'bin/css/fonts',
           expand: true,
           flatten: true
+        },
+        img: {
+          cwd: 'src/common',
+          src: ['assets/*.*'],
+          dest: 'bin/css/img',
+          expand: true,
+          flatten: true
         }
       },
 
@@ -269,7 +276,7 @@
 
     grunt.registerTask('build', [
       'clean', 'concat:vendor', 'uglify', 'less', 'copy:fonts',
-      'copy:index', 'copy:html', 'karma:unit:start'
+      'copy:index', 'copy:html', 'copy:img', 'karma:unit:start'
     ]);
 
     grunt.registerTask('dev', [

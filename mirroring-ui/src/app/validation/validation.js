@@ -21,59 +21,8 @@
   var module = angular.module('validation-module', []);
 
   module.factory('ValidationSvc', ["$window", function ($window) {
-    var checkMessages = {
-        name: {
-          patternInvalid: "The name has an invalid format.",
-          unavailable: "The name you choosed is not available",
-          empty: "You need to specify a name"
-        },
-        url: {
-          empty: "You need to provide a URL",
-          patternInvalid: "The URL has an invalid format. "
-        },
-        description: {
-          empty: "You need to provide a description",
-          patternInvalid: "The Description has an invalid format. "
-        },
-        path: {
-          empty: "You need to provide a path",
-          patternInvalid: "The Path has an invalid format. "
-        },
-        key: {
-          empty: "You need to provide a key",
-          patternInvalid: "The Key has an invalid format. "
-        },
-        value: {
-          empty: "You need to provide a value",
-          patternInvalid: "The Value has an invalid format. "
-        },
-        location: {
-          empty: "You need to provide a  location",
-          patternInvalid: "The Location has an invalid format. "
-        },
-        provider: {
-          empty: "You need to provide a provider",
-          patternInvalid: "The provider has an invalid format. "
-        },
-        permission: {
-          empty: "You need to provide a Permission",
-          patternInvalid: "The Permission has an invalid format. "
-        },
-        cluster: { empty: "You need to select a cluster" },
 
-        date: {
-          empty: "You need to select a start date",
-          patternInvalid: "The start Date has an invalid format. "
-        },
-        number: {
-          empty: "You need to provide a number",
-          patternInvalid: "The number needs to be one or two digits "
-        },
-        allocationNumber: {
-          empty: "You need to provide a number",
-          patternInvalid: "The number you provided is invalid "
-        },
-        option: { empty: "You need to select an option" },
+    var checkMessages = {
         user: {
           empty: "Please enter your user name.",
           patternInvalid: "The User has an invalid format."
@@ -85,10 +34,45 @@
         user_password: {
           invalid: "The user/password you have entered is invalid."
         },
+        name: {
+          patternInvalid: "The name has an invalid format.",
+          unavailable: "The name you choosed is not available",
+          empty: "You need to specify a name"
+        },
+        number: {
+          empty: "You need to provide a number",
+          patternInvalid: "The number needs to be one or two digits "
+        },
         email: {
           patternInvalid: "The email is invalid."
+        },
+        date: {
+          empty: "You need to select a start date",
+          patternInvalid: "The start Date has an invalid format. "
+        },
+        allocationNumber: {
+          empty: "You need to provide a number",
+          patternInvalid: "The number you provided is invalid "
+        },
+        permission: {
+          empty: "You need to provide a Permission",
+          patternInvalid: "The Permission has an invalid format. "
+        },
+        key: {
+          empty: "You need to provide a key",
+          patternInvalid: "The Key has an invalid format. "
+        },
+        cluster: {
+          empty: "You need to select a cluster"
+        },
+        path: {
+          empty: "You need to provide a path",
+          patternInvalid: "The Path has an invalid format. "
+        },
+        url: {
+          empty: "You need to provide a URL",
+          patternInvalid: "The URL has an invalid format. "
         }
-
       },
       checkPatterns = {
         name: new RegExp("^[a-zA-Z0-9]{1,39}$"),
@@ -100,20 +84,7 @@
         email: new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"),
         unixPermissions: new RegExp("^((([0-7]){1,4})|(\\*))$"),
         id: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
-        freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$"),
-
-        password: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
-        
-
-        commaSeparated: new RegExp("^[a-zA-Z0-9,]{1,80}$"),
-        unixId: new RegExp("^([a-z_][a-z0-9-_\\.\\-]{0,30})$"),
-
-
-
-
-
-        tableUri: new RegExp("^[^\\0]+$"),
-        versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"),
+        freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$")
       };
 
     function acceptOnlyNumber(evt) {
@@ -147,6 +118,7 @@
         if (theEvent.preventDefault) { theEvent.preventDefault(); }
       }
     }
+
     function acceptNoSpaces(evt) {
       var theEvent = evt || $window.event,
         key = theEvent.keyCode || theEvent.which,

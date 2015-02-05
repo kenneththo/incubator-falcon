@@ -3,7 +3,7 @@
 
 	var modelModule = angular.module('dataset-model-module', []);
 
-  modelModule.factory('datasetModel', ["$http", function($http) {
+  modelModule.factory('datasetModel', [function() {
 
     var dataset = {
       name: "Test",
