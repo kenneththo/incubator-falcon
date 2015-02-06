@@ -447,7 +447,7 @@
               ng-click="goNext(timingForm.$invalid, 'form.summary')" >
         Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
       </button>
-      <a class="pull-right" ui-sref="main">
+      <a class="pull-right" ng-click="cancel()">
         Cancel
       </a>
     </div>

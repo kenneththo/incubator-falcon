@@ -8,7 +8,7 @@
     {{model.type}}
   </div>
   <div>
-    <h4 class="lightSubtitle">Tags</h4>
+    <h4 ng-if="model.tags.length > 0" class="lightSubtitle">Tags</h4>
     <div ng-repeat="tag in model.tags"><span>{{tag.key}}</span> - {{tag.value}}</div>
   </div>
 
@@ -54,17 +54,16 @@
   </div>
 
   <div>
-    <h4 class="lightSubtitle">Alerts</h4>
+    <h4 ng-if="model.alerts.length > 0" class="lightSubtitle">Alerts</h4>
 
     <div ng-repeat="alert in model.alerts">
       <span>{{alert.email}}</span> on
-
       <span ng-if="alert.start">Start</span>
       <span ng-if="alert.finish">Finish</span>
       <span ng-if="alert.fail">Fail</span>
       <span ng-if="alert.abort">Abort</span>
-
     </div>
+
   </div>
 
   <hr />
@@ -129,7 +128,7 @@
               ng-click="save()" >
         Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
       </button>
-      <a class="pull-right" ui-sref="main">
+      <a class="pull-right" ng-click="cancel()">
         Cancel
       </a>
     </div>

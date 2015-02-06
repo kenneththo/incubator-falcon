@@ -6,22 +6,23 @@
   modelModule.factory('datasetModel', [function() {
 
     var dataset = {
-      name: "Test",
-      tags: [{"key":'ddd', "value": "ssd"}],
+
+      name: "",
+      tags: [],
       type: "HDFS",
       clusters: {
         source_cluster: {
-          name: "cluster1",
+          name: "",
           location: {
             type: "HDFS",
-            src: "TEST"
+            src: ""
           }
         },
         target_cluster: {
-          name: "cluster1",
+          name: "",
           location: {
             type: "HDFS",
-            src: "TEST"
+            src: ""
           }
         }
       },
@@ -46,15 +47,7 @@
         action: "abort",
         options: "back-off"
       },
-      alerts: [
-        {
-          email: "s@h.com",
-          start: false,
-          finish: false,
-          fail: false,
-          abort: false
-        }
-      ]
+      alerts: []
 
     };
 

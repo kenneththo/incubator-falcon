@@ -21,7 +21,7 @@
   var app = angular.module('mirroring-app', [
     'ui.bootstrap', 'ui.router', 'ngCookies', 'ngAnimate', 'ngMessages', 'checklist-model',
     'form-module', 'dashboard-module', 'login-module', 'rest-api-module', 'dataset-model-module',
-    'validation-module'
+    'validation-module', 'server-messages-module'
   ]);
 
   app.config(["$stateProvider", "$urlRouterProvider", "$httpProvider",
@@ -96,11 +96,11 @@
         }
       };
 
-      $rootScope.previousState;
-      $rootScope.currentState;
+      /*$rootScope.previousState;
+      $rootScope.currentState;*/
       $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from) {
-        $rootScope.previousState = from.name;
-        $rootScope.currentState = to.name;
+        /*$rootScope.previousState = from.name;
+        $rootScope.currentState = to.name;*/
       });
       $rootScope.$on('$stateChangeError',
         function(event, toState, toParams, fromState, fromParams, error){

@@ -36,6 +36,10 @@
 
     var json = req.body;
 
+    console.log(mockData.findIndexByName(json.name));
+    console.log(json.name);
+
+
     if(mockData.findIndexByName(json.name) === false) {
       mockData.datasetsList.push(json);
       res.send(200, {status: 'suceeded', message: json.name + ' saved succesfully'});

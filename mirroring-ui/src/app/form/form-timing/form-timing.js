@@ -80,6 +80,7 @@
       },
       stop_on: {
         value: 'attempts',
+
         attempts: {
           number: ''
         },
@@ -130,6 +131,7 @@
         if ($scope.model.on_error.options.stop_on.without_response) {
           $scope.retryOptions.stop_on.without_response = $scope.model.on_error.options.stop_on.without_response;
           $scope.retryOptions.stop_on.value = 'without_response';
+
         }
         if ($scope.model.on_error.options.stop_on.attempts) {
           $scope.retryOptions.stop_on.value = 'attempts';

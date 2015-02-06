@@ -21,12 +21,11 @@
   function findIndexByName(name) {
     var i;
     for (i = 0; i < datasetsList.length; i++) {
-      if (datasetsList[i].name === name) {
+      if (datasetsList[i]["name"] === name) {
         return i;
-      } else {
-        return false;
       }
     }
+    return false;
   }
 
   var clusterList = [

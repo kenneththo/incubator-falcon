@@ -5,16 +5,17 @@
     'form-general-module', 'form-timing-module',
     'form-summary-module', 'progress-bar-module',
     'dataset-model-module', 'validation-module',
-    'rest-api-module', 'time-zone-module', 'date-filter-module'
+    'rest-api-module', 'time-zone-module', 'date-filter-module', 'server-messages-module'
   ]);
 
 	formModule.controller('FormCtrl', [
-    "$scope", "$state", "$timeout", "datasetModel", "ValidationSvc", "restApi",
-    function($scope, $state, $timeout, datasetModel, ValidationSvc, restApi) {
+    "$scope", "$state", "$timeout", "datasetModel", "ValidationSvc", "restApi", "serverMessagesAPI",
+    function ($scope, $state, $timeout, datasetModel, ValidationSvc, restApi, serverMessagesAPI) {
 
     $timeout(function () { angular.element('body').removeClass('preload'); }, 1000);
 
     $scope.validation = ValidationSvc;
+    $scope.validation.show = false;
     $scope.model = datasetModel;
     $scope.clusterList = [];
     $scope.usersList = [];
@@ -34,12 +35,17 @@
       });
 
     $scope.save = function () {
+      serverMessagesAPI.logRequest();
       restApi.postDataset(angular.toJson($scope.model))
         .success(function (data) {
-          console.log('success + ');
           console.log(data);
+          angular.element('body, html').animate({scrollTop: 0}, 500);
+          serverMessagesAPI.logResponse(data);
+          $state.go('main');
         }).error(function (err) {
+          angular.element('body, html').animate({scrollTop: 0}, 500);
           console.log(err);
+          serverMessagesAPI.logResponse(err);
         });
     };
 
@@ -75,6 +81,8 @@
 
 
 
+
+
     };
     $scope.goBack = function (stateName) {
 /*      SpinnersFlag.backShow = true;
@@ -85,8 +93,22 @@
       angular.element('body, html').animate({scrollTop: 0}, 500);
     };
 
+      $scope.cancel = function () {
+        var cancelInfo = {
+          status: 'cancel',
+          message: 'dataset edition canceled ',
+          model: $scope.model,
+          state: $state.current.name
+        };
+        serverMessagesAPI.logResponse(cancelInfo);
+        $state.go("main");
+
+      };
+
+
     $scope.$on('$destroy', function () {
       $timeout(function () { angular.element('body').addClass('preload'); }, 300);
+      //$rootScope.previousState
     });
 
   }]);

@@ -83,6 +83,7 @@
               'src/app/form/form-summary/form-summary.js',
               'src/app/form/time-zone/time-zone.js',
               'src/app/validation/validation.js',
+              'src/app/server-messages/server-messages.js',
               'src/app/rest-api/rest-api.js',
               'src/app/model/model.js',
               'src/app/login/login.js',
