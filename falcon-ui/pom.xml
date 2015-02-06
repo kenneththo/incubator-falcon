@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.falcon</groupId>
     <artifactId>falcon-main</artifactId>
-    <version>0.6-incubating-SNAPSHOT</version>    
+    <version>0.7-SNAPSHOT</version>    
   </parent>
   <artifactId>falcon-ui</artifactId>
   <packaging>pom</packaging>
@@ -48,12 +48,6 @@
                   <arg value="node_modules"/>
                   <arg value="../webapp/src/main/webapp/public"/>
                 </exec>
-                <exec dir="${basedir}" executable="rm">
-                  <arg value="-rf"/>
-                  <arg value="dist"/>
-                  <arg value="node_modules"/>
-                  <arg value="../falcon-ambari-view/src/main/resources/ui"/>
-                </exec>
               </target>
             </configuration>
           </execution>
@@ -65,7 +59,7 @@
             </goals>
             <configuration>
               <target name="falcon-ui-compile">
-                <exec dir="${basedir}" executable="npm">
+		<exec dir="${basedir}" executable="npm">
                   <arg value="install"/>
                 </exec>
                 <exec dir="${basedir}" executable="grunt" failonerror="true">
@@ -100,14 +94,32 @@
                 <exec dir="${basedir}" executable="grunt">
                   <arg value="copy:webapp"/>
                 </exec>
-                <exec dir="${basedir}" executable="grunt">
-                  <arg value="copy:ambariview"/>
-                </exec>
               </target>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>app/js/lib/**</exclude>
+	    <exclude>app/css/bootstrap/**</exclude>
+	    <exclude>app/test/lib/**</exclude>
+	    <exclude>app/css/fonts/**</exclude>
+	    <exclude>app/config/loginData.js</exclude>
+	    <exclude>dist/**</exclude>
+	    <exclude>node_modules/**</exclude>
+	    <exclude>package.json</exclude>
+	    <exclude>bower.json</exclude>
+	    <exclude>karma.conf.js</exclude>
+	    <exclude>bower.json</exclude>
+          </excludes>
+        </configuration>
+      </plugin>	
+
     </plugins>
   </build>
 </project>
