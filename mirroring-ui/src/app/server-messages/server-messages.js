@@ -14,6 +14,7 @@
   serverMessagesModule.controller('ServerMessagesCtrl', [
     "$scope", "serverMessagesAPI", "$state", "datasetModel",
     function ($scope, serverMessagesAPI, $state, datasetModel) {
+
       $scope.serverMessages = serverMessagesAPI;
 
       $scope.restore = function (message, index) {
@@ -21,6 +22,7 @@
         serverMessagesAPI.removeResponse(index);
         $state.go(message.state);
       };
+
     }
   ]);
 
@@ -44,8 +46,8 @@
     };
 
     return serverMessages;
+
   }]);
 
 
-
-})();
+}());
