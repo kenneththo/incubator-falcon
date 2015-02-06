@@ -1,0 +1,28 @@
+<div class="col-xs-24 messages-to-show">
+
+  <div ng-repeat="response in serverMessages.messages.queue" class="repeat-animation">
+    <div class="alert"
+         ng-class="{ 'bg-success': response.status === 'suceeded',
+                     'bg-warning': response.status === 'cancel',
+                     'bg-danger': response.status === 'failed' }">
+
+
+        <span ng-if="response.status === 'suceeded' || response.status === 'failed'"
+              ng-class="{'text-success': response.status === 'suceeded', 'text-danger': response.status === 'failed'}">
+          {{ response.status }}
+        </span>
+
+      {{ response.message }}
+
+      <a ng-if="response.status === 'cancel'" ng-click="restore(response, $index)">UNDO</a>
+
+      <div class="glyphicon glyphicon-remove"
+           ng-class="{ 'text-success': response.status === 'suceeded',
+                         'text-danger': response.status === 'failed',
+                         'text-warning': response.status === 'cancel' }"
+           ng-click="serverMessages.removeResponse($index)">
+      </div>
+    </div>
+  </div>
+</div>
+
