@@ -80,7 +80,7 @@
         options: {
           beautify: true,
           mangle: true,
-          compress: true,
+          compress: { warnings: false },
           preserveComments: false,
           drop_console: false,
           sourceMap: true,
