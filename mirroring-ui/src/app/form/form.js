@@ -20,6 +20,8 @@
     $scope.clusterList = [];
     $scope.usersList = [];
 
+      console.log(datasetModel);
+      console.log($scope.model);
 
     restApi.getClusters()
       .success(function (data) {
@@ -77,12 +79,6 @@
         angular.element('body, html').animate({scrollTop: 0}, 500);
       }
 
-
-
-
-
-
-
     };
     $scope.goBack = function (stateName) {
 /*      SpinnersFlag.backShow = true;
@@ -93,23 +89,25 @@
       angular.element('body, html').animate({scrollTop: 0}, 500);
     };
 
-      $scope.cancel = function () {
-        var cancelInfo = {
-          status: 'cancel',
-          message: 'dataset edition canceled ',
-          model: $scope.model,
-          state: $state.current.name
-        };
-        serverMessagesAPI.logResponse(cancelInfo);
-        $state.go("main");
-
+    $scope.cancel = function () {
+      var cancelInfo = {
+        status: 'cancel',
+        message: 'dataset edition canceled ',
+        model: $scope.model,
+        state: $state.current.name
       };
+      serverMessagesAPI.logResponse(cancelInfo);
+      $state.go("main");
+
+    };
 
 
     $scope.$on('$destroy', function () {
       $timeout(function () { angular.element('body').addClass('preload'); }, 300);
       //$rootScope.previousState
     });
+
+      console.log($scope.model);
 
   }]);
 

@@ -126,9 +126,13 @@
       <select ng-model="model.clusters.source_cluster.name"
               name="sourceClusterSelect"
               ng-required="true" class="col-xs-24 form-control" id="sourceClusterSelect">
-        <option value="" disabled selected style='display:none;'>-Select cluster-</option>
+        <option value="" disabled style='display:none;'>-Select cluster-</option>
 
-        <option ng-repeat="cluster in clusterList" value="{{cluster.name}}">{{cluster.name}}</option>
+        <option ng-selected="model.clusters.source_cluster.name === cluster.name"
+                ng-repeat="cluster in clusterList"
+                value="{{cluster.name}}">
+          {{cluster.name}}
+        </option>
       </select>
 
       <div class="validationError"
@@ -197,7 +201,11 @@
               name="targetClusterSelect"
               ng-required="true" class="col-xs-24 form-control" id="targetClusterSelect">
         <option value="" disabled selected style='display:none;'>-Select cluster-</option>
-        <option ng-repeat="clusterItem in clusterList" value="{{clusterItem.name}}">{{clusterItem.name}}</option>
+        <option ng-selected="model.clusters.target_cluster.name === clusterItem.name"
+                ng-repeat="clusterItem in clusterList"
+                value="{{clusterItem.name}}">
+          {{clusterItem.name}}
+        </option>
       </select>
       <div class="validationError"
            ng-if="generalForm.targetClusterSelect.$error.required && validation.show">

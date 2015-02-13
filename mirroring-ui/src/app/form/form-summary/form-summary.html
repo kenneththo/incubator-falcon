@@ -40,10 +40,7 @@
     <span>Start on: </span>{{model.start}}
   </div>
 
-  <div class="allocationSubBox">
-    <h4 class="lightSubtitle">Max snapshots</h4>
-    {{model.allocation.max_snapshots}} <span>{{model.allocation.measure}}</span>
-  </div>
+
   <div class="allocationSubBox">
     <h4 class="lightSubtitle">Max slots</h4>
     {{model.allocation.max_number_slots}} <span>{{model.allocation.measure}}</span>
@@ -101,19 +98,7 @@
 
 
   <hr />
-  <div>
-    <div class="previewBox">
-      <button type="button"
-              id="jsonPreview" class="btn prevBtn"
-              ng-click="jsonPreview = !jsonPreview">
-        Preview json
-      </button>
-    </div>
 
-    <pre ng-if="jsonPreview">
-      {{prettyJson}}
-    </pre>
-  </div>
 
   <div class="row">
     <div class="col-xs-24 mt20">
