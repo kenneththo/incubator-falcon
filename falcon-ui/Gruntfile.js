@@ -53,7 +53,9 @@
             'app/js/lib/angular-mocks.js',
             'app/js/lib/checklist-model.js',
             'app/js/lib/angular-animate.min.js',
-            'app/js/lib/angular-messages.min.js'
+            'app/js/lib/angular-messages.min.js',
+            //'app/js/lib/bootstrap3-typeahead.min.js',
+            'app/js/lib/ng-tags-input.js'
           ],
           dest: 'dist/js/vendor.min.js'
         }
@@ -63,7 +65,7 @@
         options: {
           beautify: true,
           mangle: true,
-          compress: true,
+          compress: {warnings: false},
           preserveComments: false,
           drop_console: false,
           sourceMap: true,
