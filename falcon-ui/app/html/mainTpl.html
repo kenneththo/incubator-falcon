@@ -17,18 +17,18 @@
  * limitations under the License.
  */
 -->
+<div class="col-sm-offset-1 col-sm-22">
+  <i class="glyphicon glyphicon-search search-icon"></i>
+    <tags-input ng-model="tags" placeholder="Search by entity name or tag"></tags-input>
+  <i class="glyphicon glyphicon-remove remove-icon"></i>
+</div>
 
-<div class="col-sm-24 dashboardBox">
-
-
+<div class="col-xs-24">
   <div class="row" ng-controller="chartCtrl">
     <div class="col-xs-18">
       <div class="chartMenuBox">
         <div class="entityBox">
-          <h5>
-            Entity
-
-          </h5>
+          <h5> Entity </h5>
           <div class="entityTypeButtons">
             <button class="btn"
                     ng-click="chartOptions.entity = 'feed'"
@@ -56,9 +56,7 @@
           <label>
             <input type="radio" ng-model="chartOptions.mode" value="14">
             14 Days
-
           </label>
-
         </div>
         <div class="dayBox">
           <h5>Day</h5>
@@ -68,12 +66,11 @@
                  is-open="opened"
                  ng-click="openDatePicker($event)"
                  ng-required="true" simple-date />
-          <span class="entypo calendar dateInputIcon"
-                ng-click="openDatePicker($event)">
-          </span>
+            <span class="entypo calendar dateInputIcon"
+                  ng-click="openDatePicker($event)">
+            </span>
         </div>
       </div>
-
       <chart class="chart"
              input="my.data"
              w="700"
@@ -83,31 +80,11 @@
              dy="[24,0]"
              details="details">
       </chart>
-
     </div>
     <div class="col-xs-6">
-
+      {{chartOptions}}
     </div>
-    {{chartOptions}}
-  </div>
 
-
-
-  <div class="row">
-    <div class="col-sm-8">
-      <h3>Clusters</h3>
-      <entity-summary entities="lists.clusterList" type="cluster"></entity-summary>
-      <entities-list input="lists.clusterList" type="cluster" entity-details="entityDetails" clone="cloneEntity" remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity" resume="resumeEntity"></entities-list>
-    </div>
-    <div class="col-sm-8">
-      <h3>Feeds</h3>
-      <entity-summary entities="lists.feedList" type="feed"></entity-summary>
-      <entities-list input="lists.feedList" type="feed" entity-details="entityDetails" clone="cloneEntity" remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity" resume="resumeEntity"></entities-list>
-    </div>
-    <div class="col-sm-8">
-      <h3>Processes</h3>
-      <entity-summary entities="lists.processList" type="process"></entity-summary>
-      <entities-list input="lists.processList" entity-details="entityDetails" type="process" clone="cloneEntity" remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity" resume="resumeEntity"></entities-list>
-    </div>
   </div>
 </div>
+
