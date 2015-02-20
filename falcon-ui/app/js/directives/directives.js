@@ -24,7 +24,8 @@
     'app.directives.server-messages',
     'app.directives.entity',
     'app.directives.check-name',
-    'app.directives.validation-message'
+    'app.directives.validation-message',
+    'chart-module'
   ]);
 
   directivesModule.directive('navHeader', function () {

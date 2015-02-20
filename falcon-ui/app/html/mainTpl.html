@@ -18,8 +18,82 @@
  */
 -->
 
-<div class="col-sm-24 dashboardBox"> 
-  <div class="row">   
+<div class="col-sm-24 dashboardBox">
+
+
+  <div class="row" ng-controller="chartCtrl">
+    <div class="col-xs-18">
+      <div class="chartMenuBox">
+        <div class="entityBox">
+          <h5>
+            Entity
+
+          </h5>
+          <div class="entityTypeButtons">
+            <button class="btn"
+                    ng-click="chartOptions.entity = 'feed'"
+                    ng-class="{active: chartOptions.entity === 'feed'}">
+              Feeds
+            </button>
+            <button class="btn"
+                    ng-click="chartOptions.entity = 'process'"
+                    ng-class="{active: chartOptions.entity === 'process'}">
+              Processes
+            </button>
+            <button class="btn"
+                    ng-click="chartOptions.entity = 'dataset'"
+                    ng-class="{active: chartOptions.entity === 'dataset'}">
+              Dataset
+            </button>
+          </div>
+        </div>
+        <div class="timeBox">
+          <h5>Time</h5>
+          <label>
+            <input type="radio" ng-model="chartOptions.mode" value="24">
+            24 Hs
+          </label>
+          <label>
+            <input type="radio" ng-model="chartOptions.mode" value="14">
+            14 Days
+
+          </label>
+
+        </div>
+        <div class="dayBox">
+          <h5>Day</h5>
+          <input type="text" class="form-control dateInput" placeholder="mm/dd/yyyy"
+                 datepicker-popup="{{dateFormat}}"
+                 ng-model="chartOptions.day"
+                 is-open="opened"
+                 ng-click="openDatePicker($event)"
+                 ng-required="true" simple-date />
+          <span class="entypo calendar dateInputIcon"
+                ng-click="openDatePicker($event)">
+          </span>
+        </div>
+      </div>
+
+      <chart class="chart"
+             input="my.data"
+             w="700"
+             h="400"
+             t="30"
+             mode="chartOptions.mode"
+             dy="[24,0]"
+             details="details">
+      </chart>
+
+    </div>
+    <div class="col-xs-6">
+
+    </div>
+    {{chartOptions}}
+  </div>
+
+
+
+  <div class="row">
     <div class="col-sm-8">
       <h3>Clusters</h3>
       <entity-summary entities="lists.clusterList" type="cluster"></entity-summary>
@@ -27,12 +101,12 @@
     </div>
     <div class="col-sm-8">
       <h3>Feeds</h3>
-      <entity-summary entities="lists.feedList" type="feed"></entity-summary>    
+      <entity-summary entities="lists.feedList" type="feed"></entity-summary>
       <entities-list input="lists.feedList" type="feed" entity-details="entityDetails" clone="cloneEntity" remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity" resume="resumeEntity"></entities-list>
     </div>
     <div class="col-sm-8">
       <h3>Processes</h3>
-      <entity-summary entities="lists.processList" type="process"></entity-summary>      
+      <entity-summary entities="lists.processList" type="process"></entity-summary>
       <entities-list input="lists.processList" entity-details="entityDetails" type="process" clone="cloneEntity" remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity" resume="resumeEntity"></entities-list>
     </div>
   </div>
