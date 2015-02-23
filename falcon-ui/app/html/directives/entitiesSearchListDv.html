@@ -59,10 +59,10 @@
       </td>
     </tr>
 
-    <tr ng-if="input.length === 0 && !server.responses.listLoaded[type]">
+    <tr ng-if="input.length === 0 && !server.responses.listLoaded">
       <td> loading {{ type }}s </td>
     </tr>
-    <tr ng-if="input.length === 0 && server.responses.listLoaded[type]">
+    <tr ng-if="input.length === 0 && server.responses.listLoaded">
       <td> There are no {{ type }}s </td>
     </tr>
 

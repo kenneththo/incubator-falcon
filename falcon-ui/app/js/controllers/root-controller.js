@@ -43,24 +43,21 @@
         });
       };
 
-      //$scope.lists = {};
-      //$scope.lists.feedList = [];
-      //$scope.lists.clusterList = [];
-      //$scope.lists.processList = [];
-      //$scope.searchList = [];
+      $scope.refreshList = function (type, expression) {
 
-      $scope.refreshList = function (type) {
         type = type.toLowerCase();
-        Falcon.responses.listLoaded[type] = false;
-        if (Falcon.responses.multiRequest[type] > 0) { return; }
+        //Falcon.responses.listLoaded[type] = false;
+        //if (Falcon.responses.multiRequest[type] > 0) { return; }
 
         Falcon.logRequest();
 
-        Falcon.getEntities(type)
+        Falcon.searchEntitiesByName(type, expression)
           .success(function (data) {
-            console.log(data);
+
+            console.log(JSON.stringify(data));
+
             Falcon.logResponse('success', data, false, true);
-            Falcon.responses.listLoaded[type] = true;
+            Falcon.responses.listLoaded = true;
             //$scope.lists[type + 'List'] = [];
             $scope.searchList = [];
 
@@ -71,6 +68,7 @@
               var typeOfData = Object.prototype.toString.call(data.entity);
         	  if (typeOfData === "[object Array]") {
                 $scope.searchList = data.entity;
+                console.log($scope.searchList.length);
               } else if (typeOfData === "[object Object]") {
                 $scope.searchList[0] = data.entity;
               } else {
