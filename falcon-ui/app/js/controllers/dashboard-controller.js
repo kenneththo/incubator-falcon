@@ -134,8 +134,8 @@
         console.log("relations " + type + " - " + name);
       };
 
-      $scope.displayResults = function (expression) {
-        $scope.$parent.refreshList("feed", expression.text);
+      $scope.displayResults = function () {
+        $scope.$parent.refreshList($scope.tags);
       };
       
     }]);

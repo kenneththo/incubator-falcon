@@ -43,59 +43,49 @@
         });
       };
 
-      $scope.refreshList = function (type, expression) {
+      $scope.refreshList = function (tags) {
 
         $scope.loading= true;
-        type = type.toLowerCase();
+        var type = "feed";
         Falcon.logRequest();
 
-        if(expression.indexOf("=") > -1){
-          Falcon.searchEntitiesByTag(type, expression).success(function (data) {
-            Falcon.logResponse('success', data, false, true);
-            Falcon.responses.listLoaded = true;
-            $scope.searchList = [];
-            if (data === null) {
-              $scope.searchList = [];
-            }else{
-              var typeOfData = Object.prototype.toString.call(data.entity);
-              if (typeOfData === "[object Array]") {
-                $scope.searchList = data.entity;
-                console.log($scope.searchList.length);
-              } else if (typeOfData === "[object Object]") {
-                $scope.searchList[0] = data.entity;
-              } else {
-                console.log("type of data not recognized");
-              }
+        var name;
+        var tagsSt = "";
+
+        for(var i=0; i<tags.length; i++){
+          var tag = tags[i].text;
+          if(tag.indexOf("=") > -1){
+            tagsSt += tag;
+            if(i < tags.length-1){
+              tagsSt += ",";
             }
-            $scope.loading= false;
-          }).error(function (err) {
-            $scope.loading= false;
-            Falcon.logResponse('error', err);
-          });
-        }else{
-          Falcon.searchEntitiesByName(type, expression).success(function (data) {
-            Falcon.logResponse('success', data, false, true);
-            Falcon.responses.listLoaded = true;
-            $scope.searchList = [];
-            if (data === null) {
-              $scope.searchList = [];
-            }else{
-              var typeOfData = Object.prototype.toString.call(data.entity);
-              if (typeOfData === "[object Array]") {
-                $scope.searchList = data.entity;
-                console.log($scope.searchList.length);
-              } else if (typeOfData === "[object Object]") {
-                $scope.searchList[0] = data.entity;
-              } else {
-                console.log("type of data not recognized");
-              }
-            }
-            $scope.loading= false;
-          }).error(function (err) {
-            $scope.loading= false;
-            Falcon.logResponse('error', err);
-          });
+          }else{
+            name = tag;
+          }
         }
+
+        Falcon.searchEntities(type, name, tagsSt).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          Falcon.responses.listLoaded = true;
+          $scope.searchList = [];
+          if (data === null) {
+            $scope.searchList = [];
+          }else{
+            var typeOfData = Object.prototype.toString.call(data.entity);
+            if (typeOfData === "[object Array]") {
+              $scope.searchList = data.entity;
+              console.log($scope.searchList.length);
+            } else if (typeOfData === "[object Object]") {
+              $scope.searchList[0] = data.entity;
+            } else {
+              console.log("type of data not recognized");
+            }
+          }
+          $scope.loading= false;
+        }).error(function (err) {
+          $scope.loading= false;
+          Falcon.logResponse('error', err);
+        });
 
       };
 
