@@ -45,28 +45,20 @@
 
       $scope.refreshList = function (type, expression) {
 
+        $scope.loading= true;
         type = type.toLowerCase();
-        //Falcon.responses.listLoaded[type] = false;
-        //if (Falcon.responses.multiRequest[type] > 0) { return; }
-
         Falcon.logRequest();
 
-        Falcon.searchEntitiesByName(type, expression)
-          .success(function (data) {
-
-            console.log(JSON.stringify(data));
-
+        if(expression.indexOf("=") > -1){
+          Falcon.searchEntitiesByTag(type, expression).success(function (data) {
             Falcon.logResponse('success', data, false, true);
             Falcon.responses.listLoaded = true;
-            //$scope.lists[type + 'List'] = [];
             $scope.searchList = [];
-
             if (data === null) {
-              //$scope.lists[type + 'List'] = [];
               $scope.searchList = [];
             }else{
               var typeOfData = Object.prototype.toString.call(data.entity);
-        	  if (typeOfData === "[object Array]") {
+              if (typeOfData === "[object Array]") {
                 $scope.searchList = data.entity;
                 console.log($scope.searchList.length);
               } else if (typeOfData === "[object Object]") {
@@ -75,10 +67,36 @@
                 console.log("type of data not recognized");
               }
             }
-          })
-          .error(function (err) {
+            $scope.loading= false;
+          }).error(function (err) {
+            $scope.loading= false;
             Falcon.logResponse('error', err);
           });
+        }else{
+          Falcon.searchEntitiesByName(type, expression).success(function (data) {
+            Falcon.logResponse('success', data, false, true);
+            Falcon.responses.listLoaded = true;
+            $scope.searchList = [];
+            if (data === null) {
+              $scope.searchList = [];
+            }else{
+              var typeOfData = Object.prototype.toString.call(data.entity);
+              if (typeOfData === "[object Array]") {
+                $scope.searchList = data.entity;
+                console.log($scope.searchList.length);
+              } else if (typeOfData === "[object Object]") {
+                $scope.searchList[0] = data.entity;
+              } else {
+                console.log("type of data not recognized");
+              }
+            }
+            $scope.loading= false;
+          }).error(function (err) {
+            $scope.loading= false;
+            Falcon.logResponse('error', err);
+          });
+        }
+
       };
 
       $scope.refreshLists = function () {

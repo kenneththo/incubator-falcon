@@ -21,7 +21,8 @@
 
 <div class="col-sm-offset-1 col-sm-22">
 
-  <i class="glyphicon glyphicon-search search-icon"></i>
+  <img src="css/img/ajax-loader.gif" class="glyphicon search-loading-icon" ng-show="loading"/>
+  <i class="glyphicon glyphicon-search search-icon" ng-hide="loading"></i>
     <tags-input ng-model="tags" placeholder="Search by entity name or tag" min-length="1" on-tag-added="displayResults($tag)"></tags-input>
   <i class="glyphicon glyphicon-remove remove-icon"></i>
 
