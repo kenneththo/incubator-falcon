@@ -4,6 +4,7 @@
   var bodyParser = require('body-parser'),
     express = require('express'),
     mockData = require('./express-data/mockData.js'),
+    chartData = require('./express-data/chartData.js'),
     server = express(),
     PORT = 3000;
 
@@ -120,6 +121,33 @@
     mockData.entitiesList[type].entity.splice(indexInArray, 1);
     res.json(200, responseMessage);
   });
+
+  /*
+   *
+   * CHART
+   *
+   */
+
+
+
+  server.get('/api/instance/summary/:type/:mode', function(req, res) {
+    var type = req.params.type,
+        name = req.params.mode,
+        from = req.query;
+
+    console.log(from);
+
+    if (mockData.definitions[type][name]) {
+      res.send(200, mockData.definitions[type][name]);
+    } else {
+      res.send(404, "not found");
+    }
+  });
+
+
+
+
+
 
   server.listen(PORT, function () {
     console.log('Dev server listening on port ' + PORT);

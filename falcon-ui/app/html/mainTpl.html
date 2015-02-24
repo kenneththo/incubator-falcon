@@ -73,15 +73,18 @@
         </div>
         <div class="dayBox">
           <h5>Day</h5>
-          <input type="text" class="form-control dateInput" placeholder="mm/dd/yyyy"
+          <input type="text"
+                 class="form-control dateInput"
+                 placeholder="mm/dd/yyyy"
                  datepicker-popup="{{dateFormat}}"
                  ng-model="chartOptions.day"
                  is-open="opened"
                  ng-click="openDatePicker($event)"
-                 ng-required="true" simple-date />
-            <span class="entypo calendar dateInputIcon"
-                  ng-click="openDatePicker($event)">
-            </span>
+                 ng-required="true"
+                 simple-date />
+          <span class="entypo calendar dateInputIcon"
+                ng-click="openDatePicker($event)">
+          </span>
         </div>
       </div>
       <chart class="chart"
