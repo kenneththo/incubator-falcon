@@ -149,6 +149,13 @@
       return $http.get(buildURI('../api/entities/definition/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
     };
 
+    Falcon.getEntities = function (type) {
+      return $http.get(buildURI('../api/entities/list/' + type + '?fields=status,tags&numResults=' + NUMBER_OF_RESULTS));
+    };
+
+    Falcon.searchEntitiesByName = function (type, expression) {
+      return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+expression+'&fields=status,tags&numResults=' + NUMBER_OF_RESULTS));
+    };
 
     //----------------------------------------------//
     return Falcon;

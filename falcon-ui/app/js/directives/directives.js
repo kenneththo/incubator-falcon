@@ -20,7 +20,8 @@
 
   var directivesModule = angular.module('app.directives', [
     'app.services',
-    'app.directives.entities-list',
+    //'app.directives.entities-list',
+    'app.directives.entities-search-list',
     'app.directives.server-messages',
     'app.directives.entity',
     'app.directives.check-name',

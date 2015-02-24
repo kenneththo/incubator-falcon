@@ -23,7 +23,7 @@
   dashboardCtrlModule.controller('DashboardCtrl', [ "$scope", "Falcon", "EntityModel", "FileApi", "$state", "X2jsService",
     function ($scope, Falcon, EntityModel, FileApi, $state, X2jsService) {
       
-      $scope.$parent.refreshLists();
+      //$scope.$parent.refreshLists();
 
       $scope.deleteEntity = function (type, name) {
         type = type.toLowerCase(); //new sandbox returns uppercase type
@@ -133,7 +133,10 @@
       $scope.relationsEntity = function (type, name) {
         console.log("relations " + type + " - " + name);
       };
-      
+
+      $scope.displayResults = function (expression) {
+        $scope.$parent.refreshList("feed", expression.text);
+      };
       
     }]);
 

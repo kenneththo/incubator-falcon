@@ -43,33 +43,34 @@
         });
       };
 
-      $scope.lists = {};
-      $scope.lists.feedList = [];
-      $scope.lists.clusterList = [];
-      $scope.lists.processList = [];
+      $scope.refreshList = function (type, expression) {
 
-      $scope.refreshList = function (type) {
         type = type.toLowerCase();
-        Falcon.responses.listLoaded[type] = false;
-        if (Falcon.responses.multiRequest[type] > 0) { return; }
+        //Falcon.responses.listLoaded[type] = false;
+        //if (Falcon.responses.multiRequest[type] > 0) { return; }
 
         Falcon.logRequest();
 
-        Falcon.getEntities(type)
+        Falcon.searchEntitiesByName(type, expression)
           .success(function (data) {
 
+            console.log(JSON.stringify(data));
+
             Falcon.logResponse('success', data, false, true);
-            Falcon.responses.listLoaded[type] = true;
-            $scope.lists[type + 'List'] = [];
+            Falcon.responses.listLoaded = true;
+            //$scope.lists[type + 'List'] = [];
+            $scope.searchList = [];
 
             if (data === null) {
-              $scope.lists[type + 'List'] = [];
+              //$scope.lists[type + 'List'] = [];
+              $scope.searchList = [];
             }else{
               var typeOfData = Object.prototype.toString.call(data.entity);
         	  if (typeOfData === "[object Array]") {
-                $scope.lists[type + 'List'] = data.entity;
+                $scope.searchList = data.entity;
+                console.log($scope.searchList.length);
               } else if (typeOfData === "[object Object]") {
-                $scope.lists[type + 'List'][0] = data.entity;
+                $scope.searchList[0] = data.entity;
               } else {
                 console.log("type of data not recognized");
               }
@@ -81,9 +82,9 @@
       };
 
       $scope.refreshLists = function () {
-        $scope.refreshList('cluster');
+        //$scope.refreshList('cluster');
         $scope.refreshList('feed');
-        $scope.refreshList('process');
+        //$scope.refreshList('process');
       };
       $scope.closeAlert = function (index) {
         Falcon.removeMessage(index);
@@ -99,6 +100,8 @@
         $state.go(cancelInfo.status);
         $scope.closeAlert(index);
       };
+
+
 
     }]);
 
