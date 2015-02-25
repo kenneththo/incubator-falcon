@@ -44,13 +44,11 @@
       };
 
       $scope.refreshList = function (tags) {
-
-        $scope.loading= true;
-        var type = "feed";
-        Falcon.logRequest();
-
         var name;
         var tagsSt = "";
+        var lastName = -1;
+        var nameCount = 0;
+        var namedTags = [];
 
         for(var i=0; i<tags.length; i++){
           var tag = tags[i].text;
@@ -60,33 +58,39 @@
               tagsSt += ",";
             }
           }else{
-            name = tag;
+            namedTags.push(i);
           }
         }
 
-        Falcon.searchEntities(type, name, tagsSt).success(function (data) {
-          Falcon.logResponse('success', data, false, true);
-          Falcon.responses.listLoaded = true;
-          $scope.searchList = [];
-          if (data === null) {
-            $scope.searchList = [];
+        for(var i=0; i<namedTags.length; i++){
+          if(i < namedTags.length-1){
+            tags[namedTags[i]].striked = "tag-striked";
           }else{
-            var typeOfData = Object.prototype.toString.call(data.entity);
-            if (typeOfData === "[object Array]") {
-              $scope.searchList = data.entity;
-              console.log($scope.searchList.length);
-            } else if (typeOfData === "[object Object]") {
-              $scope.searchList[0] = data.entity;
-            } else {
-              console.log("type of data not recognized");
-            }
+            tags[namedTags[i]].striked = "";
           }
-          $scope.loading= false;
+        }
+
+        $scope.searchList = [];
+        searchEntities("feed", name, tagsSt, $scope.searchList, true);
+      };
+
+      var searchEntities = function (type, name, tags, callback) {
+        Falcon.logRequest();
+        Falcon.searchEntities(type, name, tags).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          if (data !== null) {
+            $scope.searchList = $scope.searchList.concat(data.entity);
+          }
+          if(callback){
+            searchEntities("process", name, tags, false);
+          }else{
+            Falcon.responses.listLoaded = true;
+            $scope.loading = false;
+          }
         }).error(function (err) {
           $scope.loading= false;
           Falcon.logResponse('error', err);
         });
-
       };
 
       $scope.refreshLists = function () {
