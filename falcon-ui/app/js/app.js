@@ -41,9 +41,9 @@
       	controller: 'LoginFormCtrl',
         templateUrl: 'html/login.html'
       })
-      .state('entityDetails', {
-        controller: 'EntityDetailsCtrl',
-        templateUrl: 'html/entityDetailsTpl.html'
+      .state('entityDefinition', {
+        controller: 'EntityDefinitionCtrl',
+        templateUrl: 'html/entityDefinitionTpl.html'
       })
       .state('forms', {
         templateUrl: 'html/formsTpl.html'
@@ -129,7 +129,12 @@
       .state('forms.process.summary', {
         templateUrl: 'html/process/processFormSummaryStepTpl.html',
         controller: 'ProcessSummaryCtrl'
-      });
+      })
+      .state('entityDetails', {
+        controller: 'EntityDetailsCtrl',
+        templateUrl: 'html/entityDetailsTpl.html'
+      })
+    ;
 
   }]);
 

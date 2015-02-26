@@ -1,11 +1,19 @@
-/*!
- * ngTagsInput v2.1.1
- * http://mbenford.github.io/ngTagsInput
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Copyright (c) 2013-2014 Michael Benford
- * License: MIT
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Generated at 2014-09-04 01:27:58 -0300
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 (function() {
 'use strict';
@@ -79,7 +87,7 @@ function replaceAll(str, substr, newSubstr) {
 }
 
 function safeToString(value) {
-    return angular.isUndefined(value) || value == null ? '' : value.toString().trim();
+    return angular.isUndefined(value) || value === null ? '' : value.toString().trim();
 }
 
 function encodeHTML(value) {
@@ -143,6 +151,7 @@ tagsInput.directive('tagsInput', ["$timeout","$document","tagsInputConfig", func
             return tagText &&
                    tagText.length >= options.minLength &&
                    tagText.length <= options.maxLength &&
+                   validateSearchTag(tagText) &&
                    options.allowedTagsPattern.test(tagText) &&
                    !findInObjectArray(self.items, tag, options.displayProperty);
         };
@@ -196,6 +205,21 @@ tagsInput.directive('tagsInput', ["$timeout","$document","tagsInputConfig", func
         };
 
         return self;
+    }
+
+    function validateSearchTag(tag) {
+      var count = (tag.match(/=/g) || []).length;
+      if(count === 1){
+          if(tag.indexOf("=") === tag.length-1){
+              return false;
+          }else{
+              return true;
+          }
+      }else if(count < 1){
+          return true;
+      }else{
+          return false;
+      }
     }
 
     function validateType(type) {
@@ -862,9 +886,9 @@ tagsInput.run(["$templateCache", function($templateCache) {
     "<div class=\"tags\" ng-class=\"{focused: hasFocus}\">" +
     "<ul class=\"tag-list\">" +
     "<li class=\"tag-item\" ng-repeat=\"tag in tagList.items track by track(tag)\" ng-class=\"{ selected: tag == tagList.selected }\">" +
-    "<span ng-bind=\"getDisplayText(tag)\"></span> " +
+    "<span ng-bind=\"getDisplayText(tag)\" ng-class=\"tag.striked\"></span> " +
     "<a class=\"remove-button\" ng-click=\"tagList.remove($index)\" ng-bind=\"options.removeTagSymbol\"></a>" +
-    "</li></ul><input class=\"input\" ng-model=\"newTag.text\" ng-change=\"newTagChange()\" ng-trim=\"false\" ng-class=\"{'invalid-tag': newTag.invalid}\" ti-bind-attrs=\"{type: options.type, placeholder: options.placeholder, tabindex: options.tabindex}\" ti-autosize=\"\">" +
+    "</li></ul><input autofocus class=\"input\" ng-model=\"newTag.text\" ng-change=\"newTagChange()\" ng-trim=\"false\" ng-class=\"{'invalid-tag': newTag.invalid}\" ti-bind-attrs=\"{type: options.type, placeholder: options.placeholder, tabindex: options.tabindex}\" ti-autosize=\"\">" +
     "</div></div>"
   );
 

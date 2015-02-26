@@ -19,49 +19,17 @@
 -->
 <div class="container">
 
-	<h3 class="link-icons entity-title entity-link-null" id="entity-title">
-		{{entity.name}} <button type="button" class="detailsBT">
-		<span class="entypo download"></span> {{entity.type | titleCase}}
-	</button>
-	</h3>
+  <h3 class="link-icons entity-title entity-link-null" id="entity-title">
+    {{entity.name}} <span class="label label-success">{{entity.type | titleCase}}</span>
+  </h3>
 
-	<div class="row">
-		<div class="col-sm-24">
-			<div class="detailsBox">
-				<h5>
-					Dependencies
-				</h5>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
-			</div>
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="detailsBox">
-				<h5>
-					Properties
-				</h5>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
-			</div>
-		</div>
-		<div class="col-sm-12">
-			<div class="detailsBox">
-				<h5>
-					Instances
-				</h5>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
-			</div>
-		</div>
-	</div>
+  <div class="col-sm-24 detailsBox">
+    <h5>
+      Definition
+    </h5>
+    <div>
+      <textarea ng-model="prettyXml" rows="25" ng-disabled="true"></textarea>
+    </div>
+  </div>
 
 </div>

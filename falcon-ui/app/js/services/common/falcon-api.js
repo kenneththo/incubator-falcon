@@ -153,8 +153,14 @@
       return $http.get(buildURI('../api/entities/list/' + type + '?fields=status,tags&numResults=' + NUMBER_OF_RESULTS));
     };
 
-    Falcon.searchEntitiesByName = function (type, expression) {
-      return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+expression+'&fields=status,tags&numResults=' + NUMBER_OF_RESULTS));
+    Falcon.searchEntities = function (type, name, tags) {
+      if(name !== undefined && tags !== undefined) {
+        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags));
+      }else if(name !== undefined){
+        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags'));
+      }else {
+        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags));
+      }
     };
 
     //----------------------------------------------//

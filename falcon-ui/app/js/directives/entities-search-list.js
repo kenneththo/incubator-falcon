@@ -59,6 +59,7 @@
         edit: "=",
         type: "@",
         entityDetails:"=",
+        entityDefinition:"=",
         resume:"=",
         refresh: "="
       },
@@ -145,6 +146,9 @@
         };
         scope.scopeClone = function () {
           scope.clone(scope.selectedRows[0].type, scope.selectedRows[0].name);
+        };
+        scope.goEntityDefinition = function(name, type) {
+          scope.entityDefinition(name, type);
         };
         scope.goEntityDetails = function(name, type) {
           scope.entityDetails(name, type);
