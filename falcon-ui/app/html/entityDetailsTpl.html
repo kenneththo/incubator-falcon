@@ -21,7 +21,7 @@
 
 	<h3 class="link-icons entity-title entity-link-null" id="entity-title">
 		{{entity.name}} <button type="button" class="detailsBT">
-		<span class="entypo download"></span> {{entity.type | titleCase}}
+		<span class="entypo" ng-class="{'feed':'download','process':'cycle'}[entity.type]"></span> {{entity.type | titleCase}}
 	</button>
 	</h3>
 

@@ -48,6 +48,11 @@
         var tagsSt = "";
         var namedTags = [];
 
+        if(tags === undefined || tags.length === 0){
+          $scope.searchList = [];
+          return;
+        }
+
         for(var i=0; i<tags.length; i++){
           var tag = tags[i].text;
           if(tag.indexOf("=") > -1){
@@ -91,11 +96,6 @@
         });
       };
 
-      $scope.refreshLists = function () {
-        //$scope.refreshList('cluster');
-        $scope.refreshList('feed');
-        //$scope.refreshList('process');
-      };
       $scope.closeAlert = function (index) {
         Falcon.removeMessage(index);
       };
