@@ -62,6 +62,7 @@
             }
           }else{
             namedTags.push(i);
+            name = tag;
           }
         }
 

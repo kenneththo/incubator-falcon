@@ -131,8 +131,18 @@
         controller: 'ProcessSummaryCtrl'
       })
       .state('entityDetails', {
-        controller: 'EntityDetailsCtrl',
-        templateUrl: 'html/entityDetailsTpl.html'
+        views:{
+          '': {
+            controller: 'EntityDetailsCtrl',
+            templateUrl: 'html/entityDetailsTpl.html'
+          },
+          'feedSummary@entityDetails': {
+            templateUrl: 'html/feed/feedSummary.html'
+          },
+          'processSummary@entityDetails': {
+            templateUrl: 'html/process/processSummary.html'
+          }
+        }
       })
     ;
 

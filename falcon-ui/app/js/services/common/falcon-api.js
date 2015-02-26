@@ -154,7 +154,7 @@
     };
 
     Falcon.searchEntities = function (type, name, tags) {
-      if(name !== undefined && tags !== undefined) {
+      if(name !== undefined && tags !== undefined && tags !== "") {
         return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags));
       }else if(name !== undefined){
         return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags'));

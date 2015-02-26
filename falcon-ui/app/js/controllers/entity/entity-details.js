@@ -27,15 +27,24 @@
   var clusterModule = angular.module('app.controllers.view', [ 'app.services' ]);
 
   clusterModule.controller('EntityDetailsCtrl', [
-    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService",
-    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService) {
+    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", 'EntitySerializer',
+    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, serializer) {
 
       $scope.entity = EntityModel;
-      $scope.xmlPreview = { edit: false };
-    
-      var xmlStr = X2jsService.json2xml_str(angular.copy($scope.entity.model));
-      $scope.prettyXml = X2jsService.prettifyXml(xmlStr);
-      $scope.xml = xmlStr;
+
+      if($scope.entity.type === "feed"){
+        $scope.feed = serializer.preDeserialize($scope.entity.model, "feed");
+        $scope.feed.name = $scope.entity.name;
+        $scope.feed.type = $scope.entity.type;
+      }else{
+        $scope.process = serializer.preDeserialize($scope.entity.model, "process");
+        $scope.process.name = $scope.entity.name;
+        $scope.process.type = $scope.entity.type;
+      }
+
+      $scope.capitalize = function(input) {
+        return input.charAt(0).toUpperCase() + input.slice(1);
+      };
       
     }
   ]);

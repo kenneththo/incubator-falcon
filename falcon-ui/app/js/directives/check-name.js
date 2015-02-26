@@ -60,17 +60,20 @@
           Falcon.searchEntities(type, name).success(function (data) {
             Falcon.logResponse('success', data, false, true);
             if (data !== null) {
-
-              if(data.entity.length < 1){
-                validationService.nameAvailable = true;
+              if (data.entity.length !== undefined) {
+                if (data.entity.length < 1) {
+                  validationService.nameAvailable = true;
+                } else {
+                  var exists = false;
+                  angular.forEach(data.entity, function (entity) {
+                    if (entity.name === name) {
+                      exists = true;
+                    }
+                  });
+                  validationService.nameAvailable = !exists;
+                }
               }else{
-                var exists = false;
-                angular.forEach(data.entity, function(entity) {
-                  if(entity.name === name){
-                    exists = true;
-                  }
-                });
-                validationService.nameAvailable = !exists;
+                validationService.nameAvailable = false;
               }
             }else{
               validationService.nameAvailable = true;
