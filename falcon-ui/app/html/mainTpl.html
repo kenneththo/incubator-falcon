@@ -43,17 +43,17 @@
           <h5> Entity </h5>
           <div class="entityTypeButtons">
             <button class="btn"
-                    ng-click="chartOptions.entity = 'feed'"
+                    ng-click="chartOptions.entity = 'feed'; requestNewData()"
                     ng-class="{active: chartOptions.entity === 'feed'}">
               Feeds
             </button>
             <button class="btn"
-                    ng-click="chartOptions.entity = 'process'"
+                    ng-click="chartOptions.entity = 'process'; requestNewData()"
                     ng-class="{active: chartOptions.entity === 'process'}">
               Processes
             </button>
             <button class="btn"
-                    ng-click="chartOptions.entity = 'dataset'"
+                    ng-click="chartOptions.entity = 'dataset'; requestNewData()"
                     ng-class="{active: chartOptions.entity === 'dataset'}">
               Dataset
             </button>
@@ -62,17 +62,18 @@
         <div class="timeBox">
           <h5>Time</h5>
           <label>
-            <input type="radio" ng-model="chartOptions.mode" value="24">
+            <input type="radio" ng-model="chartOptions.mode" value="hourly" ng-change="requestNewData()">
             24 Hs
           </label>
           <label>
-            <input type="radio" ng-model="chartOptions.mode" value="14">
+            <input type="radio" ng-model="chartOptions.mode" value="daily" ng-change="requestNewData()">
             14 Days
           </label>
         </div>
         <div class="dayBox">
           <h5>Day</h5>
           <input type="text"
+                 ng-change="requestNewData()"
                  class="form-control dateInput"
                  placeholder="mm/dd/yyyy"
                  datepicker-popup="{{dateFormat}}"
@@ -87,12 +88,12 @@
         </div>
       </div>
       <chart class="chart"
-             input="my.data"
+             input="graphData"
              w="700"
              h="400"
              t="30"
              mode="chartOptions.mode"
-             dy="[24,0]"
+
              details="details">
       </chart>
     </div>

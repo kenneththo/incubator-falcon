@@ -168,6 +168,14 @@
           },
           files: ['app/js/**/*.js', 'app/test/**/*Spec.js'],
           tasks: ['jshint', 'uglify', 'karma:unit:run' ]
+        },
+
+        server : {
+          options: {
+            livereload: true
+          },
+          files: ['server.js'],
+          tasks: ['express' ]
         }
       },
 

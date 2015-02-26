@@ -158,6 +158,10 @@
     };
 
     //----------------------------------------------//
+    Falcon.getInstancesSummary = function (type, mode, from, to) {
+      return $http.get(buildURI('../api/instance/summary/' + type + '/'+ mode + '?start=' + from + '&end=' + to));
+    };
+
     return Falcon;
 
   }]);

@@ -131,17 +131,82 @@
 
 
   server.get('/api/instance/summary/:type/:mode', function(req, res) {
+
     var type = req.params.type,
-        name = req.params.mode,
-        from = req.query;
+        mode = req.params.mode,
+        from = req.query.start,
+        //fromDate = Date.UTC(from.slice(0,4), from.slice(5,7), from.slice(8,10), 0, 0, 0);
+        fromDate = new Date(from.slice(0,4), (from.slice(5,7)-1), from.slice(8,10), 0, 0, 0),
+        response,
+        selectedArray;
 
+    if (mode === 'hourly') {
+      console.log('hourly');
+      response = {"summary": [],"requestId":"23c44f3f-f528-4a94-bc0e-f95019729b42","message":"date not found","status":"FAILED"}
+      chartData[type + 'Hours'].forEach(function (item) {
+        item.summary.forEach(function (date) {
+          var currentDate = new Date(
+            date.startTime.slice(0,4),
+            (date.startTime.slice(5,7) - 1),
+            date.startTime.slice(8,10), 0, 0, 0
+          );
+          if (fromDate >= currentDate && fromDate <= currentDate) {
+            response = item;
+            return;
+          }
+
+        });
+      });
+      if (response.status === 'SUCCEEDED') {
+        res.send(200, response);
+      } else {
+        res.send(404, response);
+      }
+    } else if (mode === 'daily') {
+      console.log('daily');
+
+      response = {"summary": [],"requestId":"23c44f3f-f528-4a94-bc0e-f95019729b42","message":"date range not found","status":"FAILED"}
+
+      chartData[type + 'Days'].forEach(function (item) {
+        item.summary.forEach(function (date, index) {
+          var currentDate = new Date(
+            date.startTime.slice(0,4),
+            (date.startTime.slice(5,7) - 1),
+            date.startTime.slice(8,10), 0, 0, 0
+          );
+
+          if (fromDate >= currentDate && fromDate <= currentDate) {
+            if (index + 14 < item.summary.length) {
+              selectedArray = item.summary.slice(index, (index + 14));
+              response = {"summary": selectedArray,"requestId":"23c44f3f-f528-4a94-bc0e-f95019729b42","message":"default\\/STATUS\\n","status":"SUCCEEDED"};
+              return;
+            }
+
+          }
+
+        });
+      });
+      if (response.status === 'SUCCEEDED') {
+        res.send(200, response);
+      } else {
+        res.send(404, response);
+      }
+
+
+
+    }
+    else {
+      console.log('error');
+    }
+    console.log(type);
+    console.log(mode);
     console.log(from);
-
-    if (mockData.definitions[type][name]) {
+    //res.send(200, 'good');
+    /*if (mockData.definitions[type][name]) {
       res.send(200, mockData.definitions[type][name]);
     } else {
       res.send(404, "not found");
-    }
+    }*/
   });
 
 
