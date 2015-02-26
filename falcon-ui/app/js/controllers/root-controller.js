@@ -46,8 +46,6 @@
       $scope.refreshList = function (tags) {
         var name;
         var tagsSt = "";
-        var lastName = -1;
-        var nameCount = 0;
         var namedTags = [];
 
         for(var i=0; i<tags.length; i++){
@@ -62,7 +60,7 @@
           }
         }
 
-        for(var i=0; i<namedTags.length; i++){
+        for(i=0; i<namedTags.length; i++){
           if(i < namedTags.length-1){
             tags[namedTags[i]].striked = "tag-striked";
           }else{

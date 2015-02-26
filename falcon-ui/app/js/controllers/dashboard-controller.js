@@ -79,7 +79,8 @@
           });
       };
       //-----------------------------------------//
-      $scope.entityDetails = function (name, type) {
+      $scope.entityDefinition = function (name, type) {
+
     	  type = type.toLowerCase(); //new sandbox returns uppercase type
     	  
     	  Falcon.logRequest();
@@ -90,7 +91,7 @@
               EntityModel.type = type;
               EntityModel.name = name;
               EntityModel.model = entityModel;
-              $state.go('entityDetails');
+              $state.go('entityDefinition');
             })
             .error(function (err) {
               Falcon.logResponse('error', err, false, true);
@@ -136,6 +137,26 @@
 
       $scope.displayResults = function () {
         $scope.$parent.refreshList($scope.tags);
+      };
+
+      //-----------------------------------------//
+      $scope.entityDetails = function (name, type) {
+
+        type = type.toLowerCase(); //new sandbox returns uppercase type
+
+        Falcon.logRequest();
+        Falcon.getEntityDefinition(type, name)
+            .success(function (data) {
+              Falcon.logResponse('success', data, false, true);
+              var entityModel = X2jsService.xml_str2json(data);
+              EntityModel.type = type;
+              EntityModel.name = name;
+              EntityModel.model = entityModel;
+              $state.go('entityDetails');
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, false, true);
+            });
       };
       
     }]);

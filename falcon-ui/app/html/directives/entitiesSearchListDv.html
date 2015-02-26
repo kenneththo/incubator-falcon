@@ -35,16 +35,16 @@
   <tbody>
     <tr ng-if="input.length > 0" class="buttonsRow">
       <td class="buttonCell" colspan="9">
-        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-disabled="selectedDisabledButtons.schedule" ng-if="type !== 'cluster'">
+        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-disabled="selectedDisabledButtons.schedule">
           <span class="entypo play"></span> <div>Schedule</div>
         </div>
-        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeResume()" ng-disabled="selectedDisabledButtons.resume" ng-if="type !== 'cluster'">
+        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeResume()" ng-disabled="selectedDisabledButtons.resume">
           <span class="entypo play"></span> <div>Resume</div>
         </div>
-        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend" ng-if="type !== 'cluster'">
+        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend">
           <span class="entypo paus"></span> <div>Suspend</div>
         </div>
-        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeEdit()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1" ng-if="type !== 'cluster'">
+        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeEdit()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
           <span class="entypo cog"></span> <div>Edit</div>
         </div>
         <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeClone()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
@@ -60,10 +60,10 @@
     </tr>
 
     <tr ng-if="input.length === 0 && !server.responses.listLoaded">
-      <td> loading {{ type }}s </td>
+      <td> loading... </td>
     </tr>
     <tr ng-if="input.length === 0 && server.responses.listLoaded">
-      <td> There are no {{ type }}s </td>
+      <td> There are no results </td>
     </tr>
 
     <tr ng-if="input.length !== 0"
@@ -79,26 +79,28 @@
                checklist-value="{name:item.name, type:item.type, status:item.status}"
                ng-change="checkButtonsToShow()"/>
       </td>
-      <td class="nameCell" ng-click="goEntityDetails(item.name, type)">
-        {{ item.name }}
+      <td class="nameCell">
+        <button type="button" ng-click="goEntityDetails(item.name, item.type)">
+          <span class="entypo" ng-class="{'FEED':'download','process':'cycle'}[item.type]"></span> {{ item.name }}
+        </button>
       </td>
       <td>
         {{ item.list.tag }}
       </td>
       <td>
-        &nbsp;
+        -
       </td>
       <td>
-        &nbsp;
+        -
       </td>
       <td>
-        &nbsp;
+        -
       </td>
       <td>
-        &nbsp;
+        -
       </td>
       <td>
-        &nbsp;
+        -
       </td>
       <td class="stateCell">
         <span ng-if="type !== 'cluster'" ng-class="{'text-success': item.status === 'RUNNING', 'text-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
