@@ -75,6 +75,7 @@
         }, true);
 
         scope.selectedRows = [];
+
         scope.checkedRow = function (name) {
           var isInArray = false;
           scope.selectedRows.forEach(function(item) {
@@ -84,12 +85,15 @@
           });
           return isInArray;
         };
+
         scope.simpleFilter = {};
+
         scope.selectedDisabledButtons = {
           schedule:true,
           suspend:true,
           resume:true
         };
+
         scope.checkButtonsToShow = function() {
           var statusCount = {
             "SUBMITTED":0,
@@ -99,6 +103,13 @@
           };
 
           $timeout(function() {
+
+            if(scope.selectedRows.length === scope.input.length){
+              scope.selectedAll = true;
+            }else{
+              scope.selectedAll = false;
+            }
+
             scope.selectedRows.forEach(function(entity) {
               statusCount[entity.status] = statusCount[entity.status]+1;
             });
@@ -139,6 +150,19 @@
               };
             }
           }, 50);
+        };
+
+        scope.checkAll = function () {
+          if(scope.selectedRows.length === scope.input.length){
+            angular.forEach(scope.input, function (item) {
+              scope.selectedRows.pop();
+            });
+          }else{
+            angular.forEach(scope.input, function (item) {
+              var checkbox = {name:item.name, type:item.type, status:item.status};
+              scope.selectedRows.push(checkbox);
+            });
+          }
         };
 
         scope.scopeEdit = function () {
