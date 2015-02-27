@@ -31,7 +31,7 @@
         Falcon.deleteEntity(type, name)
           .success(function (data) {          
             Falcon.logResponse('success', data, type);           
-            $scope.$parent.refreshList();
+            $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             
@@ -102,7 +102,7 @@
         Falcon.logRequest();
         Falcon.postResumeEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList();
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -112,7 +112,7 @@
         Falcon.logRequest();
         Falcon.postScheduleEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList();
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -124,7 +124,7 @@
         Falcon.postSuspendEntity(type, name)
           .success(function (message) {
             Falcon.logResponse('success', message, type);           
-            $scope.$parent.refreshList();
+            $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             Falcon.logResponse('error', err, type);

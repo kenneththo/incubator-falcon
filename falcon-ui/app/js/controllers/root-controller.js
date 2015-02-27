@@ -75,10 +75,17 @@
         }
 
         $scope.searchList = [];
-        searchEntities("feed", name, tagsSt, $scope.searchList, true);
+        if(name.indexOf("*feed") > -1){
+          searchEntities("feed", name, tagsSt, $scope.searchList, false);
+        }else if(name.indexOf("*process") > -1){
+          searchEntities("process", name, tagsSt, $scope.searchList, false);
+        }else{
+          searchEntities("feed", name, tagsSt, $scope.searchList, true);
+        }
       };
 
       var searchEntities = function (type, name, tags, callback) {
+        $scope.loading = true;
         Falcon.logRequest();
         Falcon.searchEntities(type, name, tags).success(function (data) {
           Falcon.logResponse('success', data, false, true);

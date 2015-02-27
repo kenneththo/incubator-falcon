@@ -157,7 +157,11 @@
       if(name !== undefined && tags !== undefined && tags !== "") {
         return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags));
       }else if(name !== undefined){
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags'));
+        if(name.indexOf("*") > -1){
+          return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags'));
+        }else{
+          return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags'));
+        }
       }else {
         return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags));
       }

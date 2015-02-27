@@ -1,0 +1,94 @@
+<!--
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<table class="listTable table">
+  <thead>
+  <tr>
+    <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
+    <th><div class="filtersSearchBox">No</div></th>
+    <th><div class="filtersSearchBox">Started</div></th>
+    <th><div class="filtersSearchBox">Ended</div></th>
+    <th><div class="filtersSearchBox">Status</div></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr ng-if="input.length > 0" class="buttonsRow">
+    <td class="buttonCell" colspan="9">
+      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="download()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
+        <span class="entypo down"></span> <div>Log</div>
+      </div>
+      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeResume()" ng-disabled="selectedDisabledButtons.resume">
+        <span class="entypo play"></span> <div>Resume</div>
+      </div>
+      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend">
+        <span class="entypo paus"></span> <div>Suspend</div>
+      </div>
+      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeEdit()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
+        <span class="entypo stop"></span> <div>Stop</div>
+      </div>
+    </td>
+  </tr>
+
+  <tr ng-if="input.length === 0 && !server.responses.listLoaded">
+    <td> loading... </td>
+  </tr>
+  <tr ng-if="input.length === 0 && server.responses.listLoaded">
+    <td> There are no results </td>
+  </tr>
+
+  <tr ng-if="input.length !== 0"
+      ng-repeat="item in input | filter:{'name':simpleFilter.name} | filter:{'status':simpleFilter.status} |
+                          filter:{'list':simpleFilter.tags}"
+      class="entityRow"
+      ng-class="{
+              firstEntityRow:$first, lastEntityRow:$last,
+              rowSelected:checkedRow(item.name)
+            }">
+    <td class="checkboxCell">
+      <input type="checkbox" checklist-model="selectedRows" ng-model="$index"
+             checklist-value="{name:item.name, type:item.type, status:item.status}"
+             ng-change="checkButtonsToShow()"/>
+    </td>
+    <td class="nameCell">
+      <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
+        <span class="entypo" ng-class="{'FEED':'download','process':'cycle'}[item.type]"></span> {{ item.name }}
+      </button>
+    </td>
+    <td>
+      started
+    </td>
+    <td>
+      ended
+    </td>
+    <td class="stateCell">
+      <span ng-if="type !== 'cluster'" ng-class="{'text-success': item.status === 'RUNNING', 'text-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
+    </td>
+
+  </tr>
+  <tr>
+    <td ng-if="server.responses.multiRequest[type] > 0 || server.responses.listLoaded[type] === false">
+      <div class="spinner" ng-class="{active: server.responses.multiRequest[type] > 0 || server.responses.listLoaded[type] === false}">
+        <img src="css/img/ajax-loader.gif" />
+      </div>
+    </td>
+  </tr>
+  </tbody>
+
+</table>
