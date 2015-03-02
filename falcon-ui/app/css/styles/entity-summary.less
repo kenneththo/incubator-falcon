@@ -50,3 +50,45 @@
     color: @summaryDanger;
   }
 }
+
+.summaryBox {
+  border-radius: 5px;
+  border: 1px solid @gray-light2;
+  margin: 5px 0;
+  padding: 15px 5px;
+  font-size: 12px;
+  background-color: #ffffff;
+  h4 {
+    font-weight: bold;
+    margin:5px 0;
+  }
+  h5 {
+    font-weight: bold;
+    margin-top:20px;
+  }
+  table {
+    width: 100%;
+    border-spacing: 5px;
+    border-collapse: separate;
+  }
+  .tableHeader {
+    width: 70px;
+    font-weight: bold;
+  }
+  textarea {
+    width: 100%;
+  }
+  &.processCluster {
+    padding: 15px 4%;
+    margin: 5px auto;
+    h5 {
+      margin-top:15px;
+      &:first-child {
+        margin-top:0;
+      }
+    }
+  }
+  .detailsBox{
+    margin-left: 10px;
+  }
+}

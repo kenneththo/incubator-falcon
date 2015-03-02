@@ -48,6 +48,11 @@
         var tagsSt = "";
         var namedTags = [];
 
+        if(tags === undefined || tags.length === 0){
+          $scope.searchList = [];
+          return;
+        }
+
         for(var i=0; i<tags.length; i++){
           var tag = tags[i].text;
           if(tag.indexOf("=") > -1){
@@ -57,6 +62,7 @@
             }
           }else{
             namedTags.push(i);
+            name = tag;
           }
         }
 
@@ -69,10 +75,17 @@
         }
 
         $scope.searchList = [];
-        searchEntities("feed", name, tagsSt, $scope.searchList, true);
+        if(name.indexOf("*feed") > -1){
+          searchEntities("feed", name, tagsSt, $scope.searchList, false);
+        }else if(name.indexOf("*process") > -1){
+          searchEntities("process", name, tagsSt, $scope.searchList, false);
+        }else{
+          searchEntities("feed", name, tagsSt, $scope.searchList, true);
+        }
       };
 
       var searchEntities = function (type, name, tags, callback) {
+        $scope.loading = true;
         Falcon.logRequest();
         Falcon.searchEntities(type, name, tags).success(function (data) {
           Falcon.logResponse('success', data, false, true);
@@ -91,11 +104,6 @@
         });
       };
 
-      $scope.refreshLists = function () {
-        //$scope.refreshList('cluster');
-        $scope.refreshList('feed');
-        //$scope.refreshList('process');
-      };
       $scope.closeAlert = function (index) {
         Falcon.removeMessage(index);
       };

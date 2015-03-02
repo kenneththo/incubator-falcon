@@ -21,16 +21,16 @@
 
 	<h3 class="link-icons entity-title entity-link-null" id="entity-title">
 		{{entity.name}} <button type="button" class="detailsBT">
-		<span class="entypo download"></span> {{entity.type | titleCase}}
+		<span class="entypo" ng-class="{'feed':'download','process':'cycle'}[entity.type]"></span> {{entity.type | titleCase}}
 	</button>
 	</h3>
 
 	<div class="row">
 		<div class="col-sm-24">
 			<div class="detailsBox">
-				<h5>
+				<h4>
 					Dependencies
-				</h5>
+				</h4>
 				<br/>
 				<br/>
 				<br/>
@@ -41,25 +41,22 @@
 
 	<div class="row">
 		<div class="col-sm-12">
-			<div class="detailsBox">
-				<h5>
+			<div class="summaryBox">
+				<h4>
 					Properties
-				</h5>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
+				</h4>
+        <div ng-if="entity.type == 'feed'" ui-view="feedSummary"></div>
+        <div ng-if="entity.type == 'process'" ui-view="processSummary"></div>
 			</div>
 		</div>
 		<div class="col-sm-12">
 			<div class="detailsBox">
-				<h5>
+				<h4>
 					Instances
-				</h5>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
+				</h4>
+        <instances-list input="searchList" type="feed" entity-details="entityDetails" clone="cloneEntity"
+                              remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity"
+                              resume="resumeEntity"/>
 			</div>
 		</div>
 	</div>

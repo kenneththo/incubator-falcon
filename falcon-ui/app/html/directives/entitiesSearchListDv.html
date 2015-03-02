@@ -20,7 +20,7 @@
 <table class="listTable table">
   <thead>
     <tr>
-      <th><div class="filtersSearchBox"><input type="checkbox"/></div></th>
+      <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
       <th><div class="filtersSearchBox">Name</div></th>
       <th><div class="filtersSearchBox">Tags</div></th>
       <th><div class="filtersSearchBox">Last run</div></th>
@@ -80,7 +80,7 @@
                ng-change="checkButtonsToShow()"/>
       </td>
       <td class="nameCell">
-        <button type="button" ng-click="goEntityDetails(item.name, item.type)">
+        <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
           <span class="entypo" ng-class="{'FEED':'download','process':'cycle'}[item.type]"></span> {{ item.name }}
         </button>
       </td>

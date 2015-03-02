@@ -22,8 +22,8 @@
 
   dashboardCtrlModule.controller('DashboardCtrl', [ "$scope", "Falcon", "EntityModel", "FileApi", "$state", "X2jsService",
     function ($scope, Falcon, EntityModel, FileApi, $state, X2jsService) {
-      
-      //$scope.$parent.refreshLists();
+
+      $scope.$parent.refreshList();
 
       $scope.deleteEntity = function (type, name) {
         type = type.toLowerCase(); //new sandbox returns uppercase type
@@ -31,7 +31,7 @@
         Falcon.deleteEntity(type, name)
           .success(function (data) {          
             Falcon.logResponse('success', data, type);           
-            $scope.$parent.refreshList(type);              
+            $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             
@@ -102,7 +102,7 @@
         Falcon.logRequest();
         Falcon.postResumeEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList(type);      
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -112,7 +112,7 @@
         Falcon.logRequest();
         Falcon.postScheduleEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList(type);      
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -124,7 +124,7 @@
         Falcon.postSuspendEntity(type, name)
           .success(function (message) {
             Falcon.logResponse('success', message, type);           
-            $scope.$parent.refreshList(type);      
+            $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             Falcon.logResponse('error', err, type);
