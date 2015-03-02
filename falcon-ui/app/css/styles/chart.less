@@ -15,30 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.chart {
-  svg {
-    .background-opacity(red, 0.3);
-  }
-  height:auto;
-  display: inline-block;
-  margin: 5px;
-
-}
-.axis path,
-.axis line {
-  fill: none;
-  stroke: blue;
-  shape-rendering: crispEdges;
-}
-
-.axis text {
-  font-family: sans-serif;
-  font-size: 8px;
-}
-.tick {
-  stroke-dasharray: 1, 2;
-}
-
+//----------MENU-----------------//
 .chartMenuBox {
   h5 {
     margin-bottom: 5px;
@@ -81,4 +58,83 @@
   .dateInput {
     padding-left: 2px;
   }
+}
+//------------CHART------------------------//
+
+.chart {
+  /*svg {
+    .background-opacity(red, 0.3);
+  }*/
+  height:auto;
+  display: inline-block;
+  margin: 5px;
+
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #d3d3d3;
+  shape-rendering: crispEdges;
+}
+
+path, line,
+svg:path, svg:line{
+  shape-rendering: geometricPrecision;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 8px;
+}
+.tick {
+  stroke-dasharray: 1, 2;
+}
+
+
+.column {
+  .transition(all, 0.2s, ease);
+  opacity:0;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+text {
+  font-size: 10px;
+}
+
+
+
+
+
+
+
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
 }

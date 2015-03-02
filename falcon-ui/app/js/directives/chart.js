@@ -23,22 +23,25 @@
           prepareData();
         });
 
-        scope.yDomain = 0;
-
         function prepareData () {
+          if (scope.input.length === 0) {
+            return;
+          }
 
           if (scope.mode === 'daily') { scope.xDomain = 14; } else { scope.xDomain = 24; }
 
-          scope.input.forEach(function (item) {
-
-            if (item.numFailedInstances > scope.yDomain) {
-              scope.yDomain = item.numFailedInstances;
+          scope.yDomain = d3.max(scope.input, function (d) {
+            if (d.numFailedInstances >= d.numSuccessfullInstances) {
+              return d.numFailedInstances;
+            }else {
+              return d.numSuccessfullInstances;
             }
-            if (item.numSuccessfullInstances > scope.yDomain) {
-              scope.yDomain = item.numSuccessfullInstances;
-            }
-
           });
+          scope.yMaxDataSizeDomain = d3.max(scope.input, function (d) {
+              return d.dataSizeCopied;
+          }) + 100;
+          scope.yMaxDataSizeDomain = scope.yMaxDataSizeDomain * 1.5;
+          scope.yDomain = scope.yDomain * 1.5
 
           d3.selectAll('svg').remove();
 
@@ -46,11 +49,11 @@
 
         }
 
-
         function drawChart() {
 
           var x = d3.scale.linear().domain([0,scope.xDomain]).range( [0, (scope.w - (scope.t * 2) ) ]),
               y = d3.scale.linear().domain([0, scope.yDomain]).range( [0, (scope.h - (scope.t * 2) ) ]),
+              yDataSizeScale = d3.scale.linear().domain([0, scope.yMaxDataSizeDomain]).range( [0, (scope.h - (scope.t * 2) ) ]),
 
               xAxis = d3.svg.axis()
                 .scale(x)
@@ -63,97 +66,473 @@
               canvas = d3.select(element[0])
                 .append("svg")
                 .attr("width", scope.w)
-                .attr("height", scope.h)
-                .style("border", "1px solid black");
+                .attr("height", scope.h),
 
+              col,
+              tip,
+
+              successLineFunc = d3.svg.line()
+                .x(function(d, i) {
+                  return x(i);
+                })
+                .y(function(d) {
+                  return (y(scope.yDomain - d.numSuccessfullInstances));
+                })
+                .interpolate('cardinal'),
+
+              failedLineFunc = d3.svg.line()
+                .x(function(d, i) {
+                  return x(i);
+                })
+                .y(function(d) {
+                  return (y(scope.yDomain - d.numFailedInstances));
+                })
+                .interpolate('cardinal'),
+
+              successAreaFunc = d3.svg.area()
+                .x(function(d, i) {
+                  return x(i);
+                })
+                .y0(y(scope.yDomain))
+                .y1(function(d) {
+                  return (y(scope.yDomain - d.numSuccessfullInstances));
+                })
+                .interpolate('cardinal'),
+
+              failedAreaFunc = d3.svg.area()
+                .x(function(d, i) {
+                  return x(i);
+                })
+                .y0(y(scope.yDomain))
+                .y1(function(d) {
+                  return (y(scope.yDomain - d.numFailedInstances));
+                })
+                .interpolate('cardinal');
+
+          //---------------X AXIS ----------------------//
           canvas.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(" + scope.t + "," + (( scope.h - scope.t ) + 0.5) + ")")
             .call(xAxis);
 
-          canvas.selectAll("circle.success")
-              .data(scope.input).enter()
-            .append("circle")
-            .call(yAxis)
-            /*.attr("cx", 25)
-            .attr("cy", 25)*/
-            .attr("r", 5)
-            .attr("fill", "green")
-            .attr("cx", function(d, i) { return x(i); })
-            .attr("cy", function(d) { return (y(scope.yDomain - d.numSuccessfullInstances)); })
-            .attr("transform", "translate(" + scope.t + "," + scope.t + ")");
+          //---------------GRID-------------------------//
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: 0,
+              y2: 0,
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
 
-          canvas.selectAll("circle.error")
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y(scope.yDomain/11),
+              y2: y(scope.yDomain/11),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 2),
+              y2: y((scope.yDomain/11) * 2),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 3),
+              y2: y((scope.yDomain/11) * 3),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 4),
+              y2: y((scope.yDomain/11) * 4),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 5),
+              y2: y((scope.yDomain/11) * 5),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 6),
+              y2: y((scope.yDomain/11) * 6),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 7),
+              y2: y((scope.yDomain/11) * 7),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 8),
+              y2: y((scope.yDomain/11) * 8),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 9),
+              y2: y((scope.yDomain/11) * 9),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: 0,
+              x2: x(scope.xDomain),
+              y1: y((scope.yDomain/11) * 10),
+              y2: y((scope.yDomain/11) * 10),
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+          //----------------------------------------//
+
+
+
+
+
+
+
+          /*
+            .attr("transform", "translate(" + scope.t + "," + scope.t + ")")*/;
+
+
+
+
+            /*.style("cursor", "pointer")
+            .on("mouseover", function(){d3.select(this).style("fill", "#7C7D2F");})
+            .on("mouseout", function(){ d3.select(this).style("fill", "#307D7E"); })*/
+
+
+          /*col.append("g")
+            .attr({transform: 'translate(80, 0)'})
+            .append('text')
+            .attr({dx: 100, height: 50})
+            .html(function(d) {
+              return "<strong>Frequency:</strong> <span style='color:red'>" + d.numFailedInstances + "</span>";
+            });*/
+
+
+          //----------BARS----------------//
+          canvas.selectAll('rect.dataSize')
             .data(scope.input).enter()
-            .append("circle")
-            .call(yAxis)
-            .attr("cx", 25)
-            .attr("cy", 25)
-            .attr("r", 5)
-            .attr("fill", "red")
-            .attr("cx", function(d, i) { return x(i); })
-            .attr("cy", function(d) { return (y(scope.yDomain - d.numFailedInstances)); })
-            .attr("transform", "translate(" + scope.t + "," + scope.t + ")");
+            .append("svg:rect").attr('class', 'dataSize')
+            .attr({
+              x: function(d, i) { return x(i); },
+              y: function(d, i) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); },
+              width: function(d, i) { return x(1); },
+              height: function(d, i) { return yDataSizeScale(d.dataSizeCopied); },
+              stroke: "none",
+              fill: "rgba(8,8,8,0.3)",
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
 
-            /*.attr("x", function(d, i) { return x(i); })
-            .attr("y", function(d) { return (y(parseInt(d.numSuccessfullInstances, 10)) - y(scope.dy[0]) ); })
-            .attr("height", function(d) { return (scope.h - (scope.t * 2)) - y(parseInt(d.hours, 10)); })
-            .attr("width", function() { return x(0.9); })
-            .attr("fill", "#307D7E")
-            .attr("transform", "translate(" + scope.t + "," + scope.t + ")")
-            .style("cursor", "pointer")
-            .on("mouseover", function(){d3.select(this).style("fill", "#7C7D2F");})
-            .on("mouseout", function(){ d3.select(this).style("fill", "#307D7E"); })
-            .on("click", function(d){ scope.details(d); });*/
+          //-------------LINES ------------//
 
 
-          /*//el mode lo cambie a string por eso no funca
-          console.log(scope.xDomain);
-          var config = {
-              axis: { y:{ ticks: 24}, x:{ ticks: scope.xDomain } }
-            },
-            x = d3.scale.linear().domain([0,scope.xDomain]).range( [0, (scope.w - (scope.t * 2) ) ]),
-            y = d3.scale.linear().domain(scope.dy).range( [0, (scope.h - (scope.t * 2) ) ]),
-
-            xAxis = d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
-              .ticks(config.axis.y.ticks),
-
-            yAxis = d3.svg.axis()
-              .scale(y)
-              .orient("left")
-              .ticks(config.axis.y.ticks),
-
-            canvas = d3.select(element[0])
-              .append("svg")
-              .attr("width", scope.w)
-              .attr("height", scope.h)
-              .style("border", "1px solid black");
+          canvas.append('svg:path')
+            .attr("d", successLineFunc(0))/*.transition()*/
+            .attr({
+              d: successLineFunc(scope.input),
+              stroke: "green",
+              "stroke-width": 2,
+              "stroke-linecap": "round",
+              fill: "rgba(0,0,0,0)",
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            });
 
 
-          canvas.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + scope.t + "," + (( scope.h - scope.t ) + 0.5) + ")")
-            .call(xAxis);
+          canvas.append('svg:path')
+            .attr('d', failedLineFunc(scope.input))
+            .attr({
+              stroke: "red",
+              "stroke-width": 2,
+              //"stroke-linecap": "round",
+              fill: 'none',
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
 
-          canvas.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + (scope.t - 0.5) + "," + scope.t + ")")
-            .call(yAxis);
+            });
 
-          canvas.selectAll("rect").data(scope.input).enter()
-            .append("rect").call(yAxis)
-            .attr("x", function(d, i) { return x(i); })
-            .attr("y", function(d) { return (y(parseInt(d.hours, 10)) - y(scope.dy[0]) ); })
-            .attr("height", function(d) { return (scope.h - (scope.t * 2)) - y(parseInt(d.hours, 10)); })
-            .attr("width", function() { return x(0.9); })
-            .attr("fill", "#307D7E")
-            .attr("transform", "translate(" + scope.t + "," + scope.t + ")")
-            .style("cursor", "pointer")
-            .on("mouseover", function(){d3.select(this).style("fill", "#7C7D2F");})
-            .on("mouseout", function(){ d3.select(this).style("fill", "#307D7E"); })
-            .on("click", function(d){ scope.details(d); });*/
+          canvas.append('svg:path')
+            .attr('d', successAreaFunc(scope.input))
+            .attr({
+              stroke: "none",
+              fill: "rgba(0,255,0,0.1)",
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            });
+
+          canvas.append('svg:path')
+            .attr({
+              stroke: "none",
+              fill: "rgba(255,0,0,0.1)",
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            })
+            .transition()
+            .attr('d', failedAreaFunc(scope.input));
+
+          //------------COL----------------------------//
+          col = canvas.selectAll('g.col')
+            .data(scope.input).enter()
+            .append("g").attr('class', 'column');
+
+          col.append('svg:line')
+            .attr({
+              stroke: "#d3d3d3",
+              'stroke-width': 1,
+              x1: function(d, i) { return x(i); },
+              x2: function(d, i) { return x(i); },
+              y1: 0,
+              y2: y(scope.yDomain),
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            });
+
+          col.append('svg:line')
+            .attr({
+              stroke: "#748484",
+              'stroke-width': 3,
+              x1: function(d, i) { return x(i); },
+              x2: function(d, i) { return x(i + 1); },
+              y1: function (d) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); },
+              y2: function (d) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); },
+              transform: "translate(" + scope.t + "," + scope.t + ")"
+            });
+
+          col.append("circle")
+            .attr({
+              r: 5,
+              fill: "green",
+              cx: function(d, i) { return x(i);},
+              cy: function(d) { return (y(scope.yDomain - d.numSuccessfullInstances)); },
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            });
+          col.append("circle")
+            .attr({
+              r: 5,
+              fill: "red",
+              cx: function(d, i) { return x(i);},
+              cy: function(d) { return (y(scope.yDomain - d.numFailedInstances)); },
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            });
+
+
+
+
+
+
+
+
+
+          tip = col.append("g").attr('transform', "translate(" + scope.t + ", -" + scope.t/2 + ")");
+
+          tip.append("svg:rect")
+            .attr({
+              stroke: "gray",
+              fill: "white",
+              transform: "translate(-6, -6)",
+              width: 50,
+              height: 50,
+              'stroke-width': 1,
+              x: function(d, i) { return x(i);},
+              y: function (d) {
+
+                if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances)) - 50;
+                } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
+                  return (y(scope.yDomain) - y(d.numFailedInstances)) - 50;
+                } else {
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied)) - 50;
+                }
+
+              }
+            });
+
+          tip.append("text")
+            .attr({
+              x: function(d, i) { return x(i); },
+              y: function (d) {
+
+                if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances));
+                } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
+                  return (y(scope.yDomain) - y(d.numFailedInstances));
+                } else {
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied));
+                }
+
+              },
+              transform: "translate(10, -" +  (scope.t * 1.4) +")",
+              position: "relative"
+            })
+
+            .html(function(d, i) {
+              var tip = "<tspan x='' y='' fill='green'>" + d.numSuccessfullInstances + "</tspan>";
+
+              return tip;
+            });
+
+          tip.append("text")
+            .attr({
+              x: function(d, i) { return x(i); },
+              y: function (d) {
+
+                if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances));
+                } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
+                  return (y(scope.yDomain) - y(d.numFailedInstances));
+                } else {
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied));
+                }
+
+              },
+              transform: "translate(10, -" +  (scope.t * 0.9) +")",
+              position: "relative"
+            })
+
+            .html(function(d, i) {
+              var tip = "<tspan x='' y='' fill='red'>" + d.numFailedInstances + "</tspan>";
+
+
+              return tip;
+            });
+          tip.append("text")
+            .attr({
+              x: function(d, i) { return x(i); },
+              y: function (d) {
+
+                if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances));
+                } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
+                  return (y(scope.yDomain) - y(d.numFailedInstances));
+                } else {
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied));
+                }
+
+              },
+              transform: "translate(0, -" +  (scope.t * 0.4) +")",
+              position: "relative"
+            })
+
+            .html(function(d, i) {
+              return "<tspan x='' y='' fill='gray'>" + d.dataSizeCopied + "</tspan>";
+            });
+
+          tip.append("circle")
+            .attr({
+              r: 5,
+              fill: "green",
+              cx: function(d, i) { return x(i);},
+              cy: function (d) {
+
+                if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances));
+                } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
+                  return (y(scope.yDomain) - y(d.numFailedInstances));
+                } else {
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied));
+                }
+
+              },
+              transform: "translate(3,-" + (scope.t * 1.5) + ")"
+            });
+
+          tip.append("circle")
+            .attr({
+              r: 5,
+              fill: "red",
+              cx: function(d, i) { return x(i);},
+              cy: function (d) {
+
+                if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances));
+                } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
+                  return (y(scope.yDomain) - y(d.numFailedInstances));
+                } else {
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied));
+                }
+
+              },
+              transform: "translate(3,-" + (scope.t * 1) + ")"
+            });
+
+          col.append("rect")
+            .attr({
+              x: function(d, i) { return x(i); },
+              y: 0,
+              width: function(d, i) { return x(1); },
+              height: scope.h,
+              stroke: "none",
+              fill: "transparent",
+              transform: "translate(" + scope.t + ", 0)"
+            })
+            .on("click", function(d){ scope.details(d); });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         prepareData();
@@ -210,25 +589,8 @@
       $scope.opened = true;
     };
 
-
-    $scope.my = {
-      data : [
-
-        { "hours":"8", "checkIn":"07:00","checkOut":"19:30", "date":"01/07/2014" },
-        { "hours":"12", "checkIn":"07:00","checkOut":"19:30", "date":"02/07/2014" },
-        { "hours":"10", "checkIn":"07:00","checkOut":"19:30", "date":"03/07/2014" },
-        { "hours":"8", "checkIn":"07:00","checkOut":"19:30", "date":"04/07/2014" },
-        { "hours":"7", "checkIn":"07:00","checkOut":"19:30", "date":"05/07/2014" },
-        { "hours":"8", "checkIn":"07:00","checkOut":"19:30", "date":"06/07/2014" },
-        { "hours":"6", "checkIn":"07:00","checkOut":"19:30", "date":"07/07/2014" },
-        { "hours":"8", "checkIn":"07:00","checkOut":"19:30", "date":"08/07/2014" },
-        { "hours":"16", "checkIn":"07:00","checkOut":"19:30", "date":"07/07/2014" },
-        { "hours":"24", "checkIn":"07:00","checkOut":"19:30", "date":"08/07/2014" }
-      ]
-
-    };
     $scope.details = function (obj) {
-      console.log("details " + obj.hours);
+      console.log("details " + obj.startTime);
     };
 
   }]);
