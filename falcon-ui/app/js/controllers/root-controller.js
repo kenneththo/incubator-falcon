@@ -76,11 +76,13 @@
 
         $scope.searchList = [];
         if(name.indexOf("*feed") > -1){
-          searchEntities("feed", name, tagsSt, $scope.searchList, false);
+          console.log("Search all feeds");
+          searchEntities("feed", name, tagsSt, false);
         }else if(name.indexOf("*process") > -1){
-          searchEntities("process", name, tagsSt, $scope.searchList, false);
+          console.log("Search all process");
+          searchEntities("process", name, tagsSt, false);
         }else{
-          searchEntities("feed", name, tagsSt, $scope.searchList, true);
+          searchEntities("feed", name, tagsSt, true);
         }
       };
 
