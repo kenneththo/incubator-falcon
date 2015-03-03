@@ -45,6 +45,25 @@
       $scope.capitalize = function(input) {
         return input.charAt(0).toUpperCase() + input.slice(1);
       };
+
+      //refreshList($scope.entity.type, $scope.entity.name);
+
+      //var refreshList = function (type, name) {
+
+        $scope.instancesList = [];
+        $scope.loading = true;
+        Falcon.logRequest();
+        Falcon.getInstances($scope.entity.type, $scope.entity.name).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          if (data !== null) {
+            $scope.instancesList = data.instances;
+          }
+        }).error(function (err) {
+          Falcon.logResponse('error', err);
+        });
+
+      //};
+
       
     }
   ]);
