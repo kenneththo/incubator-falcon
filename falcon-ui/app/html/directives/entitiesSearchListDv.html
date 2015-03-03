@@ -79,9 +79,9 @@
                checklist-value="{name:item.name, type:item.type, status:item.status}"
                ng-change="checkButtonsToShow()"/>
       </td>
-      <td class="nameCell">
+      <td class="nameCell" ng-init="entityType = item.type | uppercase">
         <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
-          <span class="entypo" ng-class="{'FEED':'download','process':'cycle'}[item.type]"></span> {{ item.name }}
+          <span class="entypo" ng-class="{'FEED':'download','PROCESS':'cycle'}[(item.type | uppercase)]"></span> {{ item.name }}
         </button>
       </td>
       <td>
@@ -105,13 +105,37 @@
       <td class="stateCell">
         <span ng-if="type !== 'cluster'" ng-class="{'text-success': item.status === 'RUNNING', 'text-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
       </td>
-
     </tr>
+
     <tr>
       <td ng-if="server.responses.multiRequest[type] > 0 || server.responses.listLoaded[type] === false">
         <div class="spinner" ng-class="{active: server.responses.multiRequest[type] > 0 || server.responses.listLoaded[type] === false}">
           <img src="css/img/ajax-loader.gif" />
         </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="9">
+        <nav class="pull-right">
+          <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li>
+              <a href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </td>
     </tr>
   </tbody>

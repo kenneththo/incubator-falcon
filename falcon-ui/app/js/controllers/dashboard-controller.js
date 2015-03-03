@@ -31,7 +31,7 @@
         Falcon.deleteEntity(type, name)
           .success(function (data) {          
             Falcon.logResponse('success', data, type);           
-            $scope.$parent.refreshList($scope.tags);
+            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
           })
           .error(function (err) {
             
@@ -102,7 +102,7 @@
         Falcon.logRequest();
         Falcon.postResumeEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList($scope.tags);
+          $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -112,7 +112,7 @@
         Falcon.logRequest();
         Falcon.postScheduleEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList($scope.tags);
+          $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -123,8 +123,8 @@
         Falcon.logRequest();
         Falcon.postSuspendEntity(type, name)
           .success(function (message) {
-            Falcon.logResponse('success', message, type);           
-            $scope.$parent.refreshList($scope.tags);
+            Falcon.logResponse('success', message, type);
+              $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
           })
           .error(function (err) {
             Falcon.logResponse('error', err, type);
@@ -136,7 +136,7 @@
       };
 
       $scope.displayResults = function () {
-        $scope.$parent.refreshList($scope.tags);
+        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
       };
 
       //-----------------------------------------//

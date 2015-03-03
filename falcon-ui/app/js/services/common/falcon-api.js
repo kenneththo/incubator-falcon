@@ -149,22 +149,18 @@
       return $http.get(buildURI('../api/entities/definition/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
     };
 
-    Falcon.getEntities = function (type) {
-      return $http.get(buildURI('../api/entities/list/' + type + '?fields=status,tags&numResults=' + NUMBER_OF_RESULTS));
+    Falcon.searchEntities = function (type, name, tags, offset) {
+      if(name !== undefined && tags !== undefined && tags !== "") {
+        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + 10));
+      }else if(name !== undefined){
+        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + 10));
+      }else {
+        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + 10));
+      }
     };
 
-    Falcon.searchEntities = function (type, name, tags) {
-      if(name !== undefined && tags !== undefined && tags !== "") {
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags));
-      }else if(name !== undefined){
-        if(name.indexOf("*") > -1){
-          return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags'));
-        }else{
-          return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags'));
-        }
-      }else {
-        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags));
-      }
+    Falcon.getInstances = function (type, name) {
+      return $http.get(buildURI('../api/instance/list/' + type + '/' + name + '?colo=*&orderBy=startTime'));
     };
 
     //----------------------------------------------//

@@ -36,20 +36,21 @@
         FileApi.loadFile(evt).then(function () {
           Falcon.postSubmitEntity(FileApi.fileRaw, EntityModel.type).success(function (response) {
             Falcon.logResponse('success', response, false);
-            $scope.refreshList(EntityModel.type);
+            $scope.refreshList(EntityModel.type, $scope.tags);
           }).error(function (err) {
             Falcon.logResponse('error', err, false);
           });
         });
       };
 
-      $scope.refreshList = function (tags) {
+      $scope.refreshList = function (type, tags) {
         var name;
         var tagsSt = "";
         var namedTags = [];
 
         if(tags === undefined || tags.length === 0){
           $scope.searchList = [];
+          $scope.searchEntityType = "feed";
           return;
         }
 
@@ -74,30 +75,22 @@
           }
         }
 
-        $scope.searchList = [];
-        if(name.indexOf("*feed") > -1){
-          searchEntities("feed", name, tagsSt, $scope.searchList, false);
-        }else if(name.indexOf("*process") > -1){
-          searchEntities("process", name, tagsSt, $scope.searchList, false);
-        }else{
-          searchEntities("feed", name, tagsSt, $scope.searchList, true);
-        }
+        searchEntities(type, name, tagsSt);
+
       };
 
-      var searchEntities = function (type, name, tags, callback) {
+      var searchEntities = function (type, name, tags) {
+        $scope.searchList = [];
         $scope.loading = true;
         Falcon.logRequest();
-        Falcon.searchEntities(type, name, tags).success(function (data) {
+        Falcon.searchEntities(type, name, tags, 0).success(function (data) {
           Falcon.logResponse('success', data, false, true);
           if (data !== null) {
-            $scope.searchList = $scope.searchList.concat(data.entity);
+            console.log(data);
+            $scope.searchList = data.entity;
           }
-          if(callback){
-            searchEntities("process", name, tags, false);
-          }else{
-            Falcon.responses.listLoaded = true;
-            $scope.loading = false;
-          }
+          Falcon.responses.listLoaded = true;
+          $scope.loading = false;
         }).error(function (err) {
           $scope.loading= false;
           Falcon.logResponse('error', err);

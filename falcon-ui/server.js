@@ -23,7 +23,11 @@
 
   server.get('/api/entities/list/:type', function (req, res) {
     var type = req.params.type;
-    res.json(mockData.entitiesList[type]);
+    var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
+    var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
+    var paginated = mockData.entitiesList[type];
+    paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    res.json(paginated);
   });
 
   server.get('/api/entities/definition/:type/:name', function(req, res) {
@@ -122,13 +126,26 @@
     res.json(200, responseMessage);
   });
 
+  server.get('/api/instance/list/:type/:name', function(req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name,
+        responseMessage = {
+          "instances": mockData.instancesList[type],
+          "requestId": "falcon/default/13015853-8e40-4923-9d32-6d01053c31c6\n\n",
+          "message": "default\/STATUS\n",
+          "status": "SUCCEEDED"
+        };
+    res.json(responseMessage);
+  });
+
+
+
+
   /*
    *
    * CHART
    *
    */
-
-
 
   server.get('/api/instance/summary/:type/:mode', function(req, res) {
 
