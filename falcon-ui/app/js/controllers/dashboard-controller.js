@@ -25,6 +25,10 @@
 
       $scope.$parent.refreshList();
 
+      $scope.focusSearch = function (type) {
+        $scope.searchEntityType = type;
+      };
+
       $scope.deleteEntity = function (type, name) {
         type = type.toLowerCase(); //new sandbox returns uppercase type
         Falcon.logRequest();
