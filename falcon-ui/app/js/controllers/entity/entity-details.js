@@ -57,6 +57,7 @@
           Falcon.logResponse('success', data, false, true);
           if (data !== null) {
             $scope.instancesList = data.instances;
+            console.log($scope.instancesList);
           }
         }).error(function (err) {
           Falcon.logResponse('error', err);
