@@ -8,8 +8,6 @@
     return {
       scope: {
         input: "=",
-        w: "@",
-        h: "@",
         t: "@",
         mode: "=",
         details:"="
@@ -17,16 +15,25 @@
       restrict: "EA",
       link: function (scope, element) {
 
+
         scope.$watch(function () {
           return scope.input;
         }, function () {
           prepareData();
         });
 
+
+        angular.element(window).on('resize', prepareData);
+
         function prepareData () {
+
           if (scope.input.length === 0) {
             return;
           }
+
+          scope.w = angular.element('.chartCol').width();
+          scope.h = 400;
+
 
           if (scope.mode === 'daily') { scope.xDomain = 14; } else { scope.xDomain = 24; }
 
@@ -40,8 +47,8 @@
           scope.yMaxDataSizeDomain = d3.max(scope.input, function (d) {
               return d.dataSizeCopied;
           }) + 100;
-          scope.yMaxDataSizeDomain = scope.yMaxDataSizeDomain * 1.5;
-          scope.yDomain = scope.yDomain * 1.5
+          scope.yMaxDataSizeDomain = scope.yMaxDataSizeDomain * 1.2;
+          scope.yDomain = scope.yDomain * 1.2
 
           d3.selectAll('svg').remove();
 
@@ -70,6 +77,15 @@
 
               col,
               tip,
+
+              linePrepareTransition = d3.svg.line()
+                .x(function(d, i) {
+                  return x(i);
+                })
+                .y(function(d) {
+                  return (y(scope.yDomain));
+                })
+                .interpolate('cardinal'),
 
               successLineFunc = d3.svg.line()
                 .x(function(d, i) {
@@ -238,88 +254,79 @@
             });
           //----------------------------------------//
 
-
-
-
-
-
-
-          /*
-            .attr("transform", "translate(" + scope.t + "," + scope.t + ")")*/;
-
-
-
-
-            /*.style("cursor", "pointer")
-            .on("mouseover", function(){d3.select(this).style("fill", "#7C7D2F");})
-            .on("mouseout", function(){ d3.select(this).style("fill", "#307D7E"); })*/
-
-
-          /*col.append("g")
-            .attr({transform: 'translate(80, 0)'})
-            .append('text')
-            .attr({dx: 100, height: 50})
-            .html(function(d) {
-              return "<strong>Frequency:</strong> <span style='color:red'>" + d.numFailedInstances + "</span>";
-            });*/
-
-
-          //----------BARS----------------//
+          //----------BARS DATASIZE COPIED---------------//
           canvas.selectAll('rect.dataSize')
             .data(scope.input).enter()
             .append("svg:rect").attr('class', 'dataSize')
             .attr({
               x: function(d, i) { return x(i); },
-              y: function(d, i) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); },
+              y: function(d, i) { return yDataSizeScale(scope.yMaxDataSizeDomain); },
               width: function(d, i) { return x(1); },
-              height: function(d, i) { return yDataSizeScale(d.dataSizeCopied); },
+              height: function(d, i) { return 0; },
               stroke: "none",
               fill: "rgba(8,8,8,0.3)",
               transform: "translate(" + scope.t + "," + scope.t + ")"
+            })
+            .transition().duration(2000)
+            .attr({
+              height: function(d, i) { return yDataSizeScale(d.dataSizeCopied); },
+              y: function(d, i) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); }
             });
 
-          //-------------LINES ------------//
+          //-------------LINES AND AREAS------------//
 
 
           canvas.append('svg:path')
-            .attr("d", successLineFunc(0))/*.transition()*/
             .attr({
-              d: successLineFunc(scope.input),
+              d: linePrepareTransition(scope.input),
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")",
               stroke: "green",
               "stroke-width": 2,
               "stroke-linecap": "round",
-              fill: "rgba(0,0,0,0)",
-              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+              fill: "rgba(0,0,0,0)"
+            })
+            .transition().duration(1000)
+            .attr({
+              d: successLineFunc(scope.input)
             });
 
 
           canvas.append('svg:path')
-            .attr('d', failedLineFunc(scope.input))
             .attr({
+              d: linePrepareTransition(scope.input),
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")",
               stroke: "red",
               "stroke-width": 2,
-              //"stroke-linecap": "round",
-              fill: 'none',
-              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
-
-            });
-
-          canvas.append('svg:path')
-            .attr('d', successAreaFunc(scope.input))
+              fill: 'none'
+            })
+            .transition().duration(1000).delay(500)
             .attr({
-              stroke: "none",
-              fill: "rgba(0,255,0,0.1)",
-              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+              d: failedLineFunc(scope.input)
             });
 
           canvas.append('svg:path')
             .attr({
-              stroke: "none",
-              fill: "rgba(255,0,0,0.1)",
+              d: linePrepareTransition(scope.input),
               transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
             })
-            .transition()
-            .attr('d', failedAreaFunc(scope.input));
+            .transition().duration(1000)
+            .attr({
+              d: successAreaFunc(scope.input),
+              stroke: "none",
+              fill: "rgba(0,255,0,0.1)"
+            });
+
+          canvas.append('svg:path')
+            .attr({
+              d: linePrepareTransition(scope.input),
+              transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
+            })
+            .transition().duration(1000).delay(500)
+            .attr({
+              d: failedAreaFunc(scope.input),
+              stroke: "none",
+              fill: "rgba(255,0,0,0.1)"
+            });
 
           //------------COL----------------------------//
           col = canvas.selectAll('g.col')
@@ -343,8 +350,8 @@
               'stroke-width': 3,
               x1: function(d, i) { return x(i); },
               x2: function(d, i) { return x(i + 1); },
-              y1: function (d) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); },
-              y2: function (d) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); },
+              y1: function (d) { return yDataSizeScale((scope.yMaxDataSizeDomain - d.dataSizeCopied)) + 1.5; },
+              y2: function (d) { return yDataSizeScale((scope.yMaxDataSizeDomain - d.dataSizeCopied)) + 1.5; },
               transform: "translate(" + scope.t + "," + scope.t + ")"
             });
 
@@ -366,20 +373,13 @@
             });
 
 
-
-
-
-
-
-
-
           tip = col.append("g").attr('transform', "translate(" + scope.t + ", -" + scope.t/2 + ")");
 
           tip.append("svg:rect")
             .attr({
               stroke: "gray",
               fill: "white",
-              transform: "translate(-6, -6)",
+              transform: "translate(-6, -"+ scope.t + ")",
               width: 50,
               height: 50,
               'stroke-width': 1,
@@ -387,11 +387,11 @@
               y: function (d) {
 
                 if (y(d.numSuccessfullInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numSuccessfullInstances) > y(d.numFailedInstances)) {
-                  return (y(scope.yDomain) - y(d.numSuccessfullInstances)) - 50;
+                  return (y(scope.yDomain) - y(d.numSuccessfullInstances));
                 } else if (y(d.numFailedInstances) > yDataSizeScale(d.dataSizeCopied) && y(d.numFailedInstances) > y(d.numSuccessfullInstances)) {
-                  return (y(scope.yDomain) - y(d.numFailedInstances)) - 50;
+                  return (y(scope.yDomain) - y(d.numFailedInstances));
                 } else {
-                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied)) - 50;
+                  return (yDataSizeScale(scope.yMaxDataSizeDomain) - yDataSizeScale(d.dataSizeCopied));
                 }
 
               }
@@ -411,7 +411,7 @@
                 }
 
               },
-              transform: "translate(10, -" +  (scope.t * 1.4) +")",
+              transform: "translate(10, -" +  (scope.t * 0.5) +")",
               position: "relative"
             })
 
@@ -435,7 +435,7 @@
                 }
 
               },
-              transform: "translate(10, -" +  (scope.t * 0.9) +")",
+              transform: "translate(10, -2)",
               position: "relative"
             })
 
@@ -459,7 +459,7 @@
                 }
 
               },
-              transform: "translate(0, -" +  (scope.t * 0.4) +")",
+              transform: "translate(0, 13)",
               position: "relative"
             })
 
@@ -483,7 +483,7 @@
                 }
 
               },
-              transform: "translate(3,-" + (scope.t * 1.5) + ")"
+              transform: "translate(3,-20)"
             });
 
           tip.append("circle")
@@ -502,9 +502,10 @@
                 }
 
               },
-              transform: "translate(3,-" + (scope.t * 1) + ")"
+              transform: "translate(3,-6)"
             });
 
+          //--------------CLICKABLE-----------//
           col.append("rect")
             .attr({
               x: function(d, i) { return x(i); },
@@ -516,21 +517,6 @@
               transform: "translate(" + scope.t + ", 0)"
             })
             .on("click", function(d){ scope.details(d); });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         }

@@ -41,7 +41,7 @@
 
 <div class="col-xs-24" ng-hide="tags.length > 0 || searchList.length > 0">
   <div class="row" ng-controller="chartCtrl">
-    <div class="col-xs-18">
+    <div class="col-xs-18 chartCol">
       <div class="chartMenuBox">
         <div class="entityBox">
           <h5> Entity </h5>
@@ -93,8 +93,6 @@
       </div>
       <chart class="chart"
              input="graphData"
-             w="700"
-             h="400"
              t="30"
              mode="chartOptions.mode"
              details="details">

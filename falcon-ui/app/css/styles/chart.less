@@ -17,6 +17,7 @@
  */
 //----------MENU-----------------//
 .chartMenuBox {
+  padding: 5px 0 0 40px;
   h5 {
     margin-bottom: 5px;
   }
@@ -51,7 +52,15 @@
     }
   }
 }
-.timeBox, .dayBox {
+.dayBox {
+  position: absolute;
+  padding-left: 20px;
+  display: inline-block;
+  .dateInput {
+    padding-left: 2px;
+  }
+}
+.timeBox {
   position: relative;
   padding-left: 20px;
   display: inline-block;
@@ -92,7 +101,6 @@ svg:path, svg:line{
 
 
 .column {
-  .transition(all, 0.2s, ease);
   opacity:0;
   &:hover {
     opacity: 1;
