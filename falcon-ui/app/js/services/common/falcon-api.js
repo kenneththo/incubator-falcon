@@ -167,6 +167,9 @@
     Falcon.getInstancesSummary = function (type, mode, from, to) {
       return $http.get(buildURI('../api/instance/summary/' + type + '/'+ mode + '?start=' + from + '&end=' + to));
     };
+    Falcon.getTopEntities = function (entityType, from, to) {
+      return $http.get(buildURI('../api/entities/top/' + entityType + '?start=' + from + '&end=' + to));
+    };
 
     return Falcon;
 

@@ -566,7 +566,6 @@
         Falcon.getInstancesSummary(type, mode, from, to)
           .success(function (data) {
             $scope.graphData = data.summary;
-            console.log($scope.graphData);
           }).error(function (error) {
             Falcon.logResponse('error', error, false);
           });
@@ -582,7 +581,17 @@
     };
 
     $scope.details = function (obj) {
-      console.log("details " + obj.startTime);
+
+      var from = obj.startTime,
+          to = obj.endTime,
+          entityType = $scope.chartOptions.entity;
+
+      Falcon.getTopEntities(entityType, from, to).success(function (data) {
+        $scope.chartSidebarModel = data;
+      }).error(function (error) {
+        Falcon.logResponse('error', error, false);
+      });
+
     };
 
   }]);

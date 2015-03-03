@@ -152,13 +152,11 @@
     var type = req.params.type,
         mode = req.params.mode,
         from = req.query.start,
-        //fromDate = Date.UTC(from.slice(0,4), from.slice(5,7), from.slice(8,10), 0, 0, 0);
         fromDate = new Date(from.slice(0,4), (from.slice(5,7)-1), from.slice(8,10), 0, 0, 0),
         response,
         selectedArray;
 
     if (mode === 'hourly') {
-      console.log('hourly');
       response = {"summary": [],"requestId":"23c44f3f-f528-4a94-bc0e-f95019729b42","message":"date not found","status":"FAILED"}
       chartData[type + 'Hours'].forEach(function (item) {
         item.summary.forEach(function (date) {
@@ -180,8 +178,6 @@
         res.send(404, response);
       }
     } else if (mode === 'daily') {
-      console.log('daily');
-
       response = {"summary": [],"requestId":"23c44f3f-f528-4a94-bc0e-f95019729b42","message":"date range not found","status":"FAILED"}
 
       chartData[type + 'Days'].forEach(function (item) {
@@ -198,33 +194,53 @@
               response = {"summary": selectedArray,"requestId":"23c44f3f-f528-4a94-bc0e-f95019729b42","message":"default\\/STATUS\\n","status":"SUCCEEDED"};
               return;
             }
-
           }
 
         });
       });
+
       if (response.status === 'SUCCEEDED') {
         res.send(200, response);
       } else {
         res.send(404, response);
       }
 
-
-
     }
     else {
       console.log('error');
     }
-    console.log(type);
-    console.log(mode);
-    console.log(from);
-    //res.send(200, 'good');
-    /*if (mockData.definitions[type][name]) {
-      res.send(200, mockData.definitions[type][name]);
-    } else {
-      res.send(404, "not found");
-    }*/
+
   });
+
+  server.get('/api/entities/top/:entityType', function(req, res) {
+    var type = req.params.entityType,
+        start = req.query.start,
+        end = req.query.end,
+        from = new Date(start.slice(0,4), (start.slice(5,7)-1), start.slice(8,10), 0, 0, 0),
+        to = new Date(end.slice(0,4), (end.slice(5,7)-1), end.slice(8,10), 0, 0, 0),
+        response;
+
+    console.log(type);
+    console.log(start);
+    console.log(end);
+    console.log(from);
+    console.log(to);
+
+    response = chartData.topEntities[0];
+
+    chartData.topEntities.forEach(function (item) {
+      console.log(item);
+    });
+
+    if (response.status === 'SUCCEEDED') {
+      res.send(200, response);
+    } else {
+
+      res.send(404, response);
+    }
+
+  });
+
 
 
 
