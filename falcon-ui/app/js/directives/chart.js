@@ -22,7 +22,6 @@
           prepareData();
         });
 
-
         angular.element(window).on('resize', prepareData);
 
         function prepareData () {
@@ -536,6 +535,13 @@
       entity: "feed",
       mode: "hourly",
       day: ""
+    };
+
+    $scope.chartSidebarModel = {
+      date: undefined,
+      succeed: [],
+      failed: [],
+      dataCopied: []
     };
 
     $scope.requestNewData = function () {
