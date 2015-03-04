@@ -81,7 +81,8 @@
       {{ item.endTime }}
     </td>
     <td class="stateCell">
-      <span ng-class="{'text-success': item.status === 'RUNNING', 'text-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
+      <span ng-class="{'text-success': item.status === 'RUNNING' || item.status === 'SUCCEEDED', 'text-warning': item.status === 'SUSPENDED',
+      'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
     </td>
 
   </tr>
