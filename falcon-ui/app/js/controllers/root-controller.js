@@ -90,6 +90,9 @@
           }
           Falcon.responses.listLoaded = true;
           $scope.loading = false;
+          $timeout(function() {
+            angular.element('#tagsInput').focus();
+          }, 0, false);
         }).error(function (err) {
           $scope.loading= false;
           Falcon.logResponse('error', err);
@@ -99,6 +102,7 @@
       $scope.closeAlert = function (index) {
         Falcon.removeMessage(index);
       };
+
       $scope.cancel = function (type, state) {
         var cancelInfo = {
           state: state || $state.current.name,
@@ -106,12 +110,11 @@
         };
         Falcon.logResponse('cancel', cancelInfo, type, false);
       };
+
       $scope.restore = function (cancelInfo, index) {
         $state.go(cancelInfo.status);
         $scope.closeAlert(index);
       };
-
-
 
     }]);
 

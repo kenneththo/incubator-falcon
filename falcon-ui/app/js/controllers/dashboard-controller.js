@@ -163,6 +163,11 @@
               Falcon.logResponse('error', err, false, true);
             });
       };
+
+      $scope.clearTags = function(){
+        $scope.tags = [];
+        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+      };
       
     }]);
 

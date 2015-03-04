@@ -231,8 +231,7 @@
       scope: {
         tags: '=ngModel',
         onTagAdded: '&',
-        onTagRemoved: '&',
-        focusValue: "=syncFocusWith"
+        onTagRemoved: '&'
       },
       replace: false,
       transclude: true,
@@ -355,14 +354,6 @@
         scope.newTagChange = function () {
           events.trigger('input-change', scope.newTag.text);
         };
-
-        scope.$watch("focusValue", function (currentValue, previousValue) {
-          if (currentValue !== previousValue) {
-            $timeout(function() {
-              input[0].focus();
-            }, 0, false);
-          }
-        })
 
         scope.$watch('tags', function (value) {
           scope.tags = makeObjectArray(value, options.displayProperty);

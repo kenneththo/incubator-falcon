@@ -154,7 +154,11 @@
       if(name !== undefined && tags !== undefined && tags !== "") {
         return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }else if(name !== undefined){
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        if(name === "*"){
+          return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        }else{
+          return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        }
       }else {
         return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }

@@ -60,8 +60,10 @@
         });
       };
 
-      $scope.instanceDetails = function (type, name) {
-        console.log("details" + type + "" + name);
+      $scope.instanceDetails = function (instance, type) {
+        EntityModel.model = instance;
+        EntityModel.type = type;
+        $state.go("instanceDetails");
       };
 
       $scope.suspendInstance = function (type, name, start, end) {

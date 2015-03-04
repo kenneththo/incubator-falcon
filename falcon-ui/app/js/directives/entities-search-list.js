@@ -57,6 +57,8 @@
         remove: "=",
         edit: "=",
         type: "@",
+        tags: "=",
+        focusSearch: "=",
         entityDetails:"=",
         entityDefinition:"=",
         resume:"=",
@@ -175,6 +177,20 @@
             });
           }
         };
+
+        scope.addTag = function(text){
+          var added = false;
+          angular.forEach(scope.tags, function (scopeTag) {
+            if(scopeTag.text === text){
+              added = true;
+            }
+          });
+          if(!added){
+            var tag = {text:text};
+            scope.tags.push(tag);
+            scope.focusSearch();
+          }
+        }
 
         scope.scopeEdit = function () {
           scope.edit(scope.selectedRows[0].type, scope.selectedRows[0].name);
