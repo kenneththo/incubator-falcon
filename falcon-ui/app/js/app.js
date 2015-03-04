@@ -144,6 +144,10 @@
           }
         }
       })
+      .state('instanceDetails', {
+        templateUrl: 'html/instanceDetails.html',
+        controller: 'InstanceDetailsCtrl'
+      })
     ;
 
   }]);

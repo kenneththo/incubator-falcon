@@ -85,7 +85,9 @@
         </button>
       </td>
       <td>
-        {{ item.list.tag }}
+        <span ng-repeat="tag in item.list.tag" ng-click="addTag(tag)" class="tag">
+          {{ tag }}{{$last ? '' : ', '}}
+        </span>
       </td>
       <td>
         -

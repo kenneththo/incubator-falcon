@@ -103,29 +103,7 @@
       font-size: 10px;
     }
   }
-  .buttonsRow {
-    height: 43px;
-    td {
-      border-top: none;
-      border-bottom: 1px solid @gray-lighter;
-    }
-    margin-bottom: 8px;
 
-  }
-  .buttonCell {
-    .entypo, div {
-      display: inline-block;
-      //vertical-align: top;
-    }
-    .entypo {
-      font-size: 22px;
-      //margin: 6px 0 0 0;
-      //line-height: 18px;
-    }
-    div {
-      //margin: 3px 0 0 0;
-    }
-  }
 
   .entityRow {
     &:hover, &.rowSelected {
@@ -207,4 +185,11 @@
   &.clusterFilters {
     width: 48%;
   }
+}
+
+.tag:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #5fa33e;
+  font-weight: bold;
 }
