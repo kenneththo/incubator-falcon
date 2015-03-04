@@ -117,20 +117,34 @@ text {
     font-weight: bold;
   }
   h5 {
-    margin-bottom: 5px;
+    margin-bottom: 5px; font-weight: normal;
   }
   hr {
     margin:5px 0;
     border-top: 1px solid @gray-light;
   }
-  a {
-    color: @gray-darker;
+  span {
     font-weight: bold;
-    font-size: 10px;
-    margin:0 auto;
-    display: inline-block;
   }
-  div {
+  .table {
     font-size: 12px;
+    table-layout:fixed;
+    padding: 5px;
+    margin-bottom:0;
+    td {
+      border: 0;
+      padding: 0 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &:first-child {
+
+      }
+      &:last-child {
+        padding-bottom:0;
+        width: 30%;
+      }
+    }
   }
+
 }

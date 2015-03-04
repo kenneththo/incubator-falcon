@@ -218,18 +218,15 @@
         end = req.query.end,
         from = new Date(start.slice(0,4), (start.slice(5,7)-1), start.slice(8,10), 0, 0, 0),
         to = new Date(end.slice(0,4), (end.slice(5,7)-1), end.slice(8,10), 0, 0, 0),
+        objectToGive = Math.floor(Math.random() * 2),
         response;
 
-    console.log(type);
-    console.log(start);
-    console.log(end);
-    console.log(from);
-    console.log(to);
+    response = chartData.topEntities[objectToGive];
 
-    response = chartData.topEntities[0];
+    console.log(objectToGive);
 
     chartData.topEntities.forEach(function (item) {
-      console.log(item);
+      //console.log(item);
     });
 
     if (response.status === 'SUCCEEDED') {

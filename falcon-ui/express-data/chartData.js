@@ -29,68 +29,170 @@
                       "topSuccessfulEntities": [
                         {
                           "name": "cleanEmails",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 15
                         },
                         {
                           "name": "cleanEmails2",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 11
                         },
                         {
                           "name": "cleanEmails3",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 12
                         },
                         {
                           "name": "cleanEmails4",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 25
                         },
                         {
                           "name": "cleanEmails5",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 1
                         }
 
                       ],
                       "topFailedEntities": [
                         {
                           "name": "updateUserProfile1",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfFailedEntities": 5
                         },
                         {
                           "name": "updateUserProfile2",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfFailedEntities": 8
                         },
                         {
                           "name": "updateUserProfile3",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfFailedEntities": 1
                         },
                         {
                           "name": "updateUserProfile4",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfFailedEntities": 15
                         },
                         {
                           "name": "updateUserProfile5",
-                          "type": "process"
+                          "type": "process",
+                          "numberOfFailedEntities": 2
                         }
                       ],
                       "topDataCopiedEntities": [
                         {
                           "name": "readEmails1",
-                          "type": "process"
+                          "type": "process",
+                          "dataCopied": 4025
                         },
                         {
                           "name": "readEmails2",
-                          "type": "process"
+                          "type": "process",
+                          "dataCopied": 4025
                         },
                         {
                           "name": "readEmails3",
-                          "type": "process"
+                          "type": "process",
+                          "dataCopied": 1086
                         },
                         {
                           "name": "readEmails4",
-                          "type": "process"
+                          "type": "process",
+                          "dataCopied": 1057
                         },
                         {
                           "name": "readEmails5",
-                          "type": "process"
+                          "type": "process",
+                          "dataCopied": 5021
+                        },
+
+                      ],
+                      "requestId": "default\/e15bb378-d09f-4911-9df2-5334a45153d2\n",
+                      "message": "default\/STATUS\n",
+                      "status": "SUCCEEDED"
+                    },{
+                      "topSuccessfulEntities": [
+                        {
+                          "name": "fooEmails",
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 1
+                        },
+                        {
+                          "name": "barEmails",
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 150
+                        },
+                        {
+                          "name": "fooCleanEmails3",
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 25
+                        },
+                        {
+                          "name": "FooEmails4",
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 15
+                        },
+                        {
+                          "name": "cleanEmails5",
+                          "type": "process",
+                          "numberOfSuccessfulEntities": 10
+                        }
+
+                      ],
+                      "topFailedEntities": [
+                        {
+                          "name": "fooUpdateUserProfile1",
+                          "type": "process",
+                          "numberOfFailedEntities": 21
+                        },
+                        {
+                          "name": "fooUpdateUserProfile2",
+                          "type": "process",
+                          "numberOfFailedEntities": 92
+                        },
+                        {
+                          "name": "fooUpdateUserProfile3",
+                          "type": "process",
+                          "numberOfFailedEntities": 102
+                        },
+                        {
+                          "name": "fooUpdateUserProfile4",
+                          "type": "process",
+                          "numberOfFailedEntities": 20
+                        },
+                        {
+                          "name": "fooUpdateUserProfile5",
+                          "type": "process",
+                          "numberOfFailedEntities": 12
+                        }
+                      ],
+                      "topDataCopiedEntities": [
+                        {
+                          "name": "fooReadEmails1",
+                          "type": "process",
+                          "dataCopied": 1025
+                        },
+                        {
+                          "name": "fooReadEmails2",
+                          "type": "process",
+                          "dataCopied": 2025
+                        },
+                        {
+                          "name": "fooReadEmails3",
+                          "type": "process",
+                          "dataCopied": 1403
+                        },
+                        {
+                          "name": "fooReadEmails4",
+                          "type": "process",
+                          "dataCopied": 1103
+                        },
+                        {
+                          "name": "fooReadEmails5",
+                          "type": "process",
+                          "dataCopied": 121
                         },
 
                       ],

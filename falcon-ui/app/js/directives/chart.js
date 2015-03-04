@@ -537,12 +537,7 @@
       day: ""
     };
 
-    $scope.chartSidebarModel = {
-      date: undefined,
-      succeed: [],
-      failed: [],
-      dataCopied: []
-    };
+    $scope.chartSidebarModel;
 
     $scope.requestNewData = function () {
 
@@ -585,6 +580,8 @@
       var from = obj.startTime,
           to = obj.endTime,
           entityType = $scope.chartOptions.entity;
+
+
 
       Falcon.getTopEntities(entityType, from, to).success(function (data) {
         $scope.chartSidebarModel = data;

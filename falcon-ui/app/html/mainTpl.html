@@ -127,22 +127,41 @@
       </chart>
 
     </div>
-    <div class="col-xs-4 chartSideBar">
+    <div class="col-xs-4 chartSideBar" ng-show="chartSidebarModel">
       <h3> Tuesday 10 </h3>
       <h4> Feb 2015 </h4>
       <hr />
       <h5 class="text-success"> Succeed </h5>
-      <div ng-repeat="item in chartSidebarModel.topSuccessfulEntities"> {{item.name}} </div>
-      <a href="#">view all</a>
+
+      <table class="table">
+        <tr ng-repeat="item in chartSidebarModel.topSuccessfulEntities | orderBy:'-numberOfSuccessfulEntities'">
+          <td> {{item.name}} </td>
+          <td><span> {{item.numberOfSuccessfulEntities}} </span></td>
+        </tr>
+      </table>
+
       <hr />
       <h5 class="text-danger"> Failed </h5>
-      <div ng-repeat="item in chartSidebarModel.topFailedEntities"> {{item.name}} </div>
-      <a href="#">view all</a>
+
+      <table class="table">
+        <tr ng-repeat="item in chartSidebarModel.topFailedEntities | orderBy:'-numberOfFailedEntities'">
+          <td> {{item.name}} </td>
+          <td><span> {{item.numberOfFailedEntities}} </span></td>
+        </tr>
+      </table>
+
       <hr />
       <h5> Data Copied </h5>
-      <div ng-repeat="item in chartSidebarModel.topDataCopiedEntities"> {{item.name}} </div>
-      <a href="#">view all</a>
+
+      <table class="table">
+        <tr ng-repeat="item in chartSidebarModel.topDataCopiedEntities | orderBy:'-dataCopied'">
+          <td> {{item.name}} </td>
+          <td><span> {{item.dataCopied}} </span></td>
+        </tr>
+      </table>
+
     </div>
+
 
   </div>
 </div>
