@@ -37,7 +37,6 @@
 
   entitiesListModule.filter('tagFilter', function () {
     return function (items) {
-      console.log(items);
       var filtered = [], i;
       for (i = 0; i < items.length; i++) {
         var item = items[i];
@@ -152,6 +151,16 @@
           }, 50);
         };
 
+        var isSelected = function(item){
+          var selected = false;
+          scope.selectedRows.forEach(function(entity) {
+            if(angular.equals(item, entity)){
+              selected = true;
+            }
+          });
+          return selected;
+        }
+
         scope.checkAll = function () {
           if(scope.selectedRows.length === scope.input.length){
             angular.forEach(scope.input, function (item) {
@@ -160,7 +169,9 @@
           }else{
             angular.forEach(scope.input, function (item) {
               var checkbox = {name:item.name, type:item.type, status:item.status};
-              scope.selectedRows.push(checkbox);
+              if(!isSelected(checkbox)){
+                scope.selectedRows.push(checkbox);
+              }
             });
           }
         };

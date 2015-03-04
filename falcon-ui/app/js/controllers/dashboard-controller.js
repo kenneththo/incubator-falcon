@@ -25,6 +25,10 @@
 
       $scope.$parent.refreshList();
 
+      $scope.focusSearch = function () {
+        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+      };
+
       $scope.deleteEntity = function (type, name) {
         type = type.toLowerCase(); //new sandbox returns uppercase type
         Falcon.logRequest();
@@ -131,6 +135,7 @@
             
           });
       };
+
       $scope.relationsEntity = function (type, name) {
         console.log("relations " + type + " - " + name);
       };

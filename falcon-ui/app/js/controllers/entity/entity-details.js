@@ -46,14 +46,11 @@
         return input.charAt(0).toUpperCase() + input.slice(1);
       };
 
-      //refreshList($scope.entity.type, $scope.entity.name);
-
-      //var refreshList = function (type, name) {
-
+      $scope.refreshInstanceList = function (type, name) {
         $scope.instancesList = [];
         $scope.loading = true;
         Falcon.logRequest();
-        Falcon.getInstances($scope.entity.type, $scope.entity.name).success(function (data) {
+        Falcon.getInstances(type, name, 0).success(function (data) {
           Falcon.logResponse('success', data, false, true);
           if (data !== null) {
             $scope.instancesList = data.instances;
@@ -61,9 +58,25 @@
         }).error(function (err) {
           Falcon.logResponse('error', err);
         });
+      };
 
-      //};
+      $scope.instanceDetails = function (type, name) {
+        console.log("details" + type + "" + name);
+      };
 
+      $scope.suspendInstance = function (type, name, start, end) {
+        console.log("suspend" + type + ", " + name + "," + start + "," + end);
+        //Falcon.logRequest();
+        //Falcon.postSuspendEntity(type, name)
+        //    .success(function (message) {
+        //      Falcon.logResponse('success', message, type);
+        //      $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        //    })
+        //    .error(function (err) {
+        //      Falcon.logResponse('error', err, type);
+        //
+        //    });
+      };
       
     }
   ]);

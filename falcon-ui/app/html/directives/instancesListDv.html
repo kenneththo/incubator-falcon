@@ -21,7 +21,7 @@
   <thead>
   <tr>
     <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
-    <th><div class="filtersSearchBox">No</div></th>
+    <th><div class="filtersSearchBox">Instance</div></th>
     <th><div class="filtersSearchBox">Started</div></th>
     <th><div class="filtersSearchBox">Ended</div></th>
     <th><div class="filtersSearchBox">Status</div></th>
@@ -40,8 +40,12 @@
       <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend">
         <span class="entypo paus"></span> <div>Suspend</div>
       </div>
-      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeEdit()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
+      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeStop()" ng-disabled="selectedDisabledButtons.stop">
         <span class="entypo stop"></span> <div>Stop</div>
+      </div>
+      &nbsp;&nbsp;
+      <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-disabled="selectedDisabledButtons.schedule">
+        <span class="entypo play"></span> <div>Schedule</div>
       </div>
     </td>
   </tr>
@@ -54,31 +58,30 @@
   </tr>
 
   <tr ng-if="input.length !== 0"
-      ng-repeat="item in input | filter:{'name':simpleFilter.name} | filter:{'status':simpleFilter.status} |
-                          filter:{'list':simpleFilter.tags}"
+      ng-repeat="item in input"
       class="entityRow"
       ng-class="{
               firstEntityRow:$first, lastEntityRow:$last,
-              rowSelected:checkedRow(item.name)
+              rowSelected:checkedRow(item.instance)
             }">
     <td class="checkboxCell">
       <input type="checkbox" checklist-model="selectedRows" ng-model="$index"
-             checklist-value="{name:item.name, type:item.type, status:item.status}"
+             checklist-value="{'instance':item.instance, 'startTime':item.startTime, 'endTime':item.endTime, 'status':item.status}"
              ng-change="checkButtonsToShow()"/>
     </td>
     <td class="nameCell">
-      <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
-        <span class="entypo" ng-class="{'FEED':'download','process':'cycle'}[item.type]"></span> {{ item.name }}
+      <button type="button" class="btn btn-default" ng-click="goInstanceDetails(item.instance, type.entity.type)">
+        {{ item.instance }}
       </button>
     </td>
     <td>
-      started
+      {{ item.startTime }}
     </td>
     <td>
-      ended
+      {{ item.endTime }}
     </td>
     <td class="stateCell">
-      <span ng-if="type !== 'cluster'" ng-class="{'text-success': item.status === 'RUNNING', 'text-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
+      <span ng-class="{'text-success': item.status === 'RUNNING', 'text-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
     </td>
 
   </tr>
@@ -89,6 +92,28 @@
       </div>
     </td>
   </tr>
+
+  <tr>
+    <td colspan="5">
+      <nav class="pull-right">
+        <ul class="pagination">
+          <li>
+            <a href="javascript:void(0);" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li><a href="javascript:void(0);">1</a></li>
+          <li><a href="javascript:void(0);">2</a></li>
+          <li>
+            <a href="javascript:void(0);" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </td>
+  </tr>
+
   </tbody>
 
 </table>

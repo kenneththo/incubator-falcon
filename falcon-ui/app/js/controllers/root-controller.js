@@ -86,7 +86,6 @@
         Falcon.searchEntities(type, name, tags, 0).success(function (data) {
           Falcon.logResponse('success', data, false, true);
           if (data !== null) {
-            console.log(data);
             $scope.searchList = data.entity;
           }
           Falcon.responses.listLoaded = true;
