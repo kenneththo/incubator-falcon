@@ -21,12 +21,66 @@
     }
   });
 
+  function searchByName(name, list){
+    var result = [];
+    var index = 0;
+    for(var i=0; i<list.length; i++){
+      if(list[i].name === name){
+        result[index++] = list[i];
+      }
+    }
+    return result;
+  }
+
+  function searchTag(tag, list){
+    var result = [];
+    var index = 0;
+    for(var j=0; j<list.length; j++){
+      for(var k=0; k<list[j].list.tag.length; k++){
+        if(list[j].list.tag[k] === tag){
+            result[index++] = list[j];
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  function searchByTags(tags, list){
+    var arrTags = tags.split(",");
+    var result = list;
+    for(var i=0; i<arrTags.length; i++){
+      result = searchTag(arrTags[i], result);
+    }
+    return result;
+  }
+
   server.get('/api/entities/list/:type', function (req, res) {
     var type = req.params.type;
+    var name = req.query.filterBy === undefined ? "" : req.query.filterBy;
+    var tags = req.query.tags === undefined ? "" : req.query.tags;
     var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
     var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
-    var paginated = mockData.entitiesList[type];
-    paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    var clone;
+    var paginated = JSON.parse(JSON.stringify(mockData.entitiesList[type]));
+    name = name.substring(5);
+    if(tags !== "" && name !== "" && name !== "*"){
+      console.log("Search by tags " + tags);
+      paginated.entity = searchByName(name, paginated.entity);
+      paginated.entity = searchByTags(tags, paginated.entity);
+    }else if(tags !== ""){
+      console.log("Search by tags " + tags);
+      paginated.entity = searchByTags(tags, paginated.entity);
+    }else if(name === "*"){
+      console.log("Search by name *");
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }else if(name !== ""){
+      console.log("Search by name " + name);
+      paginated.entity = searchByName(name, paginated.entity);
+    }else{
+      console.log("Search by name *");
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }
     res.json(paginated);
   });
 
@@ -129,13 +183,17 @@
   server.get('/api/instance/list/:type/:name', function(req, res) {
     var type = req.params.type.toUpperCase(),
         name = req.params.name,
+        numResults = parseInt(req.query.numResults === undefined ? 5 : req.query.numResults),
+        offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset),
         responseMessage = {
           "instances": mockData.instancesList[type],
           "requestId": "falcon/default/13015853-8e40-4923-9d32-6d01053c31c6\n\n",
           "message": "default\/STATUS\n",
           "status": "SUCCEEDED"
         };
-    res.json(responseMessage);
+    var paginated = responseMessage;
+    paginated.entity = paginated.instances.slice(offset, offset+numResults);
+    res.json(paginated);
   });
 
 

@@ -37,7 +37,6 @@
 
   entitiesListModule.filter('tagFilter', function () {
     return function (items) {
-      console.log(items);
       var filtered = [], i;
       for (i = 0; i < items.length; i++) {
         var item = items[i];
@@ -53,14 +52,12 @@
       scope: {
         input: "=",
         schedule: "=",
-        suspend: "=",
-        clone: "=",
-        remove: "=",
-        edit: "=",
-        type: "@",
-        entityDetails:"=",
-        entityDefinition:"=",
         resume:"=",
+        suspend: "=",
+        stop: "=",
+        type: "=",
+        name: "=",
+        instanceDetails:"=",
         refresh: "="
       },
       controller: 'InstancesListCtrl',
@@ -75,11 +72,12 @@
         }, true);
 
         scope.selectedRows = [];
+        scope.$parent.refreshInstanceList(scope.type, scope.name);
 
         scope.checkedRow = function (name) {
           var isInArray = false;
           scope.selectedRows.forEach(function(item) {
-            if (name === item.name) {
+            if (name === item.instance) {
               isInArray = true;
             }
           });
@@ -91,7 +89,8 @@
         scope.selectedDisabledButtons = {
           schedule:true,
           suspend:true,
-          resume:true
+          resume:true,
+          stop:true
         };
 
         scope.checkButtonsToShow = function() {
@@ -110,63 +109,76 @@
               scope.selectedAll = false;
             }
 
-            scope.selectedRows.forEach(function(entity) {
-              statusCount[entity.status] = statusCount[entity.status]+1;
+            scope.selectedRows.forEach(function(instance) {
+              statusCount[instance.status] = statusCount[instance.status]+1;
             });
 
             if(statusCount.SUBMITTED > 0) {
               if(statusCount.RUNNING > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0) {
-                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true };
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
               }
               else {
-                scope.selectedDisabledButtons = { schedule:false, suspend:true, resume:true };
+                scope.selectedDisabledButtons = { schedule:false, suspend:true, resume:true, stop:true };
               }
             }
             if(statusCount.RUNNING > 0) {
               if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0) {
-                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true };
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:false };
               }
               else {
-                scope.selectedDisabledButtons = { schedule:true, suspend:false, resume:true };
+                scope.selectedDisabledButtons = { schedule:true, suspend:false, resume:true, stop:true  };
               }
             }
             if (statusCount.SUSPENDED > 0) {
               if(statusCount.SUBMITTED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0) {
-                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true };
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:false };
               }
               else {
-                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:false };
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:false, stop:false };
               }
             }
             if (statusCount.UNKNOWN > 0) {
-              scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true };
+              scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
             }
 
             if(scope.selectedRows.length === 0) {
               scope.selectedDisabledButtons = {
                 schedule:true,
+                resume:true,
                 suspend:true,
-                resume:true
+                stop:true
               };
             }
           }, 50);
         };
 
+        var isSelected = function(item){
+          var selected = false;
+          scope.selectedRows.forEach(function(entity) {
+            if(angular.equals(item, entity)){
+              selected = true;
+            }
+          });
+          return selected;
+        }
+
         scope.checkAll = function () {
-          if(scope.selectedRows.length === scope.input.length){
+          if(scope.selectedRows.length >= scope.input.length){
             angular.forEach(scope.input, function (item) {
               scope.selectedRows.pop();
             });
           }else{
             angular.forEach(scope.input, function (item) {
-              var checkbox = {name:item.name, type:item.type, status:item.status};
-              scope.selectedRows.push(checkbox);
+              var checkbox = {'instance':item.instance, 'startTime':item.startTime, 'endTime':item.endTime, 'status':item.status};
+              if(!isSelected(checkbox)){
+                scope.selectedRows.push(checkbox);
+              }
             });
           }
         };
 
-        scope.goEntityDetails = function(name, type) {
-          scope.entityDetails(name, type);
+        scope.goInstanceDetails = function(name) {
+          scope.instanceDetails(name, scope.type);
         };
 
         scope.scopeSuspend = function () {
@@ -174,7 +186,7 @@
           for(i = 0; i < scope.selectedRows.length; i++) {
             var multiRequestType = scope.selectedRows[i].type.toLowerCase();
             Falcon.responses.multiRequest[multiRequestType] += 1;
-            scope.suspend(scope.selectedRows[i].type, scope.selectedRows[i].name);
+            scope.suspend(scope.type, scope.name, scope.selectedRows[i].startTime, scope.selectedRows[i].endTime);
           }
         };
 

@@ -23,7 +23,8 @@
   falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', function ($http, X2jsService, $location, $rootScope, $cookieStore) {
 
     var Falcon = {},
-        NUMBER_OF_RESULTS = 50;
+        NUMBER_OF_ENTITIES = 10,
+        NUMBER_OF_INSTANCES = 5;
 
     function buildURI(uri){
       if($rootScope.ambariView()){
@@ -142,7 +143,7 @@
     };
 
     Falcon.getEntities = function (type) {
-    return $http.get(buildURI('../api/entities/list/' + type + '?fields=status,tags&numResults=' + NUMBER_OF_RESULTS));
+    return $http.get(buildURI('../api/entities/list/' + type + '?fields=status,tags&numResults=' + NUMBER_OF_ENTITIES));
     };
 
     Falcon.getEntityDefinition = function (type, name) {
@@ -151,16 +152,20 @@
 
     Falcon.searchEntities = function (type, name, tags, offset) {
       if(name !== undefined && tags !== undefined && tags !== "") {
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + 10));
+        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }else if(name !== undefined){
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + 10));
+        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }else {
-        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + 10));
+        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }
     };
 
-    Falcon.getInstances = function (type, name) {
-      return $http.get(buildURI('../api/instance/list/' + type + '/' + name + '?colo=*&orderBy=startTime'));
+    Falcon.getInstances = function (type, name, offset) {
+      return $http.get(buildURI('../api/instance/list/' + type + '/' + name + '?colo=*&orderBy=startTime&offset=' + offset + '&numResults=' + NUMBER_OF_INSTANCES));
+    };
+
+    Falcon.postSuspendInstance = function (entityType, entityName, start, end) {
+      return $http.post(buildURI('../api/instance/suspend/' + entityType + '/' + entityName + '?colo=*&start=' + start + '&end=' + end));
     };
 
     //----------------------------------------------//

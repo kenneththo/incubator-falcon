@@ -25,8 +25,8 @@
 
       $scope.$parent.refreshList();
 
-      $scope.focusSearch = function (type) {
-        $scope.searchEntityType = type;
+      $scope.focusSearch = function () {
+        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
       };
 
       $scope.deleteEntity = function (type, name) {
@@ -135,6 +135,7 @@
             
           });
       };
+
       $scope.relationsEntity = function (type, name) {
         console.log("relations " + type + " - " + name);
       };
