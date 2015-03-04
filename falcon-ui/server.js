@@ -263,8 +263,7 @@
         res.send(404, response);
       }
 
-    }
-    else {
+    } else {
       console.log('error');
     }
 
@@ -281,8 +280,6 @@
 
     response = chartData.topEntities[objectToGive];
 
-    console.log(objectToGive);
-
     chartData.topEntities.forEach(function (item) {
       //console.log(item);
     });
@@ -290,17 +287,10 @@
     if (response.status === 'SUCCEEDED') {
       res.send(200, response);
     } else {
-
       res.send(404, response);
     }
 
   });
-
-
-
-
-
-
 
   server.listen(PORT, function () {
     console.log('Dev server listening on port ' + PORT);
