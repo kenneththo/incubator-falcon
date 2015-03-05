@@ -168,8 +168,20 @@
       return $http.get(buildURI('../api/instance/list/' + type + '/' + name + '?colo=*&orderBy=startTime&offset=' + offset + '&numResults=' + NUMBER_OF_INSTANCES));
     };
 
+    Falcon.postResumeInstance = function (entityType, entityName, start, end) {
+      return $http.post(buildURI('../api/instance/resume/' + entityType + '/' + entityName + '?colo=*&start=' + start + '&end=' + end));
+    };
+
     Falcon.postSuspendInstance = function (entityType, entityName, start, end) {
       return $http.post(buildURI('../api/instance/suspend/' + entityType + '/' + entityName + '?colo=*&start=' + start + '&end=' + end));
+    };
+
+    Falcon.postKillInstance = function (entityType, entityName, start, end) {
+      return $http.post(buildURI('../api/instance/kill/' + entityType + '/' + entityName + '?colo=*&start=' + start + '&end=' + end));
+    };
+
+    Falcon.postReRunInstance = function (entityType, entityName, start, end) {
+      return $http.post(buildURI('../api/instance/rerun/' + entityType + '/' + entityName + '?colo=*&start=' + start + '&end=' + end));
     };
 
     //----------------------------------------------//

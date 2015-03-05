@@ -69,16 +69,12 @@
       paginated.entity = searchByName(name, paginated.entity);
       paginated.entity = searchByTags(tags, paginated.entity);
     }else if(tags !== ""){
-      console.log("Search by tags " + tags);
       paginated.entity = searchByTags(tags, paginated.entity);
     }else if(name === "*"){
-      console.log("Search by name *");
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else if(name !== ""){
-      console.log("Search by name " + name);
       paginated.entity = searchByName(name, paginated.entity);
     }else{
-      console.log("Search by name *");
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }
     res.json(paginated);
@@ -196,7 +192,65 @@
     res.json(paginated);
   });
 
+  server.post('/api/instance/suspend/:type/:name', function (req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name,
+        start = req.query.start,
+        end = req.query.end,
+        indexInArray = mockData.findByStartEnd(type, start, end),
+        responseMessage = {
+          "status": "SUCCEEDED",
+          "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "suspended successfully\n",
+          "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
+        };
+    mockData.instancesList[type][indexInArray].status = "SUSPENDED";
+    res.json(200, responseMessage);
+  });
 
+  server.post('/api/instance/resume/:type/:name', function (req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name,
+        start = req.query.start,
+        end = req.query.end,
+        indexInArray = mockData.findByStartEnd(type, start, end),
+        responseMessage = {
+          "status": "SUCCEEDED",
+          "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "resumed successfully\n",
+          "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
+        };
+    mockData.instancesList[type][indexInArray].status = "RUNNING";
+    res.json(200, responseMessage);
+  });
+
+  server.post('/api/instance/rerun/:type/:name', function (req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name,
+        start = req.query.start,
+        end = req.query.end,
+        indexInArray = mockData.findByStartEnd(type, start, end),
+        responseMessage = {
+          "status": "SUCCEEDED",
+          "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "resumed successfully\n",
+          "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
+        };
+    mockData.instancesList[type][indexInArray].status = "RUNNING";
+    res.json(200, responseMessage);
+  });
+
+  server.post('/api/instance/kill/:type/:name', function (req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name,
+        start = req.query.start,
+        end = req.query.end,
+        indexInArray = mockData.findByStartEnd(type, start, end),
+        responseMessage = {
+          "status": "SUCCEEDED",
+          "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "killed successfully\n",
+          "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
+        };
+    mockData.instancesList[type][indexInArray].status = "KILLED";
+    res.json(200, responseMessage);
+  });
 
 
   /*

@@ -25,7 +25,15 @@
         return i;     
       }
     } 
-  }
+  };
+
+  function findByStartEnd(type, start, end) {
+    for (var i = 0; i < instancesList[type].length; i++) {
+      if (instancesList[type][i].startTime === start && instancesList[type][i].endTime === end) {
+        return i;
+      }
+    }
+  };
 
   var entitiesList = {
     cluster : {
@@ -235,7 +243,7 @@
           "startTime": "2013-10-21T14:41:56-07:00",
           "cluster": "primary-cluster",
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
+          "status": "RUNNING",
           "instance": "2012-04-02T08:00Z"
         }, {
           "details": "",
@@ -243,7 +251,7 @@
           "startTime": "2013-10-21T14:41:56-07:00",
           "cluster": "primary-cluster",
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
+          "status": "SUSPENDED",
           "instance": "2012-04-03T08:00Z"
         }, {
           "details": "",
@@ -251,7 +259,7 @@
           "startTime": "2013-10-21T14:41:56-07:00",
           "cluster": "primary-cluster",
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
+          "status": "KILLED",
           "instance": "2012-04-04T08:00Z"
         }, {
           "details": "",
@@ -318,6 +326,7 @@
     };
   
   exports.findByNameInList = findByNameInList;
+  exports.findByStartEnd = findByStartEnd;
   exports.entitiesList = entitiesList;
   exports.definitions = definitions;
   exports.instancesList = instancesList;

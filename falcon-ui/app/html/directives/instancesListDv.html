@@ -41,7 +41,7 @@
         <span class="entypo paus"></span> <div>Suspend</div>
       </div>
       <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeStop()" ng-disabled="selectedDisabledButtons.stop">
-        <span class="entypo stop"></span> <div>Stop</div>
+        <span class="entypo stop"></span> <div>Kill</div>
       </div>
       &nbsp;&nbsp;
       <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-disabled="selectedDisabledButtons.schedule">
@@ -66,11 +66,11 @@
             }">
     <td class="checkboxCell">
       <input type="checkbox" checklist-model="selectedRows" ng-model="$index"
-             checklist-value="{'instance':item.instance, 'startTime':item.startTime, 'endTime':item.endTime, 'status':item.status}"
+             checklist-value="{'instance':item.instance, 'startTime':item.startTime, 'endTime':item.endTime, 'status':item.status, 'type':type}"
              ng-change="checkButtonsToShow()"/>
     </td>
     <td class="nameCell">
-      <button type="button" class="btn btn-default" ng-click="goInstanceDetails(item, type.entity.type)">
+      <button type="button" class="btn btn-default" ng-click="goInstanceDetails(item)">
         {{ item.instance }}
       </button>
     </td>
@@ -82,7 +82,8 @@
     </td>
     <td class="stateCell">
       <span ng-class="{'blink-success': item.status === 'RUNNING', 'text-success': item.status === 'SUCCEEDED',
-      'blink-warning': item.status === 'SUSPENDED', 'blink-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
+      'blink-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'KILLED',
+      'blink-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
     </td>
 
   </tr>

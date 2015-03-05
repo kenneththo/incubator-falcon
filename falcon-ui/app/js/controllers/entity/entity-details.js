@@ -60,24 +60,63 @@
         });
       };
 
-      $scope.instanceDetails = function (instance, type) {
+      $scope.instanceDetails = function (instance) {
         EntityModel.model = instance;
-        EntityModel.type = type;
+        EntityModel.type = $scope.entity.type;
+        EntityModel.name = $scope.entity.name;
         $state.go("instanceDetails");
       };
 
+      $scope.resumeInstance = function (type, name, start, end) {
+        Falcon.logRequest();
+        Falcon.postResumeInstance(type, name, start, end)
+            .success(function (message) {
+              Falcon.logResponse('success', message, type);
+              $scope.refreshInstanceList(type, name);
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, type);
+
+            });
+      };
+
       $scope.suspendInstance = function (type, name, start, end) {
-        console.log("suspend" + type + ", " + name + "," + start + "," + end);
-        //Falcon.logRequest();
-        //Falcon.postSuspendEntity(type, name)
-        //    .success(function (message) {
-        //      Falcon.logResponse('success', message, type);
-        //      $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
-        //    })
-        //    .error(function (err) {
-        //      Falcon.logResponse('error', err, type);
-        //
-        //    });
+        Falcon.logRequest();
+        Falcon.postSuspendInstance(type, name, start, end)
+            .success(function (message) {
+              Falcon.logResponse('success', message, type);
+              $scope.refreshInstanceList(type, name);
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, type);
+
+            });
+      };
+
+      $scope.reRunInstance = function (type, name, start, end) {
+        Falcon.logRequest();
+        Falcon.postReRunInstance(type, name, start, end)
+            .success(function (message) {
+              Falcon.logResponse('success', message, type);
+              $scope.refreshInstanceList(type, name);
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, type);
+
+            });
+      };
+
+      $scope.killInstance = function (type, name, start, end) {
+        Falcon.logRequest();
+        Falcon.postKillInstance(type, name, start, end)
+            .success(function (message) {
+              Falcon.logResponse('success', message, type);
+              $scope.refreshInstanceList(type, name);
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, type);
+
+            });
       };
       
     }

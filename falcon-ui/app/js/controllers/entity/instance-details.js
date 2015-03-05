@@ -32,6 +32,58 @@
 
       $scope.instance = EntityModel.model;
       $scope.instance.type = EntityModel.type;
+      $scope.instance.name = EntityModel.name;
+
+      $scope.resumeInstance = function () {
+        Falcon.logRequest();
+        if($scope.instance.status === "KILLED"){
+          Falcon.postReRunInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+              .success(function (message) {
+                Falcon.logResponse('success', message, $scope.instance.type);
+                $scope.instance.status = "RUNNING";
+              })
+              .error(function (err) {
+                Falcon.logResponse('error', err, $scope.instance.type);
+
+              });
+        }else{
+          Falcon.postResumeInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+              .success(function (message) {
+                Falcon.logResponse('success', message, $scope.instance.type);
+                $scope.instance.status = "RUNNING";
+              })
+              .error(function (err) {
+                Falcon.logResponse('error', err, $scope.instance.type);
+
+              });
+        }
+      };
+
+      $scope.suspendInstance = function () {
+        Falcon.logRequest();
+        Falcon.postSuspendInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+            .success(function (message) {
+              Falcon.logResponse('success', message, $scope.instance.type);
+              $scope.instance.status = "SUSPENDED";
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, $scope.instance.type);
+
+            });
+      };
+
+      $scope.killInstance = function () {
+        Falcon.logRequest();
+        Falcon.postKillInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+            .success(function (message) {
+              Falcon.logResponse('success', message, $scope.instance.type);
+              $scope.instance.status = "KILLED";
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, $scope.instance.type);
+
+            });
+      };
 
     }
   ]);

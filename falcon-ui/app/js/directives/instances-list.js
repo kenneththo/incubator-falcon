@@ -53,6 +53,7 @@
         input: "=",
         schedule: "=",
         resume:"=",
+        rerun:"=",
         suspend: "=",
         stop: "=",
         type: "=",
@@ -98,7 +99,8 @@
             "SUBMITTED":0,
             "RUNNING":0,
             "SUSPENDED":0,
-            "UNKNOWN":0
+            "UNKNOWN":0,
+            "KILLED":0
           };
 
           $timeout(function() {
@@ -114,7 +116,7 @@
             });
 
             if(statusCount.SUBMITTED > 0) {
-              if(statusCount.RUNNING > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0) {
+              if(statusCount.RUNNING > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
               }
               else {
@@ -122,7 +124,7 @@
               }
             }
             if(statusCount.RUNNING > 0) {
-              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:false };
               }
               else {
@@ -130,11 +132,19 @@
               }
             }
             if (statusCount.SUSPENDED > 0) {
-              if(statusCount.SUBMITTED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:false };
               }
               else {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:false, stop:false };
+              }
+            }
+            if (statusCount.KILLED > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0) {
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
+              }
+              else {
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:false, stop:true };
               }
             }
             if (statusCount.UNKNOWN > 0) {
@@ -169,7 +179,7 @@
             });
           }else{
             angular.forEach(scope.input, function (item) {
-              var checkbox = {'instance':item.instance, 'startTime':item.startTime, 'endTime':item.endTime, 'status':item.status};
+              var checkbox = {'instance':item.instance, 'startTime':item.startTime, 'endTime':item.endTime, 'status':item.status, 'type':scope.type};
               if(!isSelected(checkbox)){
                 scope.selectedRows.push(checkbox);
               }
@@ -177,13 +187,12 @@
           }
         };
 
-        scope.goInstanceDetails = function(name) {
-          scope.instanceDetails(name, scope.type);
+        scope.goInstanceDetails = function(instance) {
+          scope.instanceDetails(instance);
         };
 
         scope.scopeSuspend = function () {
-          var i;
-          for(i = 0; i < scope.selectedRows.length; i++) {
+          for(var i = 0; i < scope.selectedRows.length; i++) {
             var multiRequestType = scope.selectedRows[i].type.toLowerCase();
             Falcon.responses.multiRequest[multiRequestType] += 1;
             scope.suspend(scope.type, scope.name, scope.selectedRows[i].startTime, scope.selectedRows[i].endTime);
@@ -191,11 +200,22 @@
         };
 
         scope.scopeResume = function () {
-          var i;
-          for(i = 0; i < scope.selectedRows.length; i++) {
+          for(var i = 0; i < scope.selectedRows.length; i++) {
             var multiRequestType = scope.selectedRows[i].type.toLowerCase();
             Falcon.responses.multiRequest[multiRequestType] += 1;
-            scope.resume(scope.selectedRows[i].type, scope.selectedRows[i].name);
+            if(scope.selectedRows[i].status === "KILLED"){
+              scope.rerun(scope.type, scope.name, scope.selectedRows[i].startTime, scope.selectedRows[i].endTime);
+            }else{
+              scope.resume(scope.type, scope.name, scope.selectedRows[i].startTime, scope.selectedRows[i].endTime);
+            }
+          }
+        };
+
+        scope.scopeStop = function () {
+          for(var i = 0; i < scope.selectedRows.length; i++) {
+            var multiRequestType = scope.selectedRows[i].type.toLowerCase();
+            Falcon.responses.multiRequest[multiRequestType] += 1;
+            scope.stop(scope.type, scope.name, scope.selectedRows[i].startTime, scope.selectedRows[i].endTime);
           }
         };
 
