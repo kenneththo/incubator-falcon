@@ -31,8 +31,8 @@
           </div>
           <div class="col-sm-5">
             <h4 class="instance-title">
-              Status: <span ng-class="{'text-success': instance.status === 'RUNNING' || instance.status === 'SUCCEEDED',
-              'text-warning': instance.status === 'SUSPENDED', 'text-danger': instance.status === 'UNKNOWN'}">{{ instance.status }}</span>
+              Status: <span ng-class="{'blink-success': instance.status === 'RUNNING', 'text-success': instance.status === 'SUCCEEDED',
+              'blink-warning': instance.status === 'SUSPENDED', 'blink-danger': instance.status === 'UNKNOWN'}">{{ instance.status }}</span>
             </h4>
           </div>
           <div class="col-sm-6 buttonCell">

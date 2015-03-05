@@ -252,6 +252,48 @@ input[type="password"]{
   }
 }
 
+@keyframes blink-success {
+  0% { color: @summarySuccess; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink-success {
+  0% { color: @summarySuccess; }
+  100% { color: black; }
+}
+.blink-success {
+  -webkit-animation: blink-success 1s linear infinite;
+  -moz-animation: blink-success 1s linear infinite;
+  animation: blink-success 1s linear infinite;
+}
+
+@keyframes blink-warning {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink-warning {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+.blink-warning {
+  -webkit-animation: blink-warning 1s linear infinite;
+  -moz-animation: blink-warning 1s linear infinite;
+  animation: blink-warning 1s linear infinite;
+}
+
+@keyframes blink-danger {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink-danger {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+.blink-danger {
+  -webkit-animation: blink-danger 1s linear infinite;
+  -moz-animation: blink-danger 1s linear infinite;
+  animation: blink-danger 1s linear infinite;
+}
+
 .text-success {
   color: @summarySuccess;
   border-right: 2px solid @gray-lighter;
