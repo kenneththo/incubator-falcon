@@ -22,14 +22,23 @@
 
   app.controller('RootCtrl', [
     "$scope", "$timeout", "Falcon", "FileApi", "EntityModel",
-    "$state", "X2jsService", "ValidationService", "SpinnersFlag",
+    "$state", "X2jsService", "ValidationService", "SpinnersFlag", "EntityFalcon",
     function ($scope, $timeout, Falcon, FileApi,
-              EntityModel, $state, X2jsService, validationService, SpinnersFlag) {
+              EntityModel, $state, X2jsService, validationService, SpinnersFlag, EntityFalcon) {
+
+      var resultsPerPage = 10;
 
       $scope.server = Falcon;
       $scope.validations = validationService;
       $scope.buttonSpinners = SpinnersFlag;
       $scope.models = {};
+
+      $scope.pageOne = {};
+      $scope.pageTwo = {};
+      $scope.pageTree = {};
+      $scope.pageOne.enabled = false;
+      $scope.pageTwo.enabled = false;
+      $scope.pageTree.enabled = false;
 
       $scope.handleFile = function (evt) {
         Falcon.logRequest();
@@ -75,29 +84,76 @@
           }
         }
 
-        searchEntities(type, name, tagsSt);
+        getPages(type, name, tagsSt, 0);
 
       };
 
-      var searchEntities = function (type, name, tags) {
+      var getPages = function (type, name, tags, offset) {
+
         $scope.searchList = [];
         $scope.loading = true;
-        Falcon.logRequest();
-        Falcon.searchEntities(type, name, tags, 0).success(function (data) {
-          Falcon.logResponse('success', data, false, true);
-          if (data !== null) {
-            $scope.searchList = data.entity;
+
+        //Page One
+        EntityFalcon.searchEntities(type, name, tags, offset).then(function() {
+          if (EntityFalcon.data !== null) {
+            $scope.pageOne.data = EntityFalcon.data.entity;
+            $scope.pageOne.enabled = true;
+            $scope.pageOne.label = "" + ((offset/resultsPerPage)+1);
+            if($scope.pageOne.data.length > resultsPerPage){
+              offset = offset + resultsPerPage;
+              //Page Two
+              EntityFalcon.searchEntities(type, name, tags, offset).then(function() {
+                if (EntityFalcon.data !== null) {
+                  $scope.pageTwo.data = EntityFalcon.data.entity;
+                  $scope.pageTwo.enabled = true;
+                  $scope.pageTwo.label = "" + ((offset/resultsPerPage)+1);
+                  if($scope.pageTwo.data.length > resultsPerPage){
+                    offset = offset + resultsPerPage;
+                    //Page Tree
+                    EntityFalcon.searchEntities(type, name, tags, offset).then(function() {
+                      if (EntityFalcon.data !== null) {
+                        $scope.pageTree.data = EntityFalcon.data.entity;
+                        $scope.pageTree.enabled = true;
+                        $scope.pageTree.label = "" + ((offset/resultsPerPage)+1);
+                        if($scope.pageTree.data.length > resultsPerPage){
+                          offset = offset + resultsPerPage;
+                          //TODO: Show next page
+
+                        }else{
+                          //TODO: Hide next page
+
+                        }
+                        //Actual Page One
+                        $scope.searchList = $scope.pageOne.data;
+                        Falcon.responses.listLoaded = true;
+                        $scope.loading = false;
+                        $timeout(function() {
+                          angular.element('#tagsInput').focus();
+                        }, 0, false);
+                      }
+                    });
+                  }
+                }
+              });
+            }
           }
-          Falcon.responses.listLoaded = true;
-          $scope.loading = false;
-          $timeout(function() {
-            angular.element('#tagsInput').focus();
-          }, 0, false);
-        }).error(function (err) {
-          $scope.loading= false;
-          Falcon.logResponse('error', err);
         });
       };
+
+      $scope.goPageTwo = function (page) {
+        $scope.loading = true;
+        if(page === 2){
+          $scope.searchList = $scope.pageTwo.data;
+        }else if (page === 1){
+          $scope.searchList = $scope.pageTree.data;
+        }else{
+          $scope.searchList = $scope.pageOne.data;
+        }
+        $scope.loading = false;
+        $timeout(function() {
+          angular.element('#tagsInput').focus();
+        }, 0, false);
+      }
 
       $scope.closeAlert = function (index) {
         Falcon.removeMessage(index);

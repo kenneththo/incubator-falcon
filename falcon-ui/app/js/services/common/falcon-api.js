@@ -23,8 +23,8 @@
   falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', function ($http, X2jsService, $location, $rootScope, $cookieStore) {
 
     var Falcon = {},
-        NUMBER_OF_ENTITIES = 10,
-        NUMBER_OF_INSTANCES = 5;
+        NUMBER_OF_ENTITIES = 11, // 10 + 1 for next page
+        NUMBER_OF_INSTANCES = 6; // 5 + 1 for next page
 
     function buildURI(uri){
       if($rootScope.ambariView()){

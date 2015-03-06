@@ -144,7 +144,6 @@
         $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
       };
 
-      //-----------------------------------------//
       $scope.entityDetails = function (name, type) {
 
         type = type.toLowerCase(); //new sandbox returns uppercase type

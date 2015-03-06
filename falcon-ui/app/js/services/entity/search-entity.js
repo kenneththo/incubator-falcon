@@ -18,29 +18,30 @@
 (function () {
   'use strict';
 
-  var services = angular.module('app.services', [
-    'app.services.falcon',
-    'app.services.fileapi',
-    'app.services.json.transformer',
-    'app.services.x2js',
-    'app.services.validation',
-    'app.services.entity',
-    'app.services.entity.serializer',
-    'app.services.entity.factory',
-    'app.services.entity.model'
-  ]);
+  var app = angular.module('app.services.entity', ['app.services']);
 
-  services.factory('SpinnersFlag', function () {
-    return {
-      show: false,
-      backShow: false
-    };
-  });
-  services.factory('SpinnersFlag', function () {
-    return {
-      show: false,
-      backShow: false
-    };
-  });
+  app.factory('EntityFalcon', [
+    "Falcon", "$q",
+    function (Falcon, $q) {
+
+      var EntityFalcon = {};
+      var deffered = $q.defer();
+
+      EntityFalcon.searchEntities = function(type, name, tags, offset){
+        Falcon.logRequest();
+        Falcon.searchEntities(type, name, tags, offset).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          EntityFalcon.data = data;
+          deffered.resolve();
+        }).error(function (err) {
+          Falcon.logResponse('error', err);
+          deffered.resolve();
+        });
+        return deffered.promise;
+      };
+
+      return EntityFalcon;
+
+    }]);
 
 }());
