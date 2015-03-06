@@ -18,20 +18,20 @@
 (function () {
   'use strict';
 
-  var app = angular.module('app.services.entity', ['app.services']);
+  var app = angular.module('app.services.instance', ['app.services']);
 
-  app.factory('EntityFalcon', [
+  app.factory('InstanceFalcon', [
     "Falcon", "$q",
     function (Falcon, $q) {
 
-      var EntityFalcon = {};
+      var InstanceFalcon = {};
 
-      EntityFalcon.searchEntities = function(type, name, tags, offset){
+      InstanceFalcon.getInstances = function(type, name, offset){
         var deffered = $q.defer();
         Falcon.logRequest();
-        Falcon.searchEntities(type, name, tags, offset).success(function (data) {
+        Falcon.getInstances(type, name, offset).success(function (data) {
           Falcon.logResponse('success', data, false, true);
-          EntityFalcon.data = data;
+          InstanceFalcon.data = data;
           deffered.resolve();
         }).error(function (err) {
           Falcon.logResponse('error', err);
@@ -40,7 +40,7 @@
         return deffered.promise;
       };
 
-      return EntityFalcon;
+      return InstanceFalcon;
 
     }]);
 

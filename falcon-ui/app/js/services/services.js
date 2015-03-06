@@ -27,7 +27,8 @@
     'app.services.entity',
     'app.services.entity.serializer',
     'app.services.entity.factory',
-    'app.services.entity.model'
+    'app.services.entity.model',
+    'app.services.instance'
   ]);
 
   services.factory('SpinnersFlag', function () {

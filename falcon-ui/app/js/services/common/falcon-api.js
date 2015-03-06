@@ -24,7 +24,7 @@
 
     var Falcon = {},
         NUMBER_OF_ENTITIES = 11, // 10 + 1 for next page
-        NUMBER_OF_INSTANCES = 6; // 5 + 1 for next page
+        NUMBER_OF_INSTANCES = 11; // 10 + 1 for next page
 
     function buildURI(uri){
       if($rootScope.ambariView()){
@@ -152,14 +152,18 @@
 
     Falcon.searchEntities = function (type, name, tags, offset) {
       if(name !== undefined && tags !== undefined && tags !== "") {
+        console.log("Search by name & tags");
         return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }else if(name !== undefined){
         if(name === "*"){
+          console.log("Search by name *");
           return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
         }else{
+          console.log("Search by name "+name);
           return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
         }
       }else {
+        console.log("Search by tags "+tags);
         return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }
     };

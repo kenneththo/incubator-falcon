@@ -69,12 +69,16 @@
       paginated.entity = searchByName(name, paginated.entity);
       paginated.entity = searchByTags(tags, paginated.entity);
     }else if(tags !== ""){
+      console.log("Search by tags " + tags);
       paginated.entity = searchByTags(tags, paginated.entity);
     }else if(name === "*"){
+      console.log("Search by name *");
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else if(name !== ""){
+      console.log("Search by name " + name);
       paginated.entity = searchByName(name, paginated.entity);
     }else{
+      console.log("Search by name *");
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }
     res.json(paginated);

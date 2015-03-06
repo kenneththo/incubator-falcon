@@ -99,18 +99,9 @@
     <td colspan="5">
       <nav class="pull-right">
         <ul class="pagination">
-          <li>
-            <a href="javascript:void(0);" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          <li><a href="javascript:void(0);">1</a></li>
-          <li><a href="javascript:void(0);">2</a></li>
-          <li>
-            <a href="javascript:void(0);" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
+          <li ng-show="prevPages"><a href="javascript:void(0);" ng-click="scopePrevOffset(0)"> < </a></li>
+          <li ng-repeat="page in pages" ng-show="page.show"><a href="javascript:void(0);" ng-click="page.enabled ? scopeGoPage(page.index) : void(0)" ng-class="page.enabled ? '' : 'pagDisabled'">{{ page.label }}</a></li>
+          <li ng-show="nextPages"><a href="javascript:void(0);" ng-click="scopeNextOffset(0)"> > </a></li>
         </ul>
       </nav>
     </td>

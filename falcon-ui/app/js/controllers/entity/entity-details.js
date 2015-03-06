@@ -27,10 +27,18 @@
   var clusterModule = angular.module('app.controllers.view', [ 'app.services' ]);
 
   clusterModule.controller('EntityDetailsCtrl', [
-    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", 'EntitySerializer',
-    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, serializer) {
+    "$scope", "$timeout", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", 'EntitySerializer', 'InstanceFalcon',
+    function ($scope, $timeout, $interval, Falcon, EntityModel, $state, X2jsService, serializer, InstanceFalcon) {
 
       $scope.entity = EntityModel;
+
+      var resultsPerPage = 10;
+      var visiblePages = 3;
+      $scope.entityName = $scope.entity.name;
+      $scope.entityType = $scope.entity.type;
+
+      $scope.pages = [];
+      $scope.nextPages = false;
 
       if($scope.entity.type === "feed"){
         $scope.feed = serializer.preDeserialize($scope.entity.model, "feed");
@@ -48,16 +56,60 @@
 
       $scope.refreshInstanceList = function (type, name) {
         $scope.instancesList = [];
+        changePagesSet(0, 0, 0);
+      };
+
+      var consultPage = function(offset, page, defaultPage){
         $scope.loading = true;
-        Falcon.logRequest();
-        Falcon.getInstances(type, name, 0).success(function (data) {
-          Falcon.logResponse('success', data, false, true);
-          if (data !== null) {
-            $scope.instancesList = data.instances;
+        InstanceFalcon.getInstances($scope.entityType, $scope.entityName, offset).then(function() {
+          if (InstanceFalcon.data !== null) {
+            $scope.pages[page] = {};
+            $scope.pages[page].index = page;
+            $scope.pages[page].data = InstanceFalcon.data.entity;
+            $scope.pages[page].show = true;
+            $scope.pages[page].enabled = true;
+            $scope.pages[page].label = "" + ((offset/resultsPerPage)+1);
+            if($scope.pages[page].data.length > resultsPerPage){
+              offset = offset + resultsPerPage;
+              $scope.nextPages = true;
+              if(page < visiblePages-1){
+                consultPage(offset, page+1, defaultPage);
+              }else{
+                $scope.goPage(defaultPage);
+              }
+            }else{
+              $scope.nextPages = false;
+              $scope.goPage(defaultPage);
+            }
           }
-        }).error(function (err) {
-          Falcon.logResponse('error', err);
         });
+      };
+
+      var changePagesSet = function(offset, page, defaultPage){
+        $scope.pages = [];
+        consultPage(offset, page, defaultPage);
+      }
+
+      $scope.goPage = function (page) {
+        $scope.loading = true;
+        $scope.pages.forEach(function(pag) {
+          pag.enabled = true;
+        });
+        $scope.pages[page].enabled = false;
+        $scope.instancesList = $scope.pages[page].data;
+        if($scope.instancesList.length > resultsPerPage){
+          $scope.instancesList.pop();
+        }
+        $scope.prevPages = parseInt($scope.pages[page].label) >  visiblePages ? true : false;
+        Falcon.responses.listLoaded = true;
+        $scope.loading = false;
+        $timeout(function() {
+          angular.element('#tagsInput').focus();
+        }, 0, false);
+      };
+
+      $scope.changePagesSet = function(offset, page, defaultPage){
+        changePagesSet(offset, page, defaultPage);
       };
 
       $scope.instanceDetails = function (instance) {

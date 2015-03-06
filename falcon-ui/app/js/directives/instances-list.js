@@ -59,7 +59,12 @@
         type: "=",
         name: "=",
         instanceDetails:"=",
-        refresh: "="
+        refresh: "=",
+        pages: "=",
+        nextPages: "=",
+        prevPages: "=",
+        goPage: "=",
+        changePagesSet: "="
       },
       controller: 'InstancesListCtrl',
       restrict: "EA",
@@ -224,6 +229,20 @@
           for(i = 0; i < scope.selectedRows.length; i++) {
             scope.downloadEntity(scope.selectedRows[i].type, scope.selectedRows[i].name);
           }
+        };
+
+        scope.scopeGoPage = function (page) {
+          scope.goPage(page);
+        };
+
+        scope.scopeNextOffset = function (page) {
+          var offset = (parseInt(scope.pages[0].label)+(visiblePages-1))*resultsPerPage;
+          scope.changePagesSet(offset, page, 0);
+        };
+
+        scope.scopePrevOffset = function (page) {
+          var offset = (parseInt(scope.pages[0].label)-(visiblePages+1))*resultsPerPage;
+          scope.changePagesSet(offset, page, visiblePages-1);
         };
 
       }
