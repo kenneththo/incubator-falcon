@@ -116,16 +116,21 @@
              input="graphData"
              t="30"
              mode="chartOptions.mode"
+             ng-class="{daily: chartOptions.mode === 'daily'}"
              details="details">
       </chart>
 
     </div>
     <div class="col-xs-4 chartSideBar" ng-show="chartSidebarModel">
-      <h3> Tuesday 10 </h3>
-      <h4> Feb 2015 </h4>
-      <hr />
-      <h5 class="text-success"> Succeed </h5>
 
+      <h3> {{ chartSidebarDate.firstLeg }} </h3>
+      <h4> {{ chartSidebarDate.secondLeg }}
+        <span ng-if="chartOptions.mode === 'hourly'"> {{ chartSidebarDate.timeLeg }} </span>
+      </h4>
+
+      <hr />
+
+      <h5 class="text-success"> Succeed </h5>
       <table class="table">
         <tr ng-repeat="item in chartSidebarModel.topSuccessfulEntities | orderBy:'-numberOfSuccessfulEntities'">
           <td> {{item.name}} </td>
@@ -134,8 +139,8 @@
       </table>
 
       <hr />
-      <h5 class="text-danger"> Failed </h5>
 
+      <h5 class="text-danger"> Failed </h5>
       <table class="table">
         <tr ng-repeat="item in chartSidebarModel.topFailedEntities | orderBy:'-numberOfFailedEntities'">
           <td> {{item.name}} </td>
@@ -144,8 +149,8 @@
       </table>
 
       <hr />
-      <h5> Data Copied </h5>
 
+      <h5> Data Copied </h5>
       <table class="table">
         <tr ng-repeat="item in chartSidebarModel.topDataCopiedEntities | orderBy:'-dataCopied'">
           <td> {{item.name}} </td>
@@ -154,7 +159,6 @@
       </table>
 
     </div>
-
 
   </div>
 </div>

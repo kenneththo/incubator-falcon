@@ -47,7 +47,7 @@
               return d.dataSizeCopied;
           }) + 100;
           scope.yMaxDataSizeDomain = scope.yMaxDataSizeDomain * 1.2;
-          scope.yDomain = scope.yDomain * 1.2
+          scope.yDomain = scope.yDomain * 1.2;
 
           d3.selectAll('svg').remove();
 
@@ -66,8 +66,7 @@
                 .orient("bottom")
                 .ticks(scope.xDomain),
 
-              yAxis = d3.svg.axis()
-                .scale(y),
+              gridNumberRows = 11,
 
               canvas = d3.select(element[0])
                 .append("svg")
@@ -81,7 +80,7 @@
                 .x(function(d, i) {
                   return x(i);
                 })
-                .y(function(d) {
+                .y(function() {
                   return (y(scope.yDomain));
                 })
                 .interpolate('cardinal'),
@@ -130,150 +129,61 @@
             .attr("transform", "translate(" + scope.t + "," + (( scope.h - scope.t ) + 0.5) + ")")
             .call(xAxis);
 
+          if (scope.mode === 'daily') {
+
+            canvas.selectAll('g.dateAxis')
+              .data(scope.input).enter()
+              .append("g").attr('class', 'dateAxis')
+              .append("text")
+              .attr({
+                "text-anchor": "middle",
+                x: function(d, i) { return x(i);},
+                y: function() { return (y(scope.yDomain)); },
+                transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + (scope.t*1.5) + ")"
+              }).html(function(d) {
+                var format = d3.time.format.utc("%d %b");
+                return format(new Date(d.startTime));
+              });
+          }
+
           //---------------GRID-------------------------//
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: 0,
-              y2: 0,
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
 
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y(scope.yDomain/11),
-              y2: y(scope.yDomain/11),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
+          d3.range(0, (gridNumberRows + 1)).forEach(function (i) {
 
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 2),
-              y2: y((scope.yDomain/11) * 2),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
+            canvas.append('svg:line')
+              .attr({
+                stroke: "#d3d3d3",
+                'stroke-width': 1,
+                x1: 0,
+                x2: x(scope.xDomain),
+                y1: y((scope.yDomain/gridNumberRows) * i),
+                y2: y((scope.yDomain/gridNumberRows) * i),
+                transform: "translate(" + scope.t + "," + scope.t + ")"
+              });
 
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 3),
-              y2: y((scope.yDomain/11) * 3),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 4),
-              y2: y((scope.yDomain/11) * 4),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 5),
-              y2: y((scope.yDomain/11) * 5),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 6),
-              y2: y((scope.yDomain/11) * 6),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 7),
-              y2: y((scope.yDomain/11) * 7),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 8),
-              y2: y((scope.yDomain/11) * 8),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 9),
-              y2: y((scope.yDomain/11) * 9),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-
-          canvas.append('svg:line')
-            .attr({
-              stroke: "#d3d3d3",
-              'stroke-width': 1,
-              x1: 0,
-              x2: x(scope.xDomain),
-              y1: y((scope.yDomain/11) * 10),
-              y2: y((scope.yDomain/11) * 10),
-              transform: "translate(" + scope.t + "," + scope.t + ")"
-            });
-          //----------------------------------------//
+          });
 
           //----------BARS DATASIZE COPIED---------------//
+
           canvas.selectAll('rect.dataSize')
             .data(scope.input).enter()
             .append("svg:rect").attr('class', 'dataSize')
             .attr({
               x: function(d, i) { return x(i); },
-              y: function(d, i) { return yDataSizeScale(scope.yMaxDataSizeDomain); },
-              width: function(d, i) { return x(1); },
-              height: function(d, i) { return 0; },
+              y: function() { return yDataSizeScale(scope.yMaxDataSizeDomain); },
+              width: function() { return x(1); },
+              height: function() { return 0; },
               stroke: "none",
               fill: "rgba(8,8,8,0.3)",
               transform: "translate(" + scope.t + "," + scope.t + ")"
             })
             .transition().duration(2000)
             .attr({
-              height: function(d, i) { return yDataSizeScale(d.dataSizeCopied); },
-              y: function(d, i) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); }
+              height: function(d) { return yDataSizeScale(d.dataSizeCopied); },
+              y: function(d) { return yDataSizeScale(scope.yMaxDataSizeDomain - d.dataSizeCopied); }
             });
 
-          //-------------LINES AND AREAS------------//
-
+          //-------------LINES------------//
 
           canvas.append('svg:path')
             .attr({
@@ -289,7 +199,6 @@
               d: successLineFunc(scope.input)
             });
 
-
           canvas.append('svg:path')
             .attr({
               d: linePrepareTransition(scope.input),
@@ -302,6 +211,8 @@
             .attr({
               d: failedLineFunc(scope.input)
             });
+
+          //-------------AREAS------------//
 
           canvas.append('svg:path')
             .attr({
@@ -328,6 +239,7 @@
             });
 
           //------------COL----------------------------//
+
           col = canvas.selectAll('g.col')
             .data(scope.input).enter()
             .append("g").attr('class', 'column');
@@ -362,6 +274,7 @@
               cy: function(d) { return (y(scope.yDomain - d.numSuccessfullInstances)); },
               transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
             });
+
           col.append("circle")
             .attr({
               r: 5,
@@ -370,7 +283,6 @@
               cy: function(d) { return (y(scope.yDomain - d.numFailedInstances)); },
               transform: "translate(" + (x(0.5) + parseInt(scope.t, 10)) + "," + scope.t + ")"
             });
-
 
           tip = col.append("g").attr('transform', "translate(" + scope.t + ", -" + scope.t/2 + ")");
 
@@ -414,9 +326,8 @@
               position: "relative"
             })
 
-            .html(function(d, i) {
+            .html(function(d) {
               var tip = "<tspan x='' y='' fill='green'>" + d.numSuccessfullInstances + "</tspan>";
-
               return tip;
             });
 
@@ -437,13 +348,12 @@
               transform: "translate(10, -2)",
               position: "relative"
             })
-
-            .html(function(d, i) {
+            .html(function(d) {
               var tip = "<tspan x='' y='' fill='red'>" + d.numFailedInstances + "</tspan>";
-
 
               return tip;
             });
+
           tip.append("text")
             .attr({
               x: function(d, i) { return x(i); },
@@ -461,8 +371,7 @@
               transform: "translate(0, 13)",
               position: "relative"
             })
-
-            .html(function(d, i) {
+            .html(function(d) {
               return "<tspan x='' y='' fill='gray'>" + d.dataSizeCopied + "</tspan>";
             });
 
@@ -505,18 +414,18 @@
             });
 
           //--------------CLICKABLE-----------//
+
           col.append("rect")
             .attr({
               x: function(d, i) { return x(i); },
               y: 0,
-              width: function(d, i) { return x(1); },
+              width: function() { return x(1); },
               height: scope.h,
               stroke: "none",
               fill: "transparent",
               transform: "translate(" + scope.t + ", 0)"
             })
             .on("click", function(d){ scope.details(d); });
-
 
         }
 
@@ -529,6 +438,10 @@
 
   d3Module.controller('chartCtrl', [ "$scope", "Falcon", function($scope, Falcon) {
 
+    var formatFL = d3.time.format.utc("%A %d"),
+        formatSL = d3.time.format.utc("%b %Y"),
+        formatTL = d3.time.format.utc("%H:%M");
+
     $scope.graphData = [];
 
     $scope.chartOptions = {
@@ -537,7 +450,7 @@
       day: ""
     };
 
-    $scope.chartSidebarModel;
+    $scope.chartSidebarDate = {};
 
     $scope.requestNewData = function () {
 
@@ -555,7 +468,7 @@
                 return date;
               }
             }()),
-          to = from; //no from supported yet
+          to = from; //no to supported yet
 
       if (type && mode && $scope.chartOptions.day !== '' && $scope.chartOptions.day !== undefined) {
         Falcon.getInstancesSummary(type, mode, from, to)
@@ -565,6 +478,8 @@
             Falcon.logResponse('error', error, false);
           });
       }
+      $scope.chartSidebarDate = {};
+      $scope.chartSidebarModel = undefined;
 
     };
 
@@ -581,7 +496,9 @@
           to = obj.endTime,
           entityType = $scope.chartOptions.entity;
 
-
+      $scope.chartSidebarDate.firstLeg = formatFL(new Date(from));
+      $scope.chartSidebarDate.secondLeg = formatSL(new Date(from));
+      $scope.chartSidebarDate.timeLeg = formatTL(new Date(from));
 
       Falcon.getTopEntities(entityType, from, to).success(function (data) {
         $scope.chartSidebarModel = data;

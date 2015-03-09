@@ -96,9 +96,13 @@ svg:path, svg:line{
   font-size: 8px;
 }
 .tick {
-  stroke-dasharray: 1, 2;
+  //stroke-dasharray: 1, 2;
 }
-
+.daily {
+  .axis text {
+    display: none;
+  }
+}
 
 .column {
   opacity:0;
@@ -110,6 +114,10 @@ svg:path, svg:line{
 text {
   font-size: 10px;
 }
+.dateAxis {
+  fill: @gray-darker;
+}
+
 
 
 .chartSideBar {
