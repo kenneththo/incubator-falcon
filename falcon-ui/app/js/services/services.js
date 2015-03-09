@@ -24,9 +24,11 @@
     'app.services.json.transformer',
     'app.services.x2js',
     'app.services.validation',
+    'app.services.entity',
     'app.services.entity.serializer',
     'app.services.entity.factory',
-    'app.services.entity.model'
+    'app.services.entity.model',
+    'app.services.instance'
   ]);
 
   services.factory('SpinnersFlag', function () {

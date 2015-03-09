@@ -21,26 +21,40 @@
 
   <div class="row">
     <div class="col-sm-24">
+      <a href="javascript:void(0);" ng-click="backToEntity()">< Back to Entity</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-24">
       <div class="detailsBox">
         <div class="row">
           <div class="col-sm-1"></div>
-          <div class="col-sm-13">
-            <h3>
+          <div class="col-sm-11">
+            <h3 class="instance-title">
               {{ instance.instance }}
             </h3>
           </div>
-          <div class="col-sm-10 buttonsRow buttonCell">
-            Status: {{ instance.status }}
-            <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeResume()" ng-disabled="selectedDisabledButtons.resume">
+          <div class="col-sm-5">
+            <h4 class="instance-title">
+              Status: <span ng-class="{'blink-success': instance.status === 'RUNNING', 'text-success': instance.status === 'SUCCEEDED',
+              'blink-warning': instance.status === 'SUSPENDED', 'text-danger': instance.status === 'KILLED',
+              'blink-danger': instance.status === 'UNKNOWN'}">{{ instance.status }}</span>
+            </h4>
+          </div>
+          <div class="col-sm-6 buttonCell">
+            <div class="btn btn-big btn-xs buttons-to-show" ng-click="resumeInstance()"
+                 ng-disabled="!(instance.status === 'SUSPENDED' || instance.status === 'KILLED')">
               <span class="entypo play"></span> <div>Resume</div>
             </div>
-            <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend">
+            <div class="btn btn-big btn-xs buttons-to-show" ng-click="suspendInstance()" ng-disabled="!(instance.status === 'RUNNING')">
               <span class="entypo paus"></span> <div>Suspend</div>
             </div>
-            <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeStop()" ng-disabled="selectedDisabledButtons.stop">
+            <div class="btn btn-big btn-xs buttons-to-show" ng-click="killInstance()" ng-disabled="!(instance.status === 'SUSPENDED' || instance.status === 'RUNNING')">
               <span class="entypo stop"></span> <div>Stop</div>
             </div>
           </div>
+          <div class="col-sm-1"></div>
         </div>
       </div>
     </div>

@@ -15,3 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+(function () {
+  'use strict';
+
+  var app = angular.module('app.services.entity', ['app.services']);
+
+  app.factory('EntityFalcon', [
+    "Falcon", "$q",
+    function (Falcon, $q) {
+
+      var EntityFalcon = {};
+
+      EntityFalcon.searchEntities = function(type, name, tags, offset){
+        var deffered = $q.defer();
+        Falcon.logRequest();
+        Falcon.searchEntities(type, name, tags, offset).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          EntityFalcon.data = data;
+          deffered.resolve();
+        }).error(function (err) {
+          Falcon.logResponse('error', err);
+          deffered.resolve();
+        });
+        return deffered.promise;
+      };
+
+      return EntityFalcon;
+
+    }]);
+
+}());

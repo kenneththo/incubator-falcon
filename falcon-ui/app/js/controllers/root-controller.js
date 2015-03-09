@@ -22,14 +22,24 @@
 
   app.controller('RootCtrl', [
     "$scope", "$timeout", "Falcon", "FileApi", "EntityModel",
-    "$state", "X2jsService", "ValidationService", "SpinnersFlag",
+    "$state", "X2jsService", "ValidationService", "SpinnersFlag", "EntityFalcon",
     function ($scope, $timeout, Falcon, FileApi,
-              EntityModel, $state, X2jsService, validationService, SpinnersFlag) {
+              EntityModel, $state, X2jsService, validationService, SpinnersFlag, EntityFalcon) {
+
+      var resultsPerPage = 10;
+      var visiblePages = 3;
 
       $scope.server = Falcon;
       $scope.validations = validationService;
       $scope.buttonSpinners = SpinnersFlag;
       $scope.models = {};
+
+      $scope.entityName;
+      $scope.entityType;
+      $scope.entityTags;
+
+      $scope.pages = [];
+      $scope.nextPages = false;
 
       $scope.handleFile = function (evt) {
         Falcon.logRequest();
@@ -75,28 +85,66 @@
           }
         }
 
-        searchEntities(type, name, tagsSt);
+        $scope.entityName = name;
+        $scope.entityType = type;
+        $scope.entityTags = tagsSt;
+
+        $scope.searchList = [];
+        changePagesSet(0, 0, 0);
 
       };
 
-      var searchEntities = function (type, name, tags) {
-        $scope.searchList = [];
+      var consultPage = function(offset, page, defaultPage){
         $scope.loading = true;
-        Falcon.logRequest();
-        Falcon.searchEntities(type, name, tags, 0).success(function (data) {
-          Falcon.logResponse('success', data, false, true);
-          if (data !== null) {
-            $scope.searchList = data.entity;
+        EntityFalcon.searchEntities($scope.entityType, $scope.entityName, $scope.entityTags, offset).then(function() {
+          if (EntityFalcon.data !== null) {
+            $scope.pages[page] = {};
+            $scope.pages[page].index = page;
+            $scope.pages[page].data = EntityFalcon.data.entity;
+            $scope.pages[page].show = true;
+            $scope.pages[page].enabled = true;
+            $scope.pages[page].label = "" + ((offset/resultsPerPage)+1);
+            if($scope.pages[page].data.length > resultsPerPage){
+              offset = offset + resultsPerPage;
+              $scope.nextPages = true;
+              if(page < visiblePages-1){
+                consultPage(offset, page+1, defaultPage);
+              }else{
+                $scope.goPage(defaultPage);
+              }
+            }else{
+              $scope.nextPages = false;
+              $scope.goPage(defaultPage);
+            }
           }
-          Falcon.responses.listLoaded = true;
-          $scope.loading = false;
-          $timeout(function() {
-            angular.element('#tagsInput').focus();
-          }, 0, false);
-        }).error(function (err) {
-          $scope.loading= false;
-          Falcon.logResponse('error', err);
         });
+      };
+
+      var changePagesSet = function(offset, page, defaultPage){
+        $scope.pages = [];
+        consultPage(offset, page, defaultPage);
+      }
+
+      $scope.goPage = function (page) {
+        $scope.loading = true;
+        $scope.pages.forEach(function(pag) {
+          pag.enabled = true;
+        });
+        $scope.pages[page].enabled = false;
+        $scope.searchList = $scope.pages[page].data;
+        if($scope.searchList.length > resultsPerPage){
+          $scope.searchList.pop();
+        }
+        $scope.prevPages = parseInt($scope.pages[page].label) >  visiblePages ? true : false;
+        Falcon.responses.listLoaded = true;
+        $scope.loading = false;
+        $timeout(function() {
+          angular.element('#tagsInput').focus();
+        }, 0, false);
+      };
+
+      $scope.changePagesSet = function(offset, page, defaultPage){
+        changePagesSet(offset, page, defaultPage);
       };
 
       $scope.closeAlert = function (index) {

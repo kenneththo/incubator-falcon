@@ -28,10 +28,80 @@
 
   clusterModule.controller('InstanceDetailsCtrl', [
     "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", 'EntitySerializer',
-    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, serializer) {
+    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService) {
 
       $scope.instance = EntityModel.model;
       $scope.instance.type = EntityModel.type;
+      $scope.instance.name = EntityModel.name;
+
+      $scope.backToEntity = function () {
+        var type = $scope.instance.type.toLowerCase();
+        var name = $scope.instance.name;
+        Falcon.logRequest();
+        Falcon.getEntityDefinition(type, name)
+            .success(function (data) {
+              Falcon.logResponse('success', data, false, true);
+              var entityModel = X2jsService.xml_str2json(data);
+              EntityModel.type = type;
+              EntityModel.name = name;
+              EntityModel.model = entityModel;
+              $state.go('entityDetails');
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, false, true);
+            });
+      }
+
+      $scope.resumeInstance = function () {
+        Falcon.logRequest();
+        if($scope.instance.status === "KILLED"){
+          Falcon.postReRunInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+              .success(function (message) {
+                Falcon.logResponse('success', message, $scope.instance.type);
+                $scope.instance.status = "RUNNING";
+              })
+              .error(function (err) {
+                Falcon.logResponse('error', err, $scope.instance.type);
+
+              });
+        }else{
+          Falcon.postResumeInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+              .success(function (message) {
+                Falcon.logResponse('success', message, $scope.instance.type);
+                $scope.instance.status = "RUNNING";
+              })
+              .error(function (err) {
+                Falcon.logResponse('error', err, $scope.instance.type);
+
+              });
+        }
+      };
+
+      $scope.suspendInstance = function () {
+        Falcon.logRequest();
+        Falcon.postSuspendInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+            .success(function (message) {
+              Falcon.logResponse('success', message, $scope.instance.type);
+              $scope.instance.status = "SUSPENDED";
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, $scope.instance.type);
+
+            });
+      };
+
+      $scope.killInstance = function () {
+        Falcon.logRequest();
+        Falcon.postKillInstance($scope.instance.type, $scope.instance.name, $scope.instance.startTime, $scope.instance.endTime)
+            .success(function (message) {
+              Falcon.logResponse('success', message, $scope.instance.type);
+              $scope.instance.status = "KILLED";
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, $scope.instance.type);
+
+            });
+      };
 
     }
   ]);

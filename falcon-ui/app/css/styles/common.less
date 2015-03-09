@@ -227,6 +227,127 @@ input[type="password"]{
   margin-top:-10px!important;
 }
 
+@summarySuccess: #009900;
+@summaryWarning: #E6DD00;
+@summaryDanger: #FF0000;
+
+.entitySummary {
+  text-align: center;
+  .whiteBox {
+    background-color: white;
+    border-radius: 3px;
+    margin: 0 7px 0 0;
+    padding: 5px 0;
+    &:first-child {
+      margin: 0 5px;
+    }
+  }
+  h3, h5 {
+    margin:0;
+  }
+  h3 { font-size:35px; }
+  h5 { font-size:9px; font-weight: bold; }
+  .notBold {
+    font-weight: normal;
+  }
+}
+
+@keyframes blink-success {
+  0% { color: @summarySuccess; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink-success {
+  0% { color: @summarySuccess; }
+  100% { color: black; }
+}
+.blink-success {
+  -webkit-animation: blink-success 1s linear infinite;
+  -moz-animation: blink-success 1s linear infinite;
+  animation: blink-success 1s linear infinite;
+}
+
+@keyframes blink-warning {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink-warning {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+.blink-warning {
+  -webkit-animation: blink-warning 1s linear infinite;
+  -moz-animation: blink-warning 1s linear infinite;
+  animation: blink-warning 1s linear infinite;
+}
+
+@keyframes blink-danger {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink-danger {
+  0% { color: @summaryWarning; }
+  100% { color: black; }
+}
+.blink-danger {
+  -webkit-animation: blink-danger 1s linear infinite;
+  -moz-animation: blink-danger 1s linear infinite;
+  animation: blink-danger 1s linear infinite;
+}
+
+.text-success {
+  color: @summarySuccess;
+  border-right: 2px solid @gray-lighter;
+}
+.text-warning {
+  color: @summaryWarning;
+  border-right: 2px solid @gray-lighter;
+}
+.text-danger {
+  color: @summaryDanger;
+}
+
+.summaryBox {
+  border-radius: 5px;
+  border: 1px solid @gray-light2;
+  margin: 5px 0;
+  padding: 15px 5px;
+  font-size: 12px;
+  background-color: #ffffff;
+  h4 {
+    font-weight: bold;
+    margin:5px 0;
+  }
+  h5 {
+    font-weight: bold;
+    margin-top:20px;
+  }
+  table {
+    width: 100%;
+    border-spacing: 5px;
+    border-collapse: separate;
+  }
+  .tableHeader {
+    width: 70px;
+    font-weight: bold;
+  }
+  textarea {
+    width: 100%;
+  }
+  &.processCluster {
+    padding: 15px 4%;
+    margin: 5px auto;
+    h5 {
+      margin-top:15px;
+      &:first-child {
+        margin-top:0;
+      }
+    }
+  }
+  .detailsBox{
+    margin-left: 10px;
+  }
+}
+
 /*************************************** SEARCH **************************************/
 .search {
   height: 45px;
@@ -416,14 +537,17 @@ tags-input .autocomplete .suggestion-item em {
   text-decoration: line-through;
 }
 
-.btn-gray {
-  color: #333;
-  background-color: #ccc;
-  border-color: #ccc;
-}
-
 .pagination {
   margin: 10px 0 5px 0;
+}
+
+.pagDisabled{
+  cursor: default !important;
+  background-color: #eee !important;
+}
+
+.no-margin{
+  margin: 0;
 }
 
 .buttonsRow {
@@ -433,8 +557,8 @@ tags-input .autocomplete .suggestion-item em {
     border-bottom: 1px solid @gray-lighter;
   }
   margin-bottom: 8px;
-
 }
+
 .buttonCell {
   .entypo, div {
     display: inline-block;
@@ -448,4 +572,23 @@ tags-input .autocomplete .suggestion-item em {
   div {
     //margin: 3px 0 0 0;
   }
+}
+
+.btn-gray {
+  color: #333;
+  background-color: #ccc;
+  border-color: #ccc;
+}
+
+.btn-big {
+  color: #333;
+  background-color: #ccc;
+  border-color: #ccc;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.instance-title{
+  margin: 0;
+  padding: 10px;
 }

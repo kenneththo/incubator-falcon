@@ -25,7 +25,15 @@
         return i;     
       }
     } 
-  }
+  };
+
+  function findByStartEnd(type, start, end) {
+    for (var i = 0; i < instancesList[type].length; i++) {
+      if (instancesList[type][i].startTime === start && instancesList[type][i].endTime === end) {
+        return i;
+      }
+    }
+  };
 
   var entitiesList = {
     cluster : {
@@ -60,7 +68,45 @@
         {"type":"FEED","name":"feed22","status":"RUNNING","list":{"tag":["owner=USMarketing"]}},
         {"type":"FEED","name":"feed23","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
         {"type":"FEED","name":"feed24","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
-        {"type":"FEED","name":"feed25","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}}
+        {"type":"FEED","name":"feed25","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed26","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed27","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed28","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed29","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed30","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed31","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed32","status":"RUNNING","list":{"tag":["owner=USMarketing"]}},
+        {"type":"FEED","name":"feed33","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed34","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed35","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed36","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed37","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed38","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed39","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed40","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed41","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed42","status":"RUNNING","list":{"tag":["owner=USMarketing"]}},
+        {"type":"FEED","name":"feed43","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed44","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed45","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed46","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed47","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed48","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed49","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed50","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed51","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed52","status":"RUNNING","list":{"tag":["owner=USMarketing"]}},
+        {"type":"FEED","name":"feed53","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed54","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed55","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed56","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed57","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed58","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed59","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed60","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed61","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}},
+        {"type":"FEED","name":"feed62","status":"RUNNING","list":{"tag":["owner=USMarketing"]}},
+        {"type":"FEED","name":"feed63","status":"SUBMITTED","list":{"tag":["externalSystem=USWestEmailServers","classification=secure"]}}
       ]
     },
     process:{"entity":[
@@ -235,7 +281,7 @@
           "startTime": "2013-10-21T14:41:56-07:00",
           "cluster": "primary-cluster",
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
+          "status": "RUNNING",
           "instance": "2012-04-02T08:00Z"
         }, {
           "details": "",
@@ -243,7 +289,7 @@
           "startTime": "2013-10-21T14:41:56-07:00",
           "cluster": "primary-cluster",
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
+          "status": "SUSPENDED",
           "instance": "2012-04-03T08:00Z"
         }, {
           "details": "",
@@ -251,7 +297,7 @@
           "startTime": "2013-10-21T14:41:56-07:00",
           "cluster": "primary-cluster",
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
+          "status": "KILLED",
           "instance": "2012-04-04T08:00Z"
         }, {
           "details": "",
@@ -293,6 +339,110 @@
           "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
           "status": "SUCCEEDED",
           "instance": "2012-04-09T08:00Z"
+        },{
+          "details": "",
+          "endTime": "2013-10-21T14:40:26-07:00",
+          "startTime": "2013-10-21T14:39:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933395-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-10T07:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "RUNNING",
+          "instance": "2012-04-11T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUSPENDED",
+          "instance": "2012-04-12T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "KILLED",
+          "instance": "2012-04-13T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-14T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-15T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-16T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-17T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-18T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-19T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-20T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-21T08:00Z"
+        }, {
+          "details": "",
+          "endTime": "2013-10-21T14:42:26-07:00",
+          "startTime": "2013-10-21T14:41:56-07:00",
+          "cluster": "primary-cluster",
+          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
+          "status": "SUCCEEDED",
+          "instance": "2012-04-22T08:00Z"
         }
       ],
       PROCESS: [
@@ -318,6 +468,7 @@
     };
   
   exports.findByNameInList = findByNameInList;
+  exports.findByStartEnd = findByStartEnd;
   exports.entitiesList = entitiesList;
   exports.definitions = definitions;
   exports.instancesList = instancesList;
