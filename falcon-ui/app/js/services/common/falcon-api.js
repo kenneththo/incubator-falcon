@@ -97,6 +97,18 @@
         Falcon.responses.count.error = Falcon.responses.count.error +1;
         Falcon.responses.count.pending = Falcon.responses.count.pending -1;
       }
+      if(type === 'warning') {
+        if(!hide) {
+          var message = {
+            success: type,
+            status: messageObject.status,
+            message: messageObject.message,
+            model: ''
+          };
+          Falcon.responses.queue.push(message);
+          return;;
+        }
+      }
       if(entityType !== false) {
         entityType = entityType.toLowerCase();
         Falcon.responses.multiRequest[entityType] = Falcon.responses.multiRequest[entityType] - 1;
@@ -108,8 +120,19 @@
       else { Falcon.responses.count.error = Falcon.responses.count.error -1; }
       Falcon.responses.queue.splice(index, 1);
     };
-   // serverResponse: null,
-    //    success: null
+    Falcon.errorMessage = function (message) {
+      var err = {};
+      err.status = "ERROR";
+      err.message = message;
+      err.requestId = "";
+      Falcon.logResponse('error', err, false, true);
+    };
+    Falcon.warningMessage = function (message) {
+      var err = {};
+      err.status = "WARNING";
+      err.message = message;
+      Falcon.logResponse('warning', err, false, false);
+    };
 
     //-------------METHODS-----------------------------//
     Falcon.getServerVersion = function () {

@@ -34,10 +34,6 @@
       $scope.buttonSpinners = SpinnersFlag;
       $scope.models = {};
 
-      $scope.entityName;
-      $scope.entityType;
-      $scope.entityTags;
-
       $scope.pages = [];
       $scope.nextPages = false;
 
@@ -60,7 +56,9 @@
 
         if(tags === undefined || tags.length === 0){
           $scope.searchList = [];
-          $scope.searchEntityType = "feed";
+          $timeout(function() {
+            angular.element('#tagsInput').focus();
+          }, 0, false);
           return;
         }
 
@@ -85,8 +83,23 @@
           }
         }
 
+        if(type.feed && type.process && type.dataset){
+          $scope.entityType = "feed,process,dataset";
+        }else if(type.feed && type.process){
+          $scope.entityType = "feed,process";
+        }else if(type.feed && type.dataset){
+          $scope.entityType = "feed,dataset";
+        }else if(type.process && type.dataset){
+          $scope.entityType = "process,dataset";
+        }else if(type.feed){
+          $scope.entityType = "feed";
+        }else if(type.process){
+          $scope.entityType = "process";
+        }else if(type.dataset){
+          $scope.entityType = "dataset";
+        }
+
         $scope.entityName = name;
-        $scope.entityType = type;
         $scope.entityTags = tagsSt;
 
         $scope.searchList = [];
@@ -138,6 +151,11 @@
         $scope.prevPages = parseInt($scope.pages[page].label) >  visiblePages ? true : false;
         Falcon.responses.listLoaded = true;
         $scope.loading = false;
+
+        if($scope.searchList.length === 0){
+          Falcon.warningMessage("No results matched the search criteria.");
+        }
+
         $timeout(function() {
           angular.element('#tagsInput').focus();
         }, 0, false);

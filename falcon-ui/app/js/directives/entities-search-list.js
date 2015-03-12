@@ -169,7 +169,7 @@
             }
           });
           return selected;
-        }
+        };
 
         scope.checkAll = function () {
           if(scope.selectedRows.length === scope.input.length){
@@ -198,7 +198,7 @@
             scope.tags.push(tag);
             scope.focusSearch();
           }
-        }
+        };
 
         scope.scopeEdit = function () {
           scope.edit(scope.selectedRows[0].type, scope.selectedRows[0].name);

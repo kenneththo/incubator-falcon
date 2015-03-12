@@ -88,7 +88,7 @@
       var changePagesSet = function(offset, page, defaultPage){
         $scope.pages = [];
         consultPage(offset, page, defaultPage);
-      }
+      };
 
       $scope.goPage = function (page) {
         $scope.loading = true;

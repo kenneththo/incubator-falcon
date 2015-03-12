@@ -25,8 +25,34 @@
 
       $scope.$parent.refreshList();
 
-      $scope.focusSearch = function () {
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+      $scope.searchEntityType = {};
+      $scope.searchEntityType.feed = true;
+      $scope.searchEntityType.process = true;
+      $scope.searchEntityType.dataset = true;
+
+      $scope.focusSearch = function (type) {
+        if(type === "feed"){
+          if($scope.searchEntityType.feed && !$scope.searchEntityType.process && !$scope.searchEntityType.dataset){
+            Falcon.errorMessage("At least one entity type is required.");
+          }else{
+            $scope.searchEntityType.feed = !$scope.searchEntityType.feed;
+            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          }
+        }else if(type === "process"){
+          if($scope.searchEntityType.process && !$scope.searchEntityType.feed && !$scope.searchEntityType.dataset){
+            Falcon.errorMessage("At least one entity type is required.");
+          }else{
+            $scope.searchEntityType.process = !$scope.searchEntityType.process;
+            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          }
+        }else if(type === "dataset"){
+          if($scope.searchEntityType.dataset && !$scope.searchEntityType.feed && !$scope.searchEntityType.process){
+            Falcon.errorMessage("At least one entity type is required.");
+          }else{
+            $scope.searchEntityType.dataset = !$scope.searchEntityType.dataset;
+            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          }
+        }
       };
 
       $scope.deleteEntity = function (type, name) {
