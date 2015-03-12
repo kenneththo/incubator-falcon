@@ -193,7 +193,7 @@
                           "name": "fooReadEmails5",
                           "type": "process",
                           "dataCopied": 121
-                        },
+                        }
 
                       ],
                       "requestId": "default\/e15bb378-d09f-4911-9df2-5334a45153d2\n",
