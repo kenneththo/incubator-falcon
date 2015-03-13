@@ -173,21 +173,39 @@
       return $http.get(buildURI('../api/entities/definition/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
     };
 
+    //Falcon.searchEntities = function (type, name, tags, offset) {
+    //  if(name !== undefined && tags !== undefined && tags !== "") {
+    //    console.log("Search by name & tags");
+    //    return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+    //  }else if(name !== undefined){
+    //    if(name === "*"){
+    //      console.log("Search by name *");
+    //      return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+    //    }else{
+    //      console.log("Search by name "+name);
+    //      return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+    //    }
+    //  }else {
+    //    console.log("Search by tags "+tags);
+    //    return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+    //  }
+    //};
+
     Falcon.searchEntities = function (type, name, tags, offset) {
       if(name !== undefined && tags !== undefined && tags !== "") {
         console.log("Search by name & tags");
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        return $http.get(buildURI('../api/entities/search/?name=*'+name+'*&filterBy=TYPE:'+type+'&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }else if(name !== undefined){
         if(name === "*"){
           console.log("Search by name *");
-          return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+          return $http.get(buildURI('../api/entities/search/?name=*&filterBy=TYPE:'+type+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
         }else{
           console.log("Search by name "+name);
-          return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+          return $http.get(buildURI('../api/entities/search/?name=*'+name+'*&filterBy=TYPE:'+type+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
         }
       }else {
         console.log("Search by tags "+tags);
-        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        return $http.get(buildURI('../api/entities/search/?filterBy=TYPE:'+type+'&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }
     };
 

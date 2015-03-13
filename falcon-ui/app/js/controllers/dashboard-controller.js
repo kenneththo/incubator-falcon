@@ -27,10 +27,10 @@
 
       $scope.searchEntityType = {};
       $scope.searchEntityType.feed = true;
-      $scope.searchEntityType.process = true;
-      $scope.searchEntityType.dataset = true;
+      $scope.searchEntityType.process = false;
+      $scope.searchEntityType.dataset = false;
 
-      $scope.focusSearch = function (type) {
+      $scope.changeFilter = function (type) {
         if(type === "feed"){
           if($scope.searchEntityType.feed && !$scope.searchEntityType.process && !$scope.searchEntityType.dataset){
             Falcon.errorMessage("At least one entity type is required.");
@@ -53,6 +53,10 @@
             $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
           }
         }
+      };
+
+      $scope.focusSearch = function () {
+        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
       };
 
       $scope.deleteEntity = function (type, name) {

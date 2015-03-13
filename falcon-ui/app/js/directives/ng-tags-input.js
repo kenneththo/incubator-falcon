@@ -360,8 +360,13 @@
           tagList.items = scope.tags;
         });
 
-        scope.$watch('tags.length', function () {
+        scope.$watch('tags.length', function (length) {
           setElementValidity();
+          if(length > 0){
+            scope.options.placeholder = 'Tag:';
+          }else{
+            scope.options.placeholder = 'Name:';
+          }
         });
 
         input

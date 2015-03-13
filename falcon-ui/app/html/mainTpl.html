@@ -23,32 +23,20 @@
   <div class="row">
     <div class="col-sm-24">
       <label>Filter by: &nbsp;</label>
-      <!--<label>-->
-        <!--<input type="radio" ng-model="searchEntityType" value="feed" ng-change="focusSearch()">-->
-        <!--Feed&nbsp;-->
-      <!--</label>-->
-      <!--<label>-->
-        <!--<input type="radio" ng-model="searchEntityType" value="process" ng-change="focusSearch()">-->
-        <!--Process&nbsp;-->
-      <!--</label>-->
-      <!--<label>-->
-        <!--<input type="radio" ng-model="searchEntityType" value="dataset" ng-change="focusSearch()">-->
-        <!--Dataset-->
-      <!--</label>-->
       <div class="searchBox">
         <div class="entityTypeButtons">
           <button class="btn"
-                  ng-click="focusSearch('feed')"
+                  ng-click="changeFilter('feed')"
                   ng-class="{active: searchEntityType.feed}">
             Feeds
           </button>
           <button class="btn"
-                  ng-click="focusSearch('process')"
+                  ng-click="changeFilter('process')"
                   ng-class="{active: searchEntityType.process}">
             Processes
           </button>
           <button class="btn"
-                  ng-click="focusSearch('dataset')"
+                  ng-click="changeFilter('dataset')"
                   ng-class="{active: searchEntityType.dataset}">
             Dataset
           </button>
@@ -60,8 +48,8 @@
   <div class="row">
     <div class="col-sm-24">
       <img src="css/img/ajax-loader.gif" class="glyphicon search-loading-icon" ng-show="loading"/>
-      <i class="glyphicon glyphicon-search search-icon" ng-hide="loading"></i>
-      <tags-input ng-model="tags" placeholder="Search by entity name or tag" min-length="1" on-tag-added="displayResults()"
+      <i class="glyphicon glyphicon-search search-icon" ng-hide="loading" data-toggle="tooltip" data-placement="top" title="Tooltip on top"></i>
+      <tags-input ng-model="tags" min-length="1" add-on-space="true" on-tag-added="displayResults()"
                   on-tag-removed="displayResults()"></tags-input>
       <i class="glyphicon glyphicon-remove remove-icon" ng-click="clearTags()"></i>
     </div>

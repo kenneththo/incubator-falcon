@@ -62,24 +62,34 @@
           return;
         }
 
-        for(var i=0; i<tags.length; i++){
-          var tag = tags[i].text;
-          if(tag.indexOf("=") > -1){
-            tagsSt += tag;
-            if(i < tags.length-1){
-              tagsSt += ",";
-            }
-          }else{
-            namedTags.push(i);
-            name = tag;
-          }
-        }
+        //for(var i=0; i<tags.length; i++){
+        //  var tag = tags[i].text;
+        //  if(tag.indexOf("=") > -1){
+        //    tagsSt += tag;
+        //    if(i < tags.length-1){
+        //      tagsSt += ",";
+        //    }
+        //  }else{
+        //    namedTags.push(i);
+        //    name = tag;
+        //  }
+        //}
+        //
+        //for(i=0; i<namedTags.length; i++){
+        //  if(i < namedTags.length-1){
+        //    tags[namedTags[i]].striked = "tag-striked";
+        //  }else{
+        //    tags[namedTags[i]].striked = "";
+        //  }
+        //}
 
-        for(i=0; i<namedTags.length; i++){
-          if(i < namedTags.length-1){
-            tags[namedTags[i]].striked = "tag-striked";
-          }else{
-            tags[namedTags[i]].striked = "";
+        name = tags[0].text;
+
+        for(var i=1; i<tags.length; i++){
+          var tag = tags[i].text;
+          tagsSt += tag;
+          if(i < tags.length-1){
+            tagsSt += ",";
           }
         }
 

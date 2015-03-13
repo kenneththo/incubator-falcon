@@ -84,6 +84,34 @@
     res.json(paginated);
   });
 
+  server.get('/api/entities/search', function (req, res) {
+    var name = req.query.filterBy === undefined ? "" : req.query.filterBy;
+    var tags = req.query.tags === undefined ? "" : req.query.tags;
+    var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
+    var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
+    var clone;
+    var paginated = JSON.parse(JSON.stringify(mockData.entitiesList[type]));
+    name = name.substring(5);
+    if(tags !== "" && name !== "" && name !== "*"){
+      console.log("Search by tags " + tags);
+      paginated.entity = searchByName(name, paginated.entity);
+      paginated.entity = searchByTags(tags, paginated.entity);
+    }else if(tags !== ""){
+      console.log("Search by tags " + tags);
+      paginated.entity = searchByTags(tags, paginated.entity);
+    }else if(name === "*"){
+      console.log("Search by name *");
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }else if(name !== ""){
+      console.log("Search by name " + name);
+      paginated.entity = searchByName(name, paginated.entity);
+    }else{
+      console.log("Search by name *");
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }
+    res.json(paginated);
+  });
+
   server.get('/api/entities/definition/:type/:name', function(req, res) {
     var type = req.params.type.toUpperCase(),
       name = req.params.name;
