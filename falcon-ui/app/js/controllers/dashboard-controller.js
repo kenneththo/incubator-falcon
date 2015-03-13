@@ -25,38 +25,8 @@
 
       $scope.$parent.refreshList();
 
-      $scope.searchEntityType = {};
-      $scope.searchEntityType.feed = true;
-      $scope.searchEntityType.process = false;
-      $scope.searchEntityType.dataset = false;
-
-      $scope.changeFilter = function (type) {
-        if(type === "feed"){
-          if($scope.searchEntityType.feed && !$scope.searchEntityType.process && !$scope.searchEntityType.dataset){
-            Falcon.errorMessage("At least one entity type is required.");
-          }else{
-            $scope.searchEntityType.feed = !$scope.searchEntityType.feed;
-            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
-          }
-        }else if(type === "process"){
-          if($scope.searchEntityType.process && !$scope.searchEntityType.feed && !$scope.searchEntityType.dataset){
-            Falcon.errorMessage("At least one entity type is required.");
-          }else{
-            $scope.searchEntityType.process = !$scope.searchEntityType.process;
-            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
-          }
-        }else if(type === "dataset"){
-          if($scope.searchEntityType.dataset && !$scope.searchEntityType.feed && !$scope.searchEntityType.process){
-            Falcon.errorMessage("At least one entity type is required.");
-          }else{
-            $scope.searchEntityType.dataset = !$scope.searchEntityType.dataset;
-            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
-          }
-        }
-      };
-
       $scope.focusSearch = function () {
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        $scope.$parent.refreshList($scope.tags);
       };
 
       $scope.deleteEntity = function (type, name) {
@@ -65,7 +35,7 @@
         Falcon.deleteEntity(type, name)
           .success(function (data) {          
             Falcon.logResponse('success', data, type);           
-            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+            $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             
@@ -136,7 +106,7 @@
         Falcon.logRequest();
         Falcon.postResumeEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -146,7 +116,7 @@
         Falcon.logRequest();
         Falcon.postScheduleEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -158,7 +128,7 @@
         Falcon.postSuspendEntity(type, name)
           .success(function (message) {
             Falcon.logResponse('success', message, type);
-              $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+              $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             Falcon.logResponse('error', err, type);
@@ -171,7 +141,7 @@
       };
 
       $scope.displayResults = function () {
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        $scope.$parent.refreshList($scope.tags);
       };
 
       $scope.entityDetails = function (name, type) {
@@ -195,7 +165,7 @@
 
       $scope.clearTags = function(){
         $scope.tags = [];
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        $scope.$parent.refreshList($scope.tags);
       };
       
     }]);

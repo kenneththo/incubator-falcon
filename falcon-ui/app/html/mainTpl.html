@@ -22,31 +22,6 @@
 
   <div class="row">
     <div class="col-sm-24">
-      <label>Filter by: &nbsp;</label>
-      <div class="searchBox">
-        <div class="entityTypeButtons">
-          <button class="btn"
-                  ng-click="changeFilter('feed')"
-                  ng-class="{active: searchEntityType.feed}">
-            Feeds
-          </button>
-          <button class="btn"
-                  ng-click="changeFilter('process')"
-                  ng-class="{active: searchEntityType.process}">
-            Processes
-          </button>
-          <button class="btn"
-                  ng-click="changeFilter('dataset')"
-                  ng-class="{active: searchEntityType.dataset}">
-            Dataset
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-24">
       <img src="css/img/ajax-loader.gif" class="glyphicon search-loading-icon" ng-show="loading"/>
       <i class="glyphicon glyphicon-search search-icon" ng-hide="loading" data-toggle="tooltip" data-placement="top" title="Tooltip on top"></i>
       <tags-input ng-model="tags" min-length="1" add-on-space="true" on-tag-added="displayResults()"
@@ -60,8 +35,7 @@
       <div class="col-sm-24">
         <entities-search-list input="searchList" entity-details="entityDetails" clone="cloneEntity" tags="tags"
                               remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity"
-                              resume="resumeEntity" focus-search="focusSearch" pages="pages" go-page="goPage"
-                              next-pages="nextPages" prev-pages="prevPages" change-pages-set="changePagesSet"/>
+                              resume="resumeEntity" focus-search="focusSearch" pages="pages" go-page="goPage"/>
       </div>
     </div>
   </div>
