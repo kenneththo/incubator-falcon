@@ -64,10 +64,7 @@
         resume:"=",
         refresh: "=",
         pages: "=",
-        nextPages: "=",
-        prevPages: "=",
-        goPage: "=",
-        changePagesSet: "="
+        goPage: "="
       },
       controller: 'EntitiesSearchListCtrl',
       restrict: "EA",
@@ -79,9 +76,6 @@
           scope.checkButtonsToShow();
 
         }, true);
-
-        var resultsPerPage = 10;
-        var visiblePages = 3;
 
         scope.selectedRows = [];
 
@@ -169,7 +163,7 @@
             }
           });
           return selected;
-        }
+        };
 
         scope.checkAll = function () {
           if(scope.selectedRows.length === scope.input.length){
@@ -198,7 +192,7 @@
             scope.tags.push(tag);
             scope.focusSearch();
           }
-        }
+        };
 
         scope.scopeEdit = function () {
           scope.edit(scope.selectedRows[0].type, scope.selectedRows[0].name);
@@ -257,16 +251,6 @@
 
         scope.scopeGoPage = function (page) {
           scope.goPage(page);
-        };
-
-        scope.scopeNextOffset = function (page) {
-          var offset = (parseInt(scope.pages[0].label)+(visiblePages-1))*resultsPerPage;
-          scope.changePagesSet(offset, page, 0);
-        };
-
-        scope.scopePrevOffset = function (page) {
-          var offset = (parseInt(scope.pages[0].label)-(visiblePages+1))*resultsPerPage;
-          scope.changePagesSet(offset, page, visiblePages-1);
         };
 
       }

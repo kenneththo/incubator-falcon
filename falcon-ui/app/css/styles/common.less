@@ -398,6 +398,32 @@ input[type="password"]{
   color: #777;
 }
 
+.searchBox {
+  display: inline-block;
+  .entityTypeButtons {
+    display: inline-block;
+    background-color: @gray-light2;
+    border-radius: 7px;
+    padding: 4px;
+
+    .btn {
+      background-color: @gray-light2;
+      border-radius: 7px;
+      border: none;
+      outline: none!important;
+      line-height: 1;
+      padding: 5px;
+      &.active {
+        background-color: @gray-light;
+        color: white;
+      }
+      &:focus {
+
+      }
+    }
+  }
+}
+
 tags-input {
   display: block;
 }

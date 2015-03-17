@@ -50,7 +50,7 @@
             .error(function (err) {
               Falcon.logResponse('error', err, false, true);
             });
-      }
+      };
 
       $scope.resumeInstance = function () {
         Falcon.logRequest();

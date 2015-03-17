@@ -26,7 +26,7 @@
       $scope.$parent.refreshList();
 
       $scope.focusSearch = function () {
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        $scope.$parent.refreshList($scope.tags);
       };
 
       $scope.deleteEntity = function (type, name) {
@@ -35,7 +35,7 @@
         Falcon.deleteEntity(type, name)
           .success(function (data) {          
             Falcon.logResponse('success', data, type);           
-            $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+            $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             
@@ -106,7 +106,7 @@
         Falcon.logRequest();
         Falcon.postResumeEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -116,7 +116,7 @@
         Falcon.logRequest();
         Falcon.postScheduleEntity(type, name).success(function (data) {
           Falcon.logResponse('success', data, type);
-          $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+          $scope.$parent.refreshList($scope.tags);
         })
         .error(function (err) {
           Falcon.logResponse('error', err, type);
@@ -128,7 +128,7 @@
         Falcon.postSuspendEntity(type, name)
           .success(function (message) {
             Falcon.logResponse('success', message, type);
-              $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+              $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
             Falcon.logResponse('error', err, type);
@@ -141,7 +141,7 @@
       };
 
       $scope.displayResults = function () {
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        $scope.$parent.refreshList($scope.tags);
       };
 
       $scope.entityDetails = function (name, type) {
@@ -165,7 +165,7 @@
 
       $scope.clearTags = function(){
         $scope.tags = [];
-        $scope.$parent.refreshList($scope.searchEntityType, $scope.tags);
+        $scope.$parent.refreshList($scope.tags);
       };
       
     }]);

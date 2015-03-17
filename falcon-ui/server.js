@@ -25,7 +25,8 @@
     var result = [];
     var index = 0;
     for(var i=0; i<list.length; i++){
-      if(list[i].name === name){
+      //if(list[i].name === name){
+      if(list[i].name.indexOf(name) !== -1){
         result[index++] = list[i];
       }
     }
@@ -36,8 +37,8 @@
     var result = [];
     var index = 0;
     for(var j=0; j<list.length; j++){
-      for(var k=0; k<list[j].list.tag.length; k++){
-        if(list[j].list.tag[k] === tag){
+      for(var k=0; k<list[j].tags.tag.length; k++){
+        if(list[j].tags.tag[k] === tag){
             result[index++] = list[j];
           break;
         }
@@ -61,11 +62,10 @@
     var tags = req.query.tags === undefined ? "" : req.query.tags;
     var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
     var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
-    var clone;
     var paginated = JSON.parse(JSON.stringify(mockData.entitiesList[type]));
     name = name.substring(5);
     if(tags !== "" && name !== "" && name !== "*"){
-      console.log("Search by tags " + tags);
+      console.log("Search by name & tags " + tags);
       paginated.entity = searchByName(name, paginated.entity);
       paginated.entity = searchByTags(tags, paginated.entity);
     }else if(tags !== ""){
@@ -81,6 +81,52 @@
       console.log("Search by name *");
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }
+    res.json(paginated);
+  });
+
+  server.get('/api/entities/search', function (req, res) {
+
+    var name = req.query.name === undefined ? "" : req.query.name;
+    var tags = req.query.tags === undefined ? "" : req.query.tags;
+    var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
+    var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
+
+    if(name.length > 1){
+      name = name.substring(1,name.length-1);
+    }
+
+    var paginated = {};
+    paginated.entity = [];
+
+    paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
+        mockData.entitiesList.process.entity, mockData.entitiesList.dataset.entity);
+
+    if(tags !== "" && name !== "" && name !== "*"){
+      console.log("Search by name " + name + " & tags " + tags);
+      paginated.entity = searchByName(name, paginated.entity);
+      paginated.entity = searchByTags(tags, paginated.entity);
+      paginated.totalResults = paginated.entity.length;
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }else if(tags !== ""){
+      console.log("Search by tags " + tags);
+      paginated.entity = searchByTags(tags, paginated.entity);
+      paginated.totalResults = paginated.entity.length;
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }else if(name === "*"){
+      console.log("Search by name *");
+      paginated.totalResults = paginated.entity.length;
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }else if(name !== ""){
+      console.log("Search by name " + name);
+      paginated.entity = searchByName(name, paginated.entity);
+      paginated.totalResults = paginated.entity.length;
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }else{
+      console.log("Search by name *");
+      paginated.totalResults = paginated.entity.length;
+      paginated.entity = paginated.entity.slice(offset, offset+numResults);
+    }
+    console.log("totalResults: " + paginated.totalResults);
     res.json(paginated);
   });
 

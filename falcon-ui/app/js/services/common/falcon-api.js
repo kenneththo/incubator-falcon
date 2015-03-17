@@ -23,7 +23,7 @@
   falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', function ($http, X2jsService, $location, $rootScope, $cookieStore) {
 
     var Falcon = {},
-        NUMBER_OF_ENTITIES = 11, // 10 + 1 for next page
+        NUMBER_OF_ENTITIES = 10,
         NUMBER_OF_INSTANCES = 11; // 10 + 1 for next page
 
     function buildURI(uri){
@@ -97,6 +97,18 @@
         Falcon.responses.count.error = Falcon.responses.count.error +1;
         Falcon.responses.count.pending = Falcon.responses.count.pending -1;
       }
+      if(type === 'warning') {
+        if(!hide) {
+          var message = {
+            success: type,
+            status: messageObject.status,
+            message: messageObject.message,
+            model: ''
+          };
+          Falcon.responses.queue.push(message);
+          return;;
+        }
+      }
       if(entityType !== false) {
         entityType = entityType.toLowerCase();
         Falcon.responses.multiRequest[entityType] = Falcon.responses.multiRequest[entityType] - 1;
@@ -108,8 +120,19 @@
       else { Falcon.responses.count.error = Falcon.responses.count.error -1; }
       Falcon.responses.queue.splice(index, 1);
     };
-   // serverResponse: null,
-    //    success: null
+    Falcon.errorMessage = function (message) {
+      var err = {};
+      err.status = "ERROR";
+      err.message = message;
+      err.requestId = "";
+      Falcon.logResponse('error', err, false, true);
+    };
+    Falcon.warningMessage = function (message) {
+      var err = {};
+      err.status = "WARNING";
+      err.message = message;
+      Falcon.logResponse('warning', err, false, false);
+    };
 
     //-------------METHODS-----------------------------//
     Falcon.getServerVersion = function () {
@@ -150,21 +173,21 @@
       return $http.get(buildURI('../api/entities/definition/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
     };
 
-    Falcon.searchEntities = function (type, name, tags, offset) {
+    Falcon.searchEntities = function (name, tags, offset) {
       if(name !== undefined && tags !== undefined && tags !== "") {
         console.log("Search by name & tags");
-        return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        return $http.get(buildURI('../api/entities/search/?name=*'+name+'*&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }else if(name !== undefined){
         if(name === "*"){
           console.log("Search by name *");
-          return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+          return $http.get(buildURI('../api/entities/search/?name=*&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
         }else{
           console.log("Search by name "+name);
-          return $http.get(buildURI('../api/entities/list/'+type+'?filterBy=NAME:'+name+'&fields=status,tags&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+          return $http.get(buildURI('../api/entities/search/?name=*'+name+'*&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
         }
       }else {
         console.log("Search by tags "+tags);
-        return $http.get(buildURI('../api/entities/list/'+type+'?fields=status,tags&tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
+        return $http.get(buildURI('../api/entities/search/?tags='+tags+'&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES));
       }
     };
 

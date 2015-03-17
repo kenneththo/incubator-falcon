@@ -27,16 +27,11 @@
               EntityModel, $state, X2jsService, validationService, SpinnersFlag, EntityFalcon) {
 
       var resultsPerPage = 10;
-      var visiblePages = 3;
 
       $scope.server = Falcon;
       $scope.validations = validationService;
       $scope.buttonSpinners = SpinnersFlag;
       $scope.models = {};
-
-      $scope.entityName;
-      $scope.entityType;
-      $scope.entityTags;
 
       $scope.pages = [];
       $scope.nextPages = false;
@@ -46,105 +41,71 @@
         FileApi.loadFile(evt).then(function () {
           Falcon.postSubmitEntity(FileApi.fileRaw, EntityModel.type).success(function (response) {
             Falcon.logResponse('success', response, false);
-            $scope.refreshList(EntityModel.type, $scope.tags);
+            $scope.refreshList($scope.tags);
           }).error(function (err) {
             Falcon.logResponse('error', err, false);
           });
         });
       };
 
-      $scope.refreshList = function (type, tags) {
+      $scope.goPage = function(page){
+        $scope.loading = true;
+        var offset = (page-1) * resultsPerPage;
+        EntityFalcon.searchEntities($scope.entityName, $scope.entityTags, offset).then(function() {
+          if (EntityFalcon.data !== null) {
+            $scope.actualPage = page;
+            $scope.searchList = EntityFalcon.data.entity;
+            var totalPages = Math.ceil(EntityFalcon.data.totalResults/resultsPerPage);
+            $scope.pages = []
+            for(var i=0; i<totalPages; i++){
+              $scope.pages[i] = {};
+              $scope.pages[i].index = (i+1);
+              $scope.pages[i].label = ""+(i+1);
+              if(page === (i+1)){
+                $scope.pages[i].enabled = false;
+              }else{
+                $scope.pages[i].enabled = true;
+              }
+            }
+            if($scope.searchList.length === 0){
+              Falcon.warningMessage("No results matched the search criteria.");
+            }
+            $timeout(function() {
+              angular.element('#tagsInput').focus();
+            }, 0, false);
+            Falcon.responses.listLoaded = true;
+            $scope.loading = false;
+          }
+        });
+      };
+
+      $scope.refreshList = function (tags) {
         var name;
         var tagsSt = "";
-        var namedTags = [];
+        $scope.searchList = [];
 
         if(tags === undefined || tags.length === 0){
-          $scope.searchList = [];
-          $scope.searchEntityType = "feed";
+          $timeout(function() {
+            angular.element('#tagsInput').focus();
+          }, 0, false);
           return;
         }
 
-        for(var i=0; i<tags.length; i++){
-          var tag = tags[i].text;
-          if(tag.indexOf("=") > -1){
-            tagsSt += tag;
-            if(i < tags.length-1){
-              tagsSt += ",";
-            }
-          }else{
-            namedTags.push(i);
-            name = tag;
-          }
-        }
+        name = tags[0].text;
 
-        for(i=0; i<namedTags.length; i++){
-          if(i < namedTags.length-1){
-            tags[namedTags[i]].striked = "tag-striked";
-          }else{
-            tags[namedTags[i]].striked = "";
+        for(var i=1; i<tags.length; i++){
+          var tag = tags[i].text;
+          tagsSt += tag;
+          if(i < tags.length-1){
+            tagsSt += ",";
           }
         }
 
         $scope.entityName = name;
-        $scope.entityType = type;
         $scope.entityTags = tagsSt;
 
-        $scope.searchList = [];
-        changePagesSet(0, 0, 0);
+        $scope.goPage(1);
 
-      };
-
-      var consultPage = function(offset, page, defaultPage){
-        $scope.loading = true;
-        EntityFalcon.searchEntities($scope.entityType, $scope.entityName, $scope.entityTags, offset).then(function() {
-          if (EntityFalcon.data !== null) {
-            $scope.pages[page] = {};
-            $scope.pages[page].index = page;
-            $scope.pages[page].data = EntityFalcon.data.entity;
-            $scope.pages[page].show = true;
-            $scope.pages[page].enabled = true;
-            $scope.pages[page].label = "" + ((offset/resultsPerPage)+1);
-            if($scope.pages[page].data.length > resultsPerPage){
-              offset = offset + resultsPerPage;
-              $scope.nextPages = true;
-              if(page < visiblePages-1){
-                consultPage(offset, page+1, defaultPage);
-              }else{
-                $scope.goPage(defaultPage);
-              }
-            }else{
-              $scope.nextPages = false;
-              $scope.goPage(defaultPage);
-            }
-          }
-        });
-      };
-
-      var changePagesSet = function(offset, page, defaultPage){
-        $scope.pages = [];
-        consultPage(offset, page, defaultPage);
-      }
-
-      $scope.goPage = function (page) {
-        $scope.loading = true;
-        $scope.pages.forEach(function(pag) {
-          pag.enabled = true;
-        });
-        $scope.pages[page].enabled = false;
-        $scope.searchList = $scope.pages[page].data;
-        if($scope.searchList.length > resultsPerPage){
-          $scope.searchList.pop();
-        }
-        $scope.prevPages = parseInt($scope.pages[page].label) >  visiblePages ? true : false;
-        Falcon.responses.listLoaded = true;
-        $scope.loading = false;
-        $timeout(function() {
-          angular.element('#tagsInput').focus();
-        }, 0, false);
-      };
-
-      $scope.changePagesSet = function(offset, page, defaultPage){
-        changePagesSet(offset, page, defaultPage);
       };
 
       $scope.closeAlert = function (index) {

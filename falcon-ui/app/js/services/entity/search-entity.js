@@ -26,10 +26,10 @@
 
       var EntityFalcon = {};
 
-      EntityFalcon.searchEntities = function(type, name, tags, offset){
+      EntityFalcon.searchEntities = function(name, tags, offset){
         var deffered = $q.defer();
         Falcon.logRequest();
-        Falcon.searchEntities(type, name, tags, offset).success(function (data) {
+        Falcon.searchEntities(name, tags, offset).success(function (data) {
           Falcon.logResponse('success', data, false, true);
           EntityFalcon.data = data;
           deffered.resolve();
