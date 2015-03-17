@@ -257,6 +257,16 @@
   });
 
 
+  server.post('/api/entities/prepareAndSubmitRecipe', function (req, res) {
+    var file = req.text,
+      responseMessage = {
+        "requestId": "default\/d72a41f7-6420-487b-8199-62d66e492e35\n",
+        "message": "default\/Submit successful (recipe)\n",
+        "status": "SUCCEEDED"
+      };
+    console.log(file);
+    res.json(200, responseMessage);
+  });
   /*
    *
    * CHART

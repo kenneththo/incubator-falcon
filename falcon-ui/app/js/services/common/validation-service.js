@@ -71,8 +71,14 @@
         engine: { empty: "You need to select an engine" },
         cluster: { empty: "You need to select a cluster" },
         feed: { empty: "You need to select a feed" },
-        date: { empty: "You need to select a date" },
-        number: { empty: "You need to provide a number" },
+        date: {
+          empty: "You need to select a date",
+          patternInvalid: "The start Date has an invalid format. "
+        },
+        number: {
+          empty: "You need to provide a number",
+          patternInvalid: "The number needs to be one or two digits "
+        },
         option: { empty: "You need to select an option" },
         user: {
           empty: "Please enter your user name.",
@@ -81,7 +87,23 @@
         password: {
           empty: "Please enter your password.",
           patternInvalid: "The Password has an invalid format."
+        },
+        email: {
+          patternInvalid: "The email is invalid."
+        },
+        allocationNumber: {
+          empty: "You need to provide a number",
+          patternInvalid: "The number you provided is invalid "
+        },
+        permission: {
+          empty: "You need to provide a Permission",
+          patternInvalid: "The Permission has an invalid format. "
+        },
+        url: {
+          empty: "You need to provide a URL",
+          patternInvalid: "The URL has an invalid format. "
         }
+
 
       },
       checkPatterns = {
@@ -96,7 +118,10 @@
         osPath: new RegExp("^[^\\0 ]+$"),
         twoDigits: new RegExp("^([0-9]){1,2}$"),
         tableUri: new RegExp("^[^\\0]+$"),
-        versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$")
+        versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"),
+        url: new RegExp("^[^\\0 ]+\\.[a-zA-Z0-9]{1,3}$"),
+        number: new RegExp("^([0-9]){1,40}$"),
+        email: new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$")
       };
 
     function acceptOnlyNumber(evt) {

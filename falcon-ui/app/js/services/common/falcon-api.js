@@ -195,6 +195,10 @@
     Falcon.getTopEntities = function (entityType, from, to) {
       return $http.get(buildURI('../api/entities/top/' + entityType + '?start=' + from + '&end=' + to));
     };
+    //----------------------------------------------//
+    Falcon.postSubmitRecipe = function (recipe) {
+      return $http.post(buildURI('../api/entities/prepareAndSubmitRecipe'), recipe, { headers: {'Content-Type': 'text/plain'} });
+    };
 
     return Falcon;
 

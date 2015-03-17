@@ -1,0 +1,142 @@
+<div id="formSummaryBox" class="col-xs-24">
+  <div>
+    <h4 class="lightSubtitle">Name</h4>
+    {{model.name}}
+  </div>
+  <div>
+    <h4 class="lightSubtitle">Type</h4>
+    {{model.type}}
+  </div>
+  <div>
+    <h4 ng-if="model.tags.length > 0" class="lightSubtitle">Tags</h4>
+    <div ng-repeat="tag in model.tags"><span>{{tag.key}}</span> - {{tag.value}}</div>
+  </div>
+
+  <div>
+    <h4 class="lightSubtitle">Source Cluster</h4>
+  </div>
+  <div class="box">
+    <h3>{{model.clusters.source_cluster.name}}</h3>
+
+    <h4>Location</h4>
+    <span ng-if="model.type === 'HDFS'">{{model.clusters.source_cluster.location.type}}</span>
+    {{model.clusters.source_cluster.location.src}}
+  </div>
+  <div>
+    <h4 class="lightSubtitle">Target Cluster</h4>
+  </div>
+  <div class="box">
+    <h3>{{model.clusters.target_cluster.name}}</h3>
+
+    <h4>Location</h4>
+    <span ng-if="model.type === 'HDFS'">{{model.clusters.target_cluster.location.type}}</span>
+    {{model.clusters.target_cluster.location.src}}
+  </div>
+
+  <hr />
+
+  <div>
+    <h4 class="lightSubtitle">Schedule</h4>
+    <span>Start on: </span>{{model.start}}
+  </div>
+
+
+  <div class="allocationSubBox">
+    <h4 class="lightSubtitle">Max slots</h4>
+    {{model.allocation.max_number_slots}} <span>{{model.allocation.measure}}</span>
+  </div>
+  <div class="allocationSubBox">
+    <h4 class="lightSubtitle">Max bandwidth</h4>
+    {{model.allocation.max_bandwidth}} <span>{{model.allocation.measure}}</span>
+  </div>
+
+  <div>
+    <h4 ng-if="model.alerts.length > 0" class="lightSubtitle">Alerts</h4>
+
+    <div ng-repeat="alert in model.alerts">
+      <span>{{alert.email}}</span> on
+      <span ng-if="alert.start">Start</span>
+      <span ng-if="alert.finish">Finish</span>
+      <span ng-if="alert.fail">Fail</span>
+      <span ng-if="alert.abort">Abort</span>
+    </div>
+
+  </div>
+
+  <hr />
+  <div>
+    <h4 class="lightSubtitle">Run as</h4>
+    {{model.run_as}}
+    <div>
+      <span>Permissions: </span>{{model.permission}}
+    </div>
+  </div>
+  <div>
+    <h4 class="lightSubtitle">On error</h4>
+    <span>Action:</span> {{model.on_error.action}}
+  </div>
+  <div ng-if="model.on_error.action === 'abort'">
+    <span>Options:</span> {{model.on_error.options}}
+  </div>
+  <div ng-if="model.on_error.action === 'retry'">
+    <span>Options:</span> Retry every {{model.on_error.options.retry_every.number}} {{model.on_error.options.retry_every.unit}}
+    <div>
+
+      <div ng-if="model.on_error.options.stop_on.attempts">
+        <span>Stop on:</span> {{model.on_error.options.stop_on.attempts}} attempts
+      </div>
+      <div ng-if="model.on_error.options.stop_on.without_response">
+        <span>Stop on:</span>
+        {{model.on_error.options.stop_on.without_response.number}}
+        {{model.on_error.options.stop_on.without_response.unit}} without response
+      </div>
+      <div ng-if="model.on_error.options.stop_on === 'never'">
+        <span>Stop on:</span> Never
+      </div>
+    </div>
+  </div>
+
+
+  <hr />
+
+
+<!--  <div class="row">
+    <div class="col-xs-24 mt20">
+      <button type="button"
+              id="summaryBack" class="btn prevBtn"
+              ng-click="goBack('form.timing')"
+              ng-disabled="buttonSpinners.backShow">
+        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+      </button>
+      <button id="summarySave"
+              class="btn nextBtn pull-right"
+              ng-click="save()" >
+        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      </button>
+      <a class="pull-right" ng-click="cancel()">
+        Cancel
+      </a>
+    </div>
+  </div>-->
+
+  <div class="row">
+    <div class="col-xs-24 mt20">
+      <button type="button" class="btn prevBtn"
+              ng-click="goBack('forms.dataset.general')"
+              ng-disabled="buttonSpinners.backShow">
+        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+      </button>
+      <button class="btn nextBtn pull-right"
+              ng-disabled="buttonSpinners.show"
+              ng-click="save()">
+        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      </button>
+      <a class="pull-right" ui-sref="main">
+        Cancel
+      </a>
+    </div>
+  </div>
+
+</div>
+
+

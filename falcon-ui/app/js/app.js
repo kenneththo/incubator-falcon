@@ -144,6 +144,24 @@
           }
         }
       })
+      .state('forms.dataset', {
+        controller: 'DatasetCtrl',
+        templateUrl: 'html/dataset/datasetFormTpl.html',
+        resolve: {
+          clustersList: ['Falcon', function(Falcon) {
+            return Falcon.getEntities('cluster').then(
+              function(response) {
+                return response.data.entity;
+              });
+          }]
+        }
+      })
+      .state('forms.dataset.general', {
+        templateUrl: 'html/dataset/datasetFormGeneralStepTpl.html'
+      })
+      .state('forms.dataset.summary', {
+        templateUrl: 'html/dataset/datasetFormSummaryStepTpl.html'
+      })
       .state('instanceDetails', {
         templateUrl: 'html/instanceDetails.html',
         controller: 'InstanceDetailsCtrl'

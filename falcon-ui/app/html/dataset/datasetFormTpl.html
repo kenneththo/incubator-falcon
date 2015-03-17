@@ -1,0 +1,38 @@
+<div id="formBox" class="row">
+  <div class="col-sm-24 formTitol">
+    <a>Falcon Datasets</a>
+    <h1>New Dataset</h1>
+  </div>
+
+  <div class="col-sm-24">
+    <div class="formBoxWrapper">
+
+      <div class="progressBox col-xs-24" ng-class="{ general:isActive('forms.dataset.general'),
+                                                 summary:isActive('forms.dataset.summary')}">
+        <div class="progressBar">
+          <div class="bar1"></div>
+          <span>
+            <div class="fir">
+              <b>1</b>
+              <span class="glyphicon glyphicon-ok"></span>
+              <h6>General</h6>
+            </div>
+          </span>
+          <span>
+            <div class="sec">
+              <b>2</b>
+              <span class="glyphicon glyphicon-ok"></span>
+              <h6>Summary</h6>
+            </div>
+          </span>
+        </div>
+      </div>
+
+      <div class="row" ui-view></div>
+    </div>
+  </div>
+
+  <div class="col-sm-10">
+    {{model}}
+  </div>
+</div>

@@ -66,6 +66,13 @@
         $state.go("forms.feed.general");
       };
 
+      $scope.resetDataset = function () {
+        validationService.displayValidations = {show: false, nameShow: false};
+        $scope.cloningMode = true;
+        $scope.models.feedModel = null;
+        $state.go("forms.dataset.general");
+      };
+
       $scope.userLogged = function () {
     	  if($rootScope.userLogged()){
     	  	if(angular.isDefined($cookieStore.get('userToken')) && $cookieStore.get('userToken') !== null){

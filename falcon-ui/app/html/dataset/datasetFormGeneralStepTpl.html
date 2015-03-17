@@ -1,0 +1,622 @@
+<form id="formGeneralBox"
+      name="datasetForm"
+      class="col-xs-24"
+      novalidate>
+
+  <div class="row">
+    <div class="col-xs-24">
+      <label class="db"> Dataset Source Name
+        <input type="text"
+               name="nameInput"
+               class="form-control"
+               ng-model="model.name"
+               placeholder=""
+               ng-pattern="validations.patterns.name"
+               ng-required="true",
+               validation-message="{{validations.messages.name}}"/>
+      </label>
+
+    </div>
+
+    <div class="col-xs-24 tagsBox mt10">
+      <label class="db">Tags
+
+        <div class="row mb10">
+          <div class="col-xs-10">
+            <input type="text"
+                   name="newTagKeyInput"
+                   class="form-control"
+                   ng-model="newTag.key"
+                   placeholder="key"
+                   ng-pattern="validations.patterns.alpha"
+                   ng-required="newTag.value"
+                   validation-optional-message="{{validations.messages.key}}"/>
+          </div>
+          <div class="col-xs-10">
+            <input type="text"
+                   name="newTagValueInput"
+                   class="form-control"
+                   ng-model="newTag.value"
+                   placeholder="value"
+                   ng-pattern="validations.patterns.alpha"
+                   ng-required="newTag.key"
+                   validation-optional-message="{{validations.messages.value}}"/>
+          </div>
+          <div class="col-xs-4">
+            <button type="button"
+                    class="btn btn-default btn-xs"
+                    ng-click="addTag()"
+                    ng-disabled="!newTag.key || !newTag.value"
+                    ng-disabled="false">
+              <span class="glyphicon glyphicon-plus"></span> add tag
+            </button>
+          </div>
+        </div>
+
+        <div ng-repeat="tag in model.tags" class="row">
+          <div class="col-xs-10">
+            <h6>{{tag.key}}</h6>
+          </div>
+          <div class="col-xs-10">
+            <h6>{{tag.value}}</h6>
+          </div>
+          <div class="col-xs-4">
+            <button type="button"
+                    class="btn btn-default btn-xs"
+                    ng-click="removeTag($index)"
+                    ng-disabled="false">
+              <span class="glyphicon glyphicon-minus"></span> delete
+            </button>
+          </div>
+        </div>
+
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-24 mt10">
+      <label class="db">Dataset type
+        <div class="typeButtonsBox">
+          <button type="button"
+                  ng-class="{active:model.type === 'HDFS'}"
+                  class="btn btn-default btn-xs"
+                  ng-click="model.type = 'HDFS'">
+            HDFS(File System)
+          </button>
+          <button type="button"
+                  ng-class="{active:model.type === 'HIVE'}"
+                  class="btn btn-default btn-xs"
+                  ng-click="model.type = 'HIVE'">
+            HIVE(catalog Storage)
+          </button>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-24 clusterBox">
+      <h3>Source cluster</h3>
+
+      <div class="locationBox" ng-if="model.type === 'HDFS'">
+        <label class="db">Location:
+          <input type="radio"
+                 id="sourceHDFSRadio"
+                 ng-model="model.clusters.source_cluster.location.type"
+                 value="HDFS"
+                 ng-required="!model.clusters.source_cluster.location.type"/> HDFS
+          <input type="radio"
+                 id="sourceAzureRadio"
+                 ng-model="model.clusters.source_cluster.location.type"
+                 value="azure"
+                 ng-required="!model.clusters.source_cluster.location.type"/> Azure
+          <input type="radio"
+                 id="sourceS3Radio"
+                 ng-model="model.clusters.source_cluster.location.type"
+                 value="S3"
+                 ng-required="!model.clusters.source_cluster.location.type"/> S3
+        </label>
+      </div>
+
+      <div>
+        <select ng-if="model.clusters.source_cluster.location.type === 'HDFS' || model.type === 'HIVE'"
+                ng-model="model.clusters.source_cluster.name"
+                name="sourceClusterSelect"
+                ng-required="model.clusters.source_cluster.location.type === 'HDFS' || model.type === 'HIVE'"
+                class="col-xs-24 form-control"
+                id="sourceClusterSelect">
+
+          <option value="" disabled style='display:none;'>-Select cluster-</option>
+          <option ng-selected="model.clusters.source_cluster.name === cluster.name"
+                  ng-repeat="cluster in clustersList"
+                  value="{{cluster.name}}">
+            {{cluster.name}}
+          </option>
+        </select>
+      </div>
+
+
+
+
+      <div ng-if="model.clusters.source_cluster.location.type === 'HDFS' || model.type === 'HIVE'">
+        <label class="db">Path
+          <input type="text"
+                 name="sourceClusterPathInput"
+                 class="form-control"
+                 ng-model="model.clusters.source_cluster.location.src"
+                 placeholder="Path"
+                 ng-pattern="validations.patterns.osPath"
+                 ng-required="model.clusters.source_cluster.location.type === 'HDFS' || model.type === 'HIVE'"
+                 validation-message="{{validations.messages.path}}"/>
+        </label>
+
+      </div>
+      <div ng-if="model.clusters.source_cluster.location.type === 'azure' && model.type === 'HDFS' || model.clusters.source_cluster.location.type === 'S3' && model.type === 'HDFS'">
+        <label class="db">URL
+          <input type="text"
+                 name="sourceClusterUrlInput"
+                 class="form-control"
+                 ng-model="model.clusters.source_cluster.location.src"
+                 placeholder="URL"
+                 ng-pattern="validations.patterns.url"
+                 ng-required="model.clusters.source_cluster.location.type === 'azure' || model.clusters.source_cluster.location.type === 'S3'"
+                 validation-message="{{validations.messages.url}}" />
+        </label>
+      </div>
+    </div>
+
+    <div class="col-xs-24 clusterBox">
+      <h3>Target cluster</h3>
+
+      <div class="locationBox" ng-if="model.type === 'HDFS'">
+        <label class="db">Location:
+          <input type="radio"
+                 id="targetHDFSRadio"
+                 ng-model="model.clusters.target_cluster.location.type"
+                 value="HDFS"
+                 ng-required="!model.clusters.target_cluster.location.type"/> HDFS
+          <input type="radio"
+                 id="targetAzureRadio"
+                 ng-model="model.clusters.target_cluster.location.type"
+                 value="azure"
+                 ng-required="!model.clusters.target_cluster.location.type"/> Azure
+          <input type="radio"
+                 id="targetS3Radio"
+                 ng-model="model.clusters.target_cluster.location.type"
+                 value="S3"
+                 ng-required="!model.clusters.target_cluster.location.type"/> S3
+        </label>
+      </div>
+
+      <div>
+        <select ng-if="model.clusters.target_cluster.location.type === 'HDFS' || model.type === 'HIVE'"
+                ng-model="model.clusters.target_cluster.name"
+                name="targetClusterSelect"
+                ng-required="model.clusters.target_cluster.location.type === 'HDFS' || model.type === 'HIVE'"
+                class="col-xs-24 form-control"
+                id="targetClusterSelect">
+          <option value="" disabled selected style='display:none;'>-Select cluster-</option>
+          <option ng-selected="model.clusters.target_cluster.name === clusterItem.name"
+                  ng-repeat="clusterItem in clustersList"
+                  value="{{clusterItem.name}}">
+            {{clusterItem.name}}
+          </option>
+        </select>
+      </div>
+
+      <div ng-if="model.clusters.target_cluster.location.type === 'HDFS' || model.type === 'HIVE'">
+        <label class="db">Path
+          <input type="text"
+                 name="targetClusterPathInput"
+                 class="form-control"
+                 ng-model="model.clusters.target_cluster.location.src"
+                 placeholder="Path"
+                 ng-pattern="validations.patterns.osPath"
+                 ng-required="model.clusters.target_cluster.location.type === 'HDFS'"
+                 validation-message="{{validations.messages.path}}"/>
+        </label>
+      </div>
+      <div ng-if="model.clusters.target_cluster.location.type === 'azure' && model.type === 'HDFS' || model.clusters.target_cluster.location.type === 'S3' && model.type === 'HDFS'">
+        <label class="db">URL
+          <input type="text"
+                 name="targetClusterUrlInput"
+                 class="form-control"
+                 ng-model="model.clusters.target_cluster.location.src"
+                 placeholder="URL"
+                 ng-pattern="validations.patterns.url"
+                 ng-required="model.clusters.target_cluster.location.type === 'azure' || model.clusters.target_cluster.location.type === 'S3'"
+                 validation-message="{{validations.messages.url}}"/>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-24 alertsBox">
+      <div class="to">
+        <label class="db">
+          <h4>Send alerts to </h4>
+          <input class="form-control"
+                 name="emailAlertInput"
+                 ng-model="emailAlert.email"
+                 type="text"
+                 placeholder="Email"
+                 ng-pattern="validations.patterns.email"
+                 validation-optional-message="{{validations.messages.email}}">
+        </label>
+      </div>
+      <div class="on">
+        <h4>on </h4>
+        <label>
+          <input type="checkbox" ng-model="emailAlert.start"/>
+          Start
+        </label>
+        <label>
+          <input type="checkbox" ng-model="emailAlert.finish"/>
+          Finish
+        </label>
+        <label>
+          <input type="checkbox" ng-model="emailAlert.fail"/>
+          Fail
+        </label>
+        <label>
+          <input type="checkbox" ng-model="emailAlert.abort"/>
+          Abort
+        </label>
+        <button class="btn btn-default btn-xs"
+                ng-disabled="(!emailAlert.start&&!emailAlert.finish&&!emailAlert.fail&&!emailAlert.abort) || !emailAlert.email"
+                type="button"
+                ng-click="addAlert()">
+          <span class="glyphicon glyphicon-plus"></span>add alert
+        </button>
+      </div>
+
+      <div class="emailArrayRow" ng-repeat="email in model.alerts">
+        <span>{{email.email}}</span> on
+        <span ng-if="email.start">Start</span>
+        <span ng-if="email.finish">Finish</span>
+        <span ng-if="email.fail">Fail</span>
+        <span ng-if="email.abort">Abort</span>
+        <button class="btn btn-default btn-xs"
+                type="button"
+                ng-click="removeAlert()">
+          <span class="glyphicon glyphicon-minus"></span> delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row advancedOptionsButton" ng-click="expandOptions = !expandOptions">
+    <h4>Advanced options
+      <span class="entypo chevron-down" ng-if="!expandOptions"></span>
+      <span class="entypo chevron-up" ng-if="expandOptions"></span>
+      <hr />
+    </h4>
+  </div>
+
+  <div id="advancedOptionsBox" ng-class="{expanded:expandOptions}">
+    <div class="row" id="formTimingBox">
+      <h4 class="col-xs-24">Timing</h4>
+      <div class="col-xs-24 timingBox">
+        <div class="startOnBox">
+          <label>Start on
+            <input type="text"
+                   name="startDateInput"
+                   class="form-control dateInput"
+                   placeholder="mm/dd/yyyy"
+                   datepicker-popup="{{dateFormat}}"
+                   ng-model="date.start"
+                   is-open="opened"
+                   ng-click="openDatePicker($event, date.start)"
+                   ng-change="constructDate()"
+                   simple-date>
+          </label>
+        </div>
+        <div class="timeBox">
+          <label>Time
+            <timepicker ng-change="constructDate()"
+                        ng-model="date.time"
+                        hour-step="1"
+                        minute-step="1"
+                        show-meridian="true">
+            </timepicker>
+          </label>
+        </div>
+        <div class="tzBox">
+          <time-zone-select
+                  ng-model="date.tz"
+                  class=""
+                  ng-change="constructDate()">
+          </time-zone-select>
+        </div>
+      </div>
+      <br />
+
+
+      <div class="col-xs-24 mt10">
+        <div class="frequencyBox">
+          <div>
+            <label>Frequency</label>
+          </div>
+          <div>
+            <label>
+              Every
+              <input type="text"
+                     name="frequencyEveryInput"
+                     ng-model="model.frequency.every"
+                     ng-pattern="validations.patterns.twoDigits"
+                     ng-keydown="validations.acceptOnlyNumber($event)"
+                     class="form-control"
+                     validation-optional-message="{{validations.messages.number}}" />
+
+              <select ng-model="model.frequency.unit"
+                      class="form-control">
+                <option selected value="hours">hours</option>
+                <option value="minutes">minutes</option>
+              </select>
+
+            </label>
+          </div>
+        </div>
+        <div class="repeatsBox">
+          <div><label>Repeats</label></div>
+          <div>
+            <label>
+              Every
+              <input type="text"
+                     name="repeatsEveryInput"
+                     ng-model="model.repeats.every"
+                     ng-pattern="validations.patterns.twoDigits"
+                     ng-keydown="validations.acceptOnlyNumber($event)"
+                     class="form-control"
+                     validation-optional-message="{{validations.messages.number}}"/>
+              <select ng-model="model.repeats.unit"
+                      class="form-control">
+                <option selected value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+                <option value="years">Years</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <h4 class="col-xs-24 mt20">Allocation</h4>
+      <div class="col-xs-24">
+
+        <div class="maxNumberSlotsBox">
+          <label>Max number of slots
+            <input type="text"
+                   name="maxSlotsInput"
+                   ng-model="model.allocation.max_number_slots"
+                   ng-pattern="validations.patterns.number"
+                   ng-keydown="validations.acceptOnlyNumber($event)"
+                   class="form-control"
+                   validation-optional-message="{{validations.messages.allocationNumber}}"/>
+          </label>
+        </div>
+
+        <div class="maxBandwidthBox">
+          <label>Max bandwidth
+            <input type="text"
+                   name="maxBandwidthInput"
+                   ng-model="model.allocation.max_bandwidth"
+                   ng-pattern="validations.patterns.number"
+                   ng-keydown="validations.acceptOnlyNumber($event)"
+                   class="form-control"
+                   validation-optional-message="{{validations.messages.allocationNumber}}" />
+          </label>
+        </div>
+
+        <div class="unitRadioBox">
+          <label>
+            <input type="radio"
+                   value="Kb"
+                   ng-model="model.allocation.measure" />
+            Kb
+          </label>
+          <label>
+            <input type="radio"
+                   value="Mb"
+                   ng-model="model.allocation.measure" />
+            Mb
+          </label>
+          <label>
+            <input type="radio"
+                   value="Gb"
+                   ng-model="model.allocation.measure" />
+            Gb
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <h4 class="col-xs-24 mt20">Others</h4>
+      <div class="col-xs-24 othersBox">
+        <div class="runJobAsBox">
+          <label>Run job as
+            <select ng-model="model.run_as"
+                    ng-required="true"
+                    class="form-control">
+              <option value="default" selected>defaultUser</option>
+              <option ng-repeat="user in usersList" value="{{user.name}}">{{user.name}}</option>
+            </select>
+          </label>
+        </div>
+        <div class="dataPermissions">
+          <label>Data permissions
+            <input type="text"
+                   name="dataPermissionInput"
+                   ng-model="model.permission"
+                   ng-pattern="validations.patterns.unixPermissions"
+                   ng-required="true"
+                   ng-keydown="validations.acceptOnlyNumber($event)"
+                   class="form-control"
+                   validation-message="{{validations.messages.permission}}"/>
+          </label>
+        </div>
+        <div class="onErrorBox">
+          <div class="onErrorHeaderBox">
+            <label>On error:
+              <label>
+                <input type="radio"
+                       ng-model="model.on_error.action"
+                       value="abort"
+                       ng-change="onErrorTransform()"/>
+                Abort
+              </label>
+              <label>
+                <input type="radio"
+                       ng-model="model.on_error.action"
+                       value="retry"
+                       ng-change="onErrorTransform()"/>
+                Retry
+              </label>
+            </label>
+          </div>
+
+          <div class="policyBox" ng-if="model.on_error.action === 'abort'">
+            <div><label>Policy</label></div>
+            <label>
+              <input type="radio" value="back-off" ng-change="onErrorTransform()" ng-model="abortOptions.policy"/>
+              Back off
+            </label>
+            <label>
+              <input type="radio" value="exp-back-off" ng-change="onErrorTransform()" ng-model="abortOptions.policy"/>
+              Exp back off
+            </label>
+          </div>
+          <div class="retryBox" ng-if="model.on_error.action === 'retry'">
+            <div class="retryEveryBox">
+              <label class="db">Retry every</label>
+              <input type="text"
+                     name="retryEveryInput"
+                     ng-model="retryOptions.retry_every.number"
+                     ng-pattern="validations.patterns.twoDigits"
+                     ng-required="model.on_error.action === 'retry'"
+                     ng-change="onErrorTransform()"
+                     ng-keydown="validations.acceptOnlyNumber($event)"
+                     class="form-control"
+                     validation-message="{{validations.messages.number}}"/>
+              <select ng-model="retryOptions.retry_every.unit"
+                      ng-change="onErrorTransform()"
+                      ng-required="true"
+                      class="form-control">
+                <option value="seconds">Seconds</option>
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+              </select>
+            </div>
+            <div class="stopOnBox">
+              <label>Stop on</label>
+              <div>
+                <label class="db">
+                  <input type="radio" value="attempts" ng-model="retryOptions.stop_on.value" ng-change="onErrorTransform()"/>
+                  <input type="text"
+                         name="attemptsNumberInput"
+                         ng-model="retryOptions.stop_on.attempts.number"
+                         ng-pattern="validations.patterns.number"
+                         ng-required="model.on_error.action === 'retry' && retryOptions.stop_on.value === 'attempts'"
+                         ng-change="onErrorTransform()"
+                         ng-keydown="validations.acceptOnlyNumber($event)"
+                         class="form-control"
+                         validation-message="{{validations.messages.number}}" />
+                  attempts
+                </label>
+              </div>
+              <div>
+                <label class="db">
+
+                  <input type="radio"
+                         value="without_response"
+                         ng-model="retryOptions.stop_on.value"
+                         ng-change="onErrorTransform()"/>
+
+                  <input type="text"
+                         name="withoutResponseNumberInput"
+                         ng-model="retryOptions.stop_on.without_response.number"
+                         ng-pattern="validations.patterns.twoDigits"
+                         ng-required="model.on_error.action === 'retry' && retryOptions.stop_on.value === 'without_response'"
+                         ng-change="onErrorTransform()"
+                         ng-keydown="validations.acceptOnlyNumber($event)"
+                         class="form-control"
+                         validation-message="{{validations.messages.number}}"/>
+
+                  <select ng-model="retryOptions.stop_on.without_response.unit"
+                          ng-required="true"
+                          ng-change="onErrorTransform()"
+                          class="form-control">
+                    <option value="seconds">Seconds</option>
+                    <option value="minutes">Minutes</option>
+                    <option value="hours">Hours</option>
+                    <option value="days">Days</option>
+                    <option value="weeks">Weeks</option>
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                  </select>
+
+                  without response
+                </label>
+              </div>
+              <div>
+                <label class="db">
+                  <input type="radio" value="never" ng-model="retryOptions.stop_on.value" ng-change="onErrorTransform()"/>
+                  Never
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="row">
+    <div class="col-xs-24 mt20">
+
+      <button class="btn nextBtn pull-right"
+              ng-disabled="buttonSpinners.show"
+              ng-click="goNext(datasetForm.$invalid, 'forms.dataset.summary')" >
+        Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      </button>
+      <a class="pull-right" ui-sref="main">
+        Cancel
+      </a>
+
+    </div>
+  </div>
+
+
+
+
+
+
+</form>
+
+
