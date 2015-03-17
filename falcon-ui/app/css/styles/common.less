@@ -51,6 +51,7 @@ input {
     border-color: inherit;
   }
 }
+
 .ng-invalid.ng-dirty {
   border-color: lighten(red, 10%);
   &:focus.empty {
@@ -357,6 +358,16 @@ input[type="password"]{
   padding-right: 40px !important;
 }
 
+.searchBoxContainer{
+  .popover{
+    right: 5px !important;
+    width: 400px;
+  }
+  .arrow{
+    right: 35px !important;
+  }
+}
+
 .search-icon {
   cursor: pointer;
   position: absolute;
@@ -390,6 +401,19 @@ input[type="password"]{
   position: absolute;
   top: 10px;
   right: 8px;
+  z-index: 2;
+  display: block;
+  line-height: 23px;
+  text-align: center;
+  font-size: 25px;
+  color: #777;
+}
+
+.question-icon {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 40px;
   z-index: 2;
   display: block;
   line-height: 23px;
