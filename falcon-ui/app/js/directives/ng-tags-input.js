@@ -343,6 +343,18 @@
 
         scope.newTag = {text: '', invalid: null};
 
+        scope.getDisplayLabel = function (index, tag) {
+          if(index === 0){
+            return "NAME: ";
+          }else{
+            if(tag.text.indexOf("type=") !== -1){
+              return "TYPE: ";
+            }else{
+              return "TAG: ";
+            }
+          }
+        };
+
         scope.getDisplayText = function (tag) {
           return safeToString(tag[options.displayProperty]);
         };
@@ -363,9 +375,9 @@
         scope.$watch('tags.length', function (length) {
           setElementValidity();
           if(length > 0){
-            scope.options.placeholder = 'Tag:';
+            scope.options.placeholder = 'Tag|Type';
           }else{
-            scope.options.placeholder = 'Name:';
+            scope.options.placeholder = 'Name';
           }
         });
 

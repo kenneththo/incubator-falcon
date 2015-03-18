@@ -51,7 +51,7 @@
       $scope.goPage = function(page){
         $scope.loading = true;
         var offset = (page-1) * resultsPerPage;
-        EntityFalcon.searchEntities($scope.entityName, $scope.entityTags, offset).then(function() {
+        EntityFalcon.searchEntities($scope.entityName, $scope.entityTags, $scope.entityType, offset).then(function() {
           if (EntityFalcon.data !== null) {
             $scope.actualPage = page;
             $scope.searchList = EntityFalcon.data.entity;
@@ -80,7 +80,7 @@
       };
 
       $scope.refreshList = function (tags) {
-        var name;
+
         var tagsSt = "";
         $scope.searchList = [];
 
@@ -91,17 +91,21 @@
           return;
         }
 
-        name = tags[0].text;
+        $scope.entityName = tags[0].text;
 
         for(var i=1; i<tags.length; i++){
           var tag = tags[i].text;
-          tagsSt += tag;
-          if(i < tags.length-1){
-            tagsSt += ",";
+          if(tag.indexOf("type=") !== -1){
+            tag = tag.substring(5);
+            $scope.entityType = tag;
+          }else{
+            tagsSt += tag;
+            if(i < tags.length-1){
+              tagsSt += ",";
+            }
           }
         }
 
-        $scope.entityName = name;
         $scope.entityTags = tagsSt;
 
         $scope.goPage(1);

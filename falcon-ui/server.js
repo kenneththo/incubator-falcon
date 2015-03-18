@@ -37,8 +37,8 @@
     var result = [];
     var index = 0;
     for(var j=0; j<list.length; j++){
-      for(var k=0; k<list[j].tags.tag.length; k++){
-        if(list[j].tags.tag[k] === tag){
+      for(var k=0; k<list[j].list.tag.length; k++){
+        if(list[j].list.tag[k] === tag){
             result[index++] = list[j];
           break;
         }
@@ -88,6 +88,8 @@
 
     var name = req.query.name === undefined ? "" : req.query.name;
     var tags = req.query.tags === undefined ? "" : req.query.tags;
+    var type = req.query.filterBy === undefined ? "" : req.query.filterBy;
+    type = type.substring(5);
     var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
     var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
 
@@ -98,8 +100,12 @@
     var paginated = {};
     paginated.entity = [];
 
-    paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
-        mockData.entitiesList.process.entity, mockData.entitiesList.dataset.entity);
+    if(type !== ""){
+      paginated.entity = paginated.entity.concat(mockData.entitiesList[type].entity);
+    }else{
+      paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
+          mockData.entitiesList.process.entity, mockData.entitiesList.dataset.entity);
+    }
 
     if(tags !== "" && name !== "" && name !== "*"){
       console.log("Search by name " + name + " & tags " + tags);
