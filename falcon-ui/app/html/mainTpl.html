@@ -26,7 +26,7 @@
       <i class="glyphicon glyphicon-search search-icon" ng-hide="loading"></i>
       <tags-input ng-model="tags" min-length="1" add-on-space="true" on-tag-added="displayResults()"
                   on-tag-removed="displayResults()"></tags-input>
-      <i class="glyphicon glyphicon-question-sign question-icon"
+      <i class="glyphicon glyphicon-question-sign" ng-class="tags.length > 0 ? 'question-icon' : 'remove-icon'"
          ns-popover
          ns-popover-template="menu"
          ns-popover-trigger="click"
@@ -44,7 +44,7 @@
           For filtering by type, write <strong>type=feed|process|dataset</strong>
         </div>
       </script>
-      <i class="glyphicon glyphicon-remove remove-icon" ng-click="clearTags()"></i>
+      <i class="glyphicon glyphicon-remove remove-icon" ng-if="tags.length > 0" ng-click="clearTags()"></i>
     </div>
   </div>
 

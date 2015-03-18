@@ -375,7 +375,7 @@
         scope.$watch('tags.length', function (length) {
           setElementValidity();
           if(length > 0){
-            scope.options.placeholder = 'Tag|Type';
+            scope.options.placeholder = 'Tags';
           }else{
             scope.options.placeholder = 'Name';
           }
