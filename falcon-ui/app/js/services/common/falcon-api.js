@@ -183,7 +183,7 @@
       searchUrl += "?fields=clusters,tags,status";
       if(name !== undefined && name !== ""){
         if(name !== "*"){
-          searchUrl += "?nameseq="+name;
+          searchUrl += "&nameseq="+name;
         }
       }
       if(tags !== undefined && tags !== ""){
