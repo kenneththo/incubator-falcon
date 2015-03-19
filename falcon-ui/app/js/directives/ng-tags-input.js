@@ -344,15 +344,7 @@
         scope.newTag = {text: '', invalid: null};
 
         scope.getDisplayLabel = function (index, tag) {
-          if(index === 0){
-            return "NAME: ";
-          }else{
-            if(tag.text.indexOf("type=") !== -1){
-              return "TYPE: ";
-            }else{
-              return "TAG: ";
-            }
-          }
+          return tag.type.toUpperCase() + ": ";
         };
 
         scope.getDisplayText = function (tag) {
@@ -374,7 +366,13 @@
 
         scope.$watch('tags.length', function (length) {
           setElementValidity();
-          if(length > 0){
+          var nameFounded = false;
+          angular.forEach(scope.tags, function (tag) {
+            if(tag.type == "name"){
+              nameFounded = true;
+            }
+          });
+          if(nameFounded){
             scope.options.placeholder = 'Tags';
           }else{
             scope.options.placeholder = 'Name';

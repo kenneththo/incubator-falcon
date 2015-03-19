@@ -174,30 +174,45 @@
     };
 
     Falcon.searchEntities = function (name, tags, entityType, offset) {
-      var searchUrl = "../api/entities/search/";
-      var paramSeparator;
+      var searchUrl = "../api/entities/list/";
+      if(entityType !== undefined && entityType !== ""){
+        searchUrl += entityType;
+      }else{
+        searchUrl += "all";
+      }
+      searchUrl += "?fields=clusters,tags,status";
       if(name !== undefined && name !== ""){
-        paramSeparator = "?";
-        if(name === "*"){
-          searchUrl += paramSeparator+"name=*";
-        }else{
-          searchUrl += paramSeparator+"name=*"+name+"*";
+        if(name !== "*"){
+          searchUrl += "?nameseq="+name;
         }
       }
       if(tags !== undefined && tags !== ""){
-        paramSeparator = (searchUrl.indexOf('?') !== -1) ? '&' : '?';
-        searchUrl += paramSeparator+"tags="+tags;
-      }
-      if(entityType !== undefined && entityType !== ""){
-        paramSeparator = (searchUrl.indexOf('?') !== -1) ? '&' : '?';
-        searchUrl += paramSeparator+"filterBy=type:"+entityType;
+        searchUrl += "&tagkey="+tags;
       }
       searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES;
       return $http.get(buildURI(searchUrl));
     };
 
-    Falcon.getInstances = function (type, name, offset) {
-      return $http.get(buildURI('../api/instance/list/' + type + '/' + name + '?colo=*&orderBy=startTime&offset=' + offset + '&numResults=' + NUMBER_OF_INSTANCES));
+    Falcon.searchInstances = function (type, name, offset, start, end, status, orderBy, sortOrder) {
+      var searchUrl = "../api/instance/list/" + type + "/" + name + "?colo=*";
+      if(start !== undefined && start !== ""){
+        searchUrl += "&start="+start;
+      }
+      if(end !== undefined && end !== ""){
+        searchUrl += "&end="+end;
+      }
+      if(status !== undefined && status !== ""){
+        searchUrl += "&filterBy=STATUS:"+status;
+      }
+      if(orderBy !== undefined && orderBy !== ""){
+        searchUrl += "&orderBy="+orderBy;
+      }
+      if(sortOrder !== undefined && sortOrder !== ""){
+        searchUrl += "&sortOrder="+sortOrder;
+      }
+      searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_INSTANCES;
+      console.log(searchUrl);
+      return $http.get(buildURI(searchUrl));
     };
 
     Falcon.postResumeInstance = function (entityType, entityName, start, end) {

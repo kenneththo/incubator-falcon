@@ -54,14 +54,14 @@
         return input.charAt(0).toUpperCase() + input.slice(1);
       };
 
-      $scope.refreshInstanceList = function (type, name) {
+      $scope.refreshInstanceList = function (type, name, start, end, status, orderBy, sortOrder) {
         $scope.instancesList = [];
-        changePagesSet(0, 0, 0);
+        changePagesSet(0, 0, 0, start, end, status, orderBy, sortOrder);
       };
 
-      var consultPage = function(offset, page, defaultPage){
+      var consultPage = function(offset, page, defaultPage, start, end, status, orderBy, sortOrder){
         $scope.loading = true;
-        InstanceFalcon.getInstances($scope.entityType, $scope.entityName, offset).then(function() {
+        InstanceFalcon.searchInstances($scope.entityType, $scope.entityName, offset, start, end, status, orderBy, sortOrder).then(function() {
           if (InstanceFalcon.data !== null) {
             $scope.pages[page] = {};
             $scope.pages[page].index = page;
@@ -73,7 +73,7 @@
               offset = offset + resultsPerPage;
               $scope.nextPages = true;
               if(page < visiblePages-1){
-                consultPage(offset, page+1, defaultPage);
+                consultPage(offset, page+1, defaultPage, start, end, status, orderBy, sortOrder);
               }else{
                 $scope.goPage(defaultPage);
               }
@@ -85,9 +85,9 @@
         });
       };
 
-      var changePagesSet = function(offset, page, defaultPage){
+      var changePagesSet = function(offset, page, defaultPage, start, end, status, orderBy, sortOrder){
         $scope.pages = [];
-        consultPage(offset, page, defaultPage);
+        consultPage(offset, page, defaultPage, start, end, status, orderBy, sortOrder);
       };
 
       $scope.goPage = function (page) {
@@ -103,13 +103,10 @@
         $scope.prevPages = parseInt($scope.pages[page].label) >  visiblePages ? true : false;
         Falcon.responses.listLoaded = true;
         $scope.loading = false;
-        $timeout(function() {
-          angular.element('#tagsInput').focus();
-        }, 0, false);
       };
 
-      $scope.changePagesSet = function(offset, page, defaultPage){
-        changePagesSet(offset, page, defaultPage);
+      $scope.changePagesSet = function(offset, page, defaultPage, start, end, status, orderBy, sortOrder){
+        changePagesSet(offset, page, defaultPage, start, end, status, orderBy, sortOrder);
       };
 
       $scope.instanceDetails = function (instance) {

@@ -82,6 +82,9 @@
       $scope.refreshList = function (tags) {
 
         var tagsSt = "";
+        var entityType = "";
+        var nameFounded = false;
+
         $scope.searchList = [];
 
         if(tags === undefined || tags.length === 0){
@@ -91,21 +94,28 @@
           return;
         }
 
-        $scope.entityName = tags[0].text;
-
-        for(var i=1; i<tags.length; i++){
+        for(var i=0; i<tags.length; i++){
           var tag = tags[i].text;
           if(tag.indexOf("type=") !== -1){
             tag = tag.substring(5);
-            $scope.entityType = tag;
+            entityType = tag;
+            tags[i].type = "type";
           }else{
-            tagsSt += tag;
-            if(i < tags.length-1){
-              tagsSt += ",";
+            if(nameFounded){
+              tagsSt += tag;
+              if(i < tags.length-1){
+                tagsSt += ",";
+              }
+              tags[i].type = "tag";
+            }else{
+              nameFounded = true;
+              $scope.entityName = tag;
+              tags[i].type = "name";
             }
           }
         }
 
+        $scope.entityType = entityType;
         $scope.entityTags = tagsSt;
 
         $scope.goPage(1);

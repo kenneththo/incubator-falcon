@@ -56,7 +56,8 @@
             'app/js/lib/angular-messages.min.js',
             //'app/js/lib/bootstrap3-typeahead.min.js',
             'app/js/lib/ng-tags-input.js',
-            'app/js/lib/popover.js'
+            'app/js/lib/popover.js',
+            'app/js/lib/ng-mask.min.js'
           ],
           dest: 'dist/js/vendor.min.js'
         }

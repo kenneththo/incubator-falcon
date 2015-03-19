@@ -21,13 +21,17 @@
   <thead>
   <tr>
     <th><div class="filtersSearchBox vertical-align"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
-    <th><div class="filtersSearchBox vertical-align">Instance&nbsp;<span class="glyphicon glyphicon-sort"></span></div></th>
-    <th><div class="filtersSearchBox">Started<input type="text" class="form-control dateInput" placeholder="MM/dd/yyyy HH:mm"></div></th>
-    <th><div class="filtersSearchBox">Ended<input type="text" class="form-control dateInput" placeholder="MM/dd/yyyy HH:mm">  </div></th>
+    <th><div class="filtersSearchBox vertical-align">Instance</div></th>
+    <th><div class="filtersSearchBox">Started&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('startTime')"></span>
+      <input type="text" class="form-control dateInput" ng-model="startFilter" ng-enter="filterInstances('startTime')" placeholder="MM/dd/yyyy HH:mm" mask="19/39/2999 19:59" restrict="reject">
+    </div></th>
+    <th><div class="filtersSearchBox">Ended&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('endTime')"></span>
+      <input type="text" class="form-control dateInput" ng-model="endFilter" ng-enter="filterInstances('startTime')" placeholder="MM/dd/yyyy HH:mm" mask='19/39/2999 19:59' restrict="reject">
+    </div></th>
     <th>
-      <div class="filtersSearchBox">Status
-        <select class="form-control padding0">
-          <option value="ALL">ALL</option>
+      <div class="filtersSearchBox">Status&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('status')"></span>
+        <select class="form-control padding0" ng-model="statusFilter" ng-change="filterInstances('startTime')">
+          <option value="">ALL</option>
           <option value="RUNNING">RUNNING</option>
           <option value="SUCCEEDED">SUCCEEDED</option>
           <option value="SUSPENDED">SUSPENDED</option>
@@ -85,6 +89,8 @@
       </button>
     </td>
     <td>
+      <!--{{ item.startTime }}<br/>-->
+      <!--{{ item.startTime | date :'yyyy-MM-ddTHH:mm:ssZ' }}<br/>-->
       {{ item.startTime | date :'MM/dd/yyyy HH:mm'}}
     </td>
     <td>

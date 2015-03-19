@@ -30,12 +30,16 @@
       <div class="detailsBox">
         <div class="row">
           <div class="col-sm-1"></div>
-          <div class="col-sm-11">
+          <div class="col-sm-8">
             <h3 class="instance-title">
               {{ instance.instance }}
             </h3>
           </div>
-          <div class="col-sm-5">
+          <div class="col-sm-3 instance-status">
+            <span class="text-success">STARTED</span><br/>
+            {{ instance.startTime | date :'MM/dd/yyyy HH:mm' }}
+          </div>
+          <div class="col-sm-5 border-left">
             <h4 class="instance-title">
               Status: <span ng-class="{'blink-success': instance.status === 'RUNNING', 'text-success': instance.status === 'SUCCEEDED',
               'blink-warning': instance.status === 'SUSPENDED', 'text-danger': instance.status === 'KILLED',

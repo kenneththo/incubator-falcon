@@ -47,7 +47,7 @@
     };
   });
 
-  entitiesListModule.directive('instancesList', ["$timeout", 'Falcon', function($timeout, Falcon) {
+  entitiesListModule.directive('instancesList', ["$timeout", 'Falcon', '$filter', function($timeout, Falcon, $filter) {
     return {
       scope: {
         input: "=",
@@ -79,6 +79,10 @@
 
         scope.selectedRows = [];
         scope.$parent.refreshInstanceList(scope.type, scope.name);
+
+        scope.startSortOrder = "desc";
+        scope.endSortOrder = "desc";
+        scope.statusSortOrder = "desc";
 
         scope.checkedRow = function (name) {
           var isInArray = false;
@@ -244,6 +248,46 @@
           var offset = (parseInt(scope.pages[0].label)-(visiblePages+1))*resultsPerPage;
           scope.changePagesSet(offset, page, visiblePages-1);
         };
+
+        scope.filterInstances = function(orderBy){
+          var sortOrder = "";
+          if(orderBy !== undefined && orderBy !== ""){
+            if(orderBy === "startTime"){
+              if(scope.startSortOrder === "desc"){
+                scope.startSortOrder = "asc";
+              }else{
+                scope.startSortOrder = "desc";
+              }
+              sortOrder = scope.startSortOrder;
+            }else if(orderBy === "endTime"){
+              if(scope.endSortOrder === "desc"){
+                scope.endSortOrder = "asc";
+              }else{
+                scope.endSortOrder = "desc";
+              }
+              sortOrder = scope.endSortOrder;
+            }else if(orderBy === "status"){
+              if(scope.statusSortOrder === "desc"){
+                scope.statusSortOrder = "asc";
+              }else{
+                scope.statusSortOrder = "desc";
+              }
+              sortOrder = scope.statusSortOrder;
+            }
+          }else{
+            orderBy = "startTime";
+            sortOrder = "desc";
+          }
+          var start = "";
+          if(scope.startFilter !== undefined && scope.startFilter !== ""){
+            start = $filter('date')(scope.startFilter, "yyyy-MM-ddTHH:mm:ssZ");
+          }
+          var end = "";
+          if(scope.endFilter !== undefined && scope.endFilter !== ""){
+            end = $filter('date')(scope.endFilter, "yyyy-MM-ddTHH:mm:ssZ");
+          }
+          scope.$parent.refreshInstanceList(scope.type, scope.name, start, end, scope.statusFilter, orderBy, sortOrder);
+        }
 
       }
     };

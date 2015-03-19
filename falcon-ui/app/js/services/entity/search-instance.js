@@ -26,10 +26,10 @@
 
       var InstanceFalcon = {};
 
-      InstanceFalcon.getInstances = function(type, name, offset){
+      InstanceFalcon.searchInstances = function(type, name, offset, start, end, status, orderBy, sortOrder){
         var deffered = $q.defer();
         Falcon.logRequest();
-        Falcon.getInstances(type, name, offset).success(function (data) {
+        Falcon.searchInstances(type, name, offset, start, end, status, orderBy, sortOrder).success(function (data) {
           Falcon.logResponse('success', data, false, true);
           InstanceFalcon.data = data;
           deffered.resolve();
