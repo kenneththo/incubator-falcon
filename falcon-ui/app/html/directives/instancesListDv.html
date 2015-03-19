@@ -20,11 +20,21 @@
 <table class="listTable table">
   <thead>
   <tr>
-    <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
-    <th><div class="filtersSearchBox">Instance</div></th>
-    <th><div class="filtersSearchBox">Started</div></th>
-    <th><div class="filtersSearchBox">Ended</div></th>
-    <th><div class="filtersSearchBox">Status</div></th>
+    <th><div class="filtersSearchBox vertical-align"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
+    <th><div class="filtersSearchBox vertical-align">Instance&nbsp;<span class="glyphicon glyphicon-sort"></span></div></th>
+    <th><div class="filtersSearchBox">Started<input type="text" class="form-control dateInput" placeholder="MM/dd/yyyy HH:mm"></div></th>
+    <th><div class="filtersSearchBox">Ended<input type="text" class="form-control dateInput" placeholder="MM/dd/yyyy HH:mm">  </div></th>
+    <th>
+      <div class="filtersSearchBox">Status
+        <select class="form-control padding0">
+          <option value="ALL">ALL</option>
+          <option value="RUNNING">RUNNING</option>
+          <option value="SUCCEEDED">SUCCEEDED</option>
+          <option value="SUSPENDED">SUSPENDED</option>
+          <option value="KILLED">KILLED</option>
+        </select>
+      </div>
+    </th>
   </tr>
   </thead>
 
@@ -75,10 +85,10 @@
       </button>
     </td>
     <td>
-      {{ item.startTime }}
+      {{ item.startTime | date :'MM/dd/yyyy HH:mm'}}
     </td>
     <td>
-      {{ item.endTime }}
+      {{ item.endTime | date :'MM/dd/yyyy HH:mm'}}
     </td>
     <td class="stateCell">
       <span ng-class="{'blink-success': item.status === 'RUNNING', 'text-success': item.status === 'SUCCEEDED',

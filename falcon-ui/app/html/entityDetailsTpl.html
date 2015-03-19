@@ -40,23 +40,32 @@
 	</div>
 
 	<div class="row">
-		<div class="col-sm-12">
-			<div class="summaryBox">
-				<h4>
-					Properties
-				</h4>
-        <div ng-if="entity.type == 'feed'" ui-view="feedSummary"></div>
-        <div ng-if="entity.type == 'process'" ui-view="processSummary"></div>
-			</div>
-		</div>
-		<div class="col-sm-12">
+		<div class="col-sm-16">
 			<div class="detailsBox">
 				<h4>
 					Instances
 				</h4>
-        <instances-list input="instancesList" type="entity.type" name="entity.name" instance-details="instanceDetails" resume="resumeInstance"
-                              schedule="scheduleInstance" suspend="suspendInstance" stop="killInstance" rerun="reRunInstance"
-                              pages="pages" go-page="goPage" next-pages="nextPages" prev-pages="prevPages" change-pages-set="changePagesSet"/>
+				<instances-list input="instancesList" type="entity.type" name="entity.name" instance-details="instanceDetails" resume="resumeInstance"
+												schedule="scheduleInstance" suspend="suspendInstance" stop="killInstance" rerun="reRunInstance"
+												pages="pages" go-page="goPage" next-pages="nextPages" prev-pages="prevPages" change-pages-set="changePagesSet"/>
+			</div>
+		</div>
+		<div class="col-sm-8">
+			<div class="summaryBox" ng-init="propsOpen = false">
+				<div class="row">
+					<div class="col-sm-21">
+						<h4>
+							Properties
+						</h4>
+					</div>
+					<div class="col-sm-3">
+						<h4 class="pointer glyphicon" ng-click="propsOpen = !propsOpen" ng-class="propsOpen ? 'glyphicon-chevron-up':'glyphicon-chevron-down'"></h4>
+					</div>
+				</div>
+        <div ng-show="propsOpen" class="animate-show">
+					<div ng-if="entity.type == 'feed'" ui-view="feedSummary"></div>
+					<div ng-if="entity.type == 'process'" ui-view="processSummary"></div>
+				</div>
 			</div>
 		</div>
 	</div>

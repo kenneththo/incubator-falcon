@@ -448,6 +448,12 @@ input[type="password"]{
   }
 }
 
+.filtersSearchBox{
+  .padding0{
+    min-width: 115px;
+  }
+}
+
 tags-input {
   display: block;
 }
@@ -641,4 +647,37 @@ tags-input .autocomplete .suggestion-item em {
 .instance-title{
   margin: 0;
   padding: 10px;
+}
+
+.animate-show {
+  line-height: 20px;
+  opacity: 1;
+  padding: 10px;
+}
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+  -webkit-transition: all linear 0.5s;
+  transition: all linear 0.5s;
+}
+
+.animate-show.ng-hide {
+  line-height: 0;
+  opacity: 0;
+  padding: 0 10px;
+}
+
+.vertical-align {
+  min-height: 5vh;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align : center;
+  -webkit-align-items : center;
+  -moz-box-align : center;
+  -ms-flex-align : center;
+  align-items : center;
+  width: 100%;
 }
