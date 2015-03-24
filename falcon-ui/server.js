@@ -315,6 +315,12 @@
     res.json(200, responseMessage);
   });
 
+  server.get('/api/entities/dependencies/:type/:name', function (req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name;
+    res.json(200, mockData.entityDependencies);
+  });
+
 
   server.post('/api/entities/prepareAndSubmitRecipe', function (req, res) {
     var file = req.text,

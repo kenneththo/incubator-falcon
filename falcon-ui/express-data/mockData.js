@@ -492,6 +492,26 @@
           "instance": "2012-04-03T08:00Z"
         }
       ]
+    },
+    entityDependencies = {
+      "entity": [
+        {
+          "name": "SampleInput",
+          "type": "feed",
+          "tag": ["Input"]
+          //"list": {"tag": ["Input"]}
+        },
+        {
+          "name": "SampleOutput",
+          "type": "feed",
+          "tag": ["Output"]
+          //"list": {"tag": ["Output"]}
+        },
+        {
+          "name": "primary-cluster",
+          "type": "cluster"
+        }
+      ]
     };
 
   exports.findByNameInList = findByNameInList;
@@ -499,5 +519,6 @@
   exports.entitiesList = entitiesList;
   exports.definitions = definitions;
   exports.instancesList = instancesList;
+  exports.entityDependencies = entityDependencies;
 
 })();

@@ -231,6 +231,11 @@
       return $http.post(buildURI('../api/instance/rerun/' + entityType + '/' + entityName + '?colo=*&start=' + start + '&end=' + end));
     };
 
+    Falcon.getEntityDependencies = function (type, name) {
+      //return $http.get(buildURI('../api/entities/dependencies/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
+      return $http.get(buildURI('../api/entities/dependencies/' + type + '/' + name));
+    };
+
     //----------------------------------------------//
     Falcon.getInstancesSummary = function (type, mode, from, to) {
       return $http.get(buildURI('../api/instance/summary/' + type + '/'+ mode + '?start=' + from + '&end=' + to));
