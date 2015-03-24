@@ -18,30 +18,20 @@
 (function () {
   'use strict';
 
-  var app = angular.module('app.services.instance', ['app.services']);
+  var module = angular.module('tooltip', []);
 
-  app.factory('InstanceFalcon', [
-    "Falcon", "$q",
-    function (Falcon, $q) {
+  module.directive('toogle', function () {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs){
+        if (attrs.toggle=="tooltip"){
+          $(element).tooltip();
+        }
+        if (attrs.toggle=="popover"){
+          $(element).popover();
+        }
+      }
+    };
+  });
 
-      var InstanceFalcon = {};
-
-      InstanceFalcon.searchInstances = function(type, name, offset, start, end, status, orderBy, sortOrder){
-        var deffered = $q.defer();
-        Falcon.logRequest();
-        Falcon.searchInstances(type, name, offset, start, end, status, orderBy, sortOrder).success(function (data) {
-          Falcon.logResponse('success', data, false, true);
-          InstanceFalcon.data = data;
-          deffered.resolve();
-        }).error(function (err) {
-          Falcon.logResponse('error', err);
-          deffered.resolve();
-        });
-        return deffered.promise;
-      };
-
-      return InstanceFalcon;
-
-    }]);
-
-}());
+})();

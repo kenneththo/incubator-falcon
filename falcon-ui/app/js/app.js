@@ -20,7 +20,7 @@
 
   var app = angular.module('app', [
     'ui.bootstrap', 'ui.router', 'ngCookies', 'ngAnimate', 'ngMessages', 'checklist-model', 'app.controllers',
-    'app.directives', 'app.services', 'ngTagsInput'
+    'app.directives', 'app.services', 'ngTagsInput', 'nsPopover', 'ngAnimate', 'ngMask'
   ]);
 
   app.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function ($stateProvider, $urlRouterProvider, $httpProvider) {

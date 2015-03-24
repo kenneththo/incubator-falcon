@@ -343,6 +343,10 @@
 
         scope.newTag = {text: '', invalid: null};
 
+        scope.getDisplayLabel = function (index, tag) {
+          return tag.type.toUpperCase() + ": ";
+        };
+
         scope.getDisplayText = function (tag) {
           return safeToString(tag[options.displayProperty]);
         };
@@ -362,10 +366,16 @@
 
         scope.$watch('tags.length', function (length) {
           setElementValidity();
-          if(length > 0){
-            scope.options.placeholder = 'Tag:';
+          var nameFounded = false;
+          angular.forEach(scope.tags, function (tag) {
+            if(tag.type == "name"){
+              nameFounded = true;
+            }
+          });
+          if(nameFounded){
+            scope.options.placeholder = 'Tags';
           }else{
-            scope.options.placeholder = 'Name:';
+            scope.options.placeholder = 'Name';
           }
         });
 

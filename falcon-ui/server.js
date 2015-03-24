@@ -37,8 +37,8 @@
     var result = [];
     var index = 0;
     for(var j=0; j<list.length; j++){
-      for(var k=0; k<list[j].tags.tag.length; k++){
-        if(list[j].tags.tag[k] === tag){
+      for(var k=0; k<list[j].list.tag.length; k++){
+        if(list[j].list.tag[k] === tag){
             result[index++] = list[j];
           break;
         }
@@ -56,50 +56,46 @@
     return result;
   }
 
+  function searchInstancesByDate(type, date, list){
+    var result = [];
+    var index = 0;
+    for(var i=0; i<list.length; i++){
+      var actualDate = new Date(list[i][type]);
+      if(date <= actualDate){
+        result[index++] = list[i];
+      }
+    }
+    return result;
+  }
+
+  function searchInstancesByStatus(status, list){
+    var result = [];
+    var index = 0;
+    for(var i=0; i<list.length; i++){
+      if(list[i].status === status){
+        result[index++] = list[i];
+      }
+    }
+    return result;
+  }
+
   server.get('/api/entities/list/:type', function (req, res) {
+
     var type = req.params.type;
-    var name = req.query.filterBy === undefined ? "" : req.query.filterBy;
-    var tags = req.query.tags === undefined ? "" : req.query.tags;
+    var name = req.query.nameseq === undefined ? "" : req.query.nameseq;
+    var tags = req.query.tagkey === undefined ? "" : req.query.tagkey;
     var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
     var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
-    var paginated = JSON.parse(JSON.stringify(mockData.entitiesList[type]));
-    name = name.substring(5);
-    if(tags !== "" && name !== "" && name !== "*"){
-      console.log("Search by name & tags " + tags);
-      paginated.entity = searchByName(name, paginated.entity);
-      paginated.entity = searchByTags(tags, paginated.entity);
-    }else if(tags !== ""){
-      console.log("Search by tags " + tags);
-      paginated.entity = searchByTags(tags, paginated.entity);
-    }else if(name === "*"){
-      console.log("Search by name *");
-      paginated.entity = paginated.entity.slice(offset, offset+numResults);
-    }else if(name !== ""){
-      console.log("Search by name " + name);
-      paginated.entity = searchByName(name, paginated.entity);
-    }else{
-      console.log("Search by name *");
-      paginated.entity = paginated.entity.slice(offset, offset+numResults);
-    }
-    res.json(paginated);
-  });
-
-  server.get('/api/entities/search', function (req, res) {
-
-    var name = req.query.name === undefined ? "" : req.query.name;
-    var tags = req.query.tags === undefined ? "" : req.query.tags;
-    var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
-    var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
-
-    if(name.length > 1){
-      name = name.substring(1,name.length-1);
-    }
 
     var paginated = {};
     paginated.entity = [];
 
-    paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
-        mockData.entitiesList.process.entity, mockData.entitiesList.dataset.entity);
+    if(type === "all"){
+      paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
+          mockData.entitiesList.process.entity, mockData.entitiesList.dataset.entity);
+    }else{
+      paginated.entity = paginated.entity.concat(mockData.entitiesList[type].entity);
+    }
 
     if(tags !== "" && name !== "" && name !== "*"){
       console.log("Search by name " + name + " & tags " + tags);
@@ -112,17 +108,13 @@
       paginated.entity = searchByTags(tags, paginated.entity);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
-    }else if(name === "*"){
-      console.log("Search by name *");
-      paginated.totalResults = paginated.entity.length;
-      paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else if(name !== ""){
       console.log("Search by name " + name);
       paginated.entity = searchByName(name, paginated.entity);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else{
-      console.log("Search by name *");
+      console.log("Search all type:"+type);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }
@@ -229,14 +221,35 @@
   server.get('/api/instance/list/:type/:name', function(req, res) {
     var type = req.params.type.toUpperCase(),
         name = req.params.name,
+        start = req.query.start === undefined ? "" : req.query.start,
+        end = req.query.end === undefined ? "" : req.query.end,
+        status = req.query.filterBy === undefined ? "" : req.query.filterBy.substring(7),
         numResults = parseInt(req.query.numResults === undefined ? 5 : req.query.numResults),
         offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset),
         responseMessage = {
-          "instances": mockData.instancesList[type],
+          "instances": [],
           "requestId": "falcon/default/13015853-8e40-4923-9d32-6d01053c31c6\n\n",
           "message": "default\/STATUS\n",
           "status": "SUCCEEDED"
         };
+
+    var instances = [];
+    instances = instances.concat(mockData.instancesList[type]);
+
+    if(status !== ""){
+      instances = searchInstancesByStatus(status, instances);
+    }
+    if(start !== ""){
+      start = new Date(start);
+      instances = searchInstancesByDate("startTime", start, instances);
+    }
+    if(end !== ""){
+      end = new Date(end);
+      instances = searchInstancesByDate("endTime", end, instances);
+    }
+
+    responseMessage.instances = instances;
+
     var paginated = responseMessage;
     paginated.entity = paginated.instances.slice(offset, offset+numResults);
     res.json(paginated);

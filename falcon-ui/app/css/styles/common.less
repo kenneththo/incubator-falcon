@@ -51,6 +51,7 @@ input {
     border-color: inherit;
   }
 }
+
 .ng-invalid.ng-dirty {
   border-color: lighten(red, 10%);
   &:focus.empty {
@@ -296,14 +297,20 @@ input[type="password"]{
 
 .text-success {
   color: @summarySuccess;
-  border-right: 2px solid @gray-lighter;
 }
 .text-warning {
   color: @summaryWarning;
-  border-right: 2px solid @gray-lighter;
 }
 .text-danger {
   color: @summaryDanger;
+}
+
+.border-left{
+  border-left: 2px solid @gray-lighter;
+}
+
+.border-right{
+  border-right: 2px solid @gray-lighter;
 }
 
 .summaryBox {
@@ -357,6 +364,16 @@ input[type="password"]{
   padding-right: 40px !important;
 }
 
+.searchBoxContainer{
+  .popover{
+    right: 5px !important;
+    width: 400px;
+  }
+  .arrow{
+    right: 35px !important;
+  }
+}
+
 .search-icon {
   cursor: pointer;
   position: absolute;
@@ -398,6 +415,19 @@ input[type="password"]{
   color: #777;
 }
 
+.question-icon {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 40px;
+  z-index: 2;
+  display: block;
+  line-height: 23px;
+  text-align: center;
+  font-size: 25px;
+  color: #777;
+}
+
 .searchBox {
   display: inline-block;
   .entityTypeButtons {
@@ -421,6 +451,12 @@ input[type="password"]{
 
       }
     }
+  }
+}
+
+.filtersSearchBox{
+  .padding0{
+    min-width: 115px;
   }
 }
 
@@ -617,4 +653,41 @@ tags-input .autocomplete .suggestion-item em {
 .instance-title{
   margin: 0;
   padding: 10px;
+}
+
+.instance-status{
+  margin-top: 8px;
+}
+
+.animate-show {
+  line-height: 20px;
+  opacity: 1;
+  padding: 10px;
+}
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+  -webkit-transition: all linear 0.5s;
+  transition: all linear 0.5s;
+}
+
+.animate-show.ng-hide {
+  line-height: 0;
+  opacity: 0;
+  padding: 0 10px;
+}
+
+.vertical-align {
+  min-height: 5vh;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align : center;
+  -webkit-align-items : center;
+  -moz-box-align : center;
+  -ms-flex-align : center;
+  align-items : center;
+  width: 100%;
 }
