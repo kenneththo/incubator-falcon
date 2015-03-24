@@ -62,6 +62,7 @@ input[type="checkbox"]:focus,
   margin-bottom: 8px;
 }
 #formBox {
+  padding: 0 2%;
   .dateInput {
     padding-right:0!important;
   }
@@ -162,30 +163,91 @@ input[type="checkbox"]:focus,
     .mb10;
     padding-top: 15px;
     padding-bottom: 15px;
+
+    h3, .runJobOnBox {
+      .pa;
+      background-color: white;
+      padding: 0 5px;
+    }
+
     h3 {
       font-size: 16px;
       font-weight: 700;
       display: inline-block;
       top: -30px;
-      position: absolute;
-      background-color: white;
+
+    }
+    .runJobOnBox {
+      width: 110px;
+      right: 5px;
+      top: -13px;
+    }
+    .databasesTextArea {
+      height: 100px;
+    }
+    .hiveDatabasesTitol {
+      font-size: 12px;
+      padding-left: 5px;
+    }
+    .databaseRadioBox{
+      font-size: 12px;
+      input {
+        margin-left: 5px;
+      }
     }
   }
-
-
-}
-
-
-
-#formTimingBox {
-  .timingBox {
+  .alertsBox {
+    .mt10;
+    h4 {
+      margin: 0;
+    }
+    .emailBox {
+      padding-right: 5px;
+      width: 82%;
+      display: inline-block;
+      vertical-align: top;
+      .db { margin:0; }
+      margin-bottom:5px;
+      label {
+        width: 100%;
+      }
+    }
+    .addAlertBox {
+      margin-bottom:5px;
+      margin-left: 10px;
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 24px;
+    }
+    .emailArrayRow {
+      height: 25px;
+      font-size: 12px;
+      line-height: 25px;
+      margin-bottom: 5px;
+      span {
+        font-weight: bold;
+      }
+      button {
+        float: right;
+        margin-right: 4px;
+      }
+    }
+  }
+  .validityBox {
     > div {
       display: inline-block;
+      margin: 0 2px;
     }
-    .startOnBox {
+
+    h4 {
+      margin-top: 5px;
+      margin-bottom: 0;
+    }
+    .startDateBox, .endDateBox {
       width: 20%;
+      vertical-align: top;
     }
-    .timeBox {
+    .startTimeBox, .endTimeBox {
       width: 15%;
       vertical-align: top;
       padding-left:0;
@@ -209,20 +271,46 @@ input[type="checkbox"]:focus,
           }
         }
       }
+
       a {
         display: none!important;
       }
     }
-    .tzBox {
-      width: 63%;
-      select {
-        margin-bottom:-8px;
-        right:0;
-      }
+    .endDateBox {
 
     }
+    .endTimeBox {
+
+    }
+    .tzBox {
+      width: 22%;
+      //padding-top: 20px;
+    }
   }
-  .frequencyBox, .repeatsBox {
+}
+.advancedOptionsButton {
+  cursor: pointer;
+  hr {
+    width: 67%;
+    margin-top: -7px;
+    margin-bottom:0;
+    margin-left: 128px;
+    border-top: 1px solid @gray-dark;
+  }
+  span.entypo {
+    float: right;
+    margin: 7px 5px;
+    font-size: 50px;
+  }
+}
+#advancedOptionsBox {
+  .transition(max-height 1s ease);
+  max-height: 0;
+  overflow: hidden;
+  &.expanded {
+    max-height: 1510px;
+  }
+  .frequencyBox {
     width: 36%;
     display: inline-block;
     vertical-align: top;
@@ -240,177 +328,52 @@ input[type="checkbox"]:focus,
     }
   }
 
-
-
-
-
-
-}
-
-.advancedOptionsButton {
-  cursor: pointer;
-  hr {
-    width: 67%;
-    float: right;
-    margin-top: 7px;
-    margin-bottom:0;
-    border-top: 1px solid @gray-dark;
-  }
-  span.entypo {
-    float: right;
-    margin: 7px 5px;
-    font-size: 50px;
-  }
-}
-#advancedOptionsBox {
-  .transition(max-height 1s ease);
-  max-height: 0;
-  overflow: hidden;
-  &.expanded {
-    max-height: 1510px;
-  }
-}
-
-
-
-#formBox {
-  .maxSnapshotBox, .maxNumberSlotsBox, .maxBandwidthBox, .unitRadioBox {
-    label {
-      display: inline !important;
-    }
-    display: inline-block;
-    width: 24%!important;
-    vertical-align: top;
-  }
-  .maxNumberSlotsBox {
-
-  }
-  .maxBandwidthBox {
-
-  }
-  .unitRadioBox {
-    margin-top: 20px;
-    label {
+  .allocationBox {
+    >div>div {
+      width: 24%;
       display: inline-block;
     }
+
   }
-  .othersBox {
-    .runJobAsBox {
-      vertical-align: top;
-      width: 68%;
+  .retryBox {
+
+    > div {
+      width: 32%;
       display: inline-block;
-      label {
-        .db;
-      }
-    }
-    .dataPermissions {
-      vertical-align: top;
-      display: inline-block;
-      width: 30%;
-      label {
-        .db;
-      }
-    }
-    .onErrorBox {
-      .p10;
-      .mt20;
-      border: 1px solid @gray-light;
-      position: relative;
-      border-radius: 5px;
-      padding-top: 20px;
-      .onErrorHeaderBox {
-        position: absolute;
+      input, select {
         display: inline-block;
-        top: -18px;
-        left: 5px;
-        padding: 5px;
-        background-color: white;
-        label {
-          display: inline;
-        }
       }
-      .policyBox {
-        label {
-          display: inline-block;
-        }
+      input {
+        width: 20px;
       }
-      .retryBox {
-        > label {
-          //.db;
-        }
-        .retryEveryBox {
-          vertical-align: top;
-          padding: 1px 5px;
-          display: inline-block;
-          input {
-            display: inline-block;
-            width: 20px;
-          }
-          select {
-            display: inline-block;
-            width: 80px;
-          }
-
-        }
-        .stopOnBox {
-          padding: 1px 5px;
-          display: inline-block;
-          input {
-            display: inline-block;
-            width: 30px;
-
-          }
-          select{
-            display: inline-block;
-            width:80px
-          };
-        }
+      select {
+        width: 80px;
+      }
+      label {
+        margin:0;
+      }
+      &:last-child {
+        text-align: right;
+        padding-right: 20px;
       }
     }
   }
-
-  .alertsBox {
-    .mt20;
-    h4 {
-      margin: 0;
-    }
-    .to {
-      vertical-align: top;
-      padding-right: 5px;
-      width: 40%;
+  .aclBox {
+    > div {
+      width: 32%;
       display: inline-block;
-      .db { margin:0; }
-      margin-bottom:5px;
-    }
-    .on {
-      margin-bottom:5px;
       vertical-align: top;
-      margin-left: 10px;
-      width: 56%;
-      display: inline-block;
-      label {
-        display: inline;
-      }
-      button {
-        float: right;
-      }
     }
-    .emailArrayRow {
-      height: 25px;
-      font-size: 12px;
-      line-height: 25px;
-      margin-bottom: 5px;
-      span {
-        font-weight: bold;
-      }
-      button {
-        float: right;
-        margin-right: 5px;
-      }
+  }
+  .hiveOptBox {
+    label {
+      display: block;
     }
   }
 }
 
+
+//---------------SUMMARY------------------//
 
 #formSummaryBox {
   font-size: 12px;
