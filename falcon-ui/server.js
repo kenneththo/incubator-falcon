@@ -251,7 +251,7 @@
     responseMessage.instances = instances;
 
     var paginated = responseMessage;
-    paginated.entity = paginated.instances.slice(offset, offset+numResults);
+    paginated.instances = paginated.instances.slice(offset, offset+numResults);
     res.json(paginated);
   });
 

@@ -31,6 +31,9 @@
         Falcon.logRequest();
         Falcon.searchInstances(type, name, offset, start, end, status, orderBy, sortOrder).success(function (data) {
           Falcon.logResponse('success', data, false, true);
+          if(data.instances === undefined){
+            data.instances = [];
+          }
           InstanceFalcon.data = data;
           deffered.resolve();
         }).error(function (err) {

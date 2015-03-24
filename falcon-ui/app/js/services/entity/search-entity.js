@@ -31,6 +31,10 @@
         Falcon.logRequest();
         Falcon.searchEntities(name, tags, entityType, offset).success(function (data) {
           Falcon.logResponse('success', data, false, true);
+          data.totalResults = parseInt(data.totalResults);
+          if(data.entity === undefined){
+            data.entity = [];
+          }
           EntityFalcon.data = data;
           deffered.resolve();
         }).error(function (err) {
