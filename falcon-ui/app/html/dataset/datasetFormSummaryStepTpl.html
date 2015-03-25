@@ -1,123 +1,94 @@
 <div id="formSummaryBox" class="col-xs-24">
   <div>
     <h4 class="lightSubtitle">Name</h4>
-    {{model.name}}
+    {{UIModel.name}}
   </div>
   <div>
     <h4 class="lightSubtitle">Type</h4>
-    {{model.type}}
+    {{UIModel.formType}}
   </div>
   <div>
-    <h4 ng-if="model.tags.length > 0" class="lightSubtitle">Tags</h4>
-    <div ng-repeat="tag in model.tags"><span>{{tag.key}}</span> - {{tag.value}}</div>
+    <h4 ng-if="UIModel.tags.tagsArray.length > 0" class="lightSubtitle">Tags</h4>
+    <div ng-repeat="tag in UIModel.tags.tagsArray"><span>{{tag.key}}</span> - {{tag.value}}</div>
   </div>
 
   <div>
-    <h4 class="lightSubtitle">Source Cluster</h4>
+    <h4 class="lightSubtitle">Source</h4>
   </div>
   <div class="box">
-    <h3>{{model.clusters.source_cluster.name}}</h3>
+    <h3 ng-if="UIModel.formType === 'HIVE' || UIModel.source.location === 'HDFS'">{{UIModel.source.cluster}}</h3>
 
     <h4>Location</h4>
-    <span ng-if="model.type === 'HDFS'">{{model.clusters.source_cluster.location.type}}</span>
-    {{model.clusters.source_cluster.location.src}}
+    <span ng-if="UIModel.formType === 'HDFS'">{{UIModel.source.location}}</span>
+    {{UIModel.source.path}}
   </div>
   <div>
-    <h4 class="lightSubtitle">Target Cluster</h4>
+    <h4 class="lightSubtitle">Target</h4>
   </div>
   <div class="box">
-    <h3>{{model.clusters.target_cluster.name}}</h3>
+    <h3 ng-if="UIModel.formType === 'HDFS' && UIModel.target.location === 'HDFS'">{{UIModel.target.cluster}}</h3>
 
     <h4>Location</h4>
-    <span ng-if="model.type === 'HDFS'">{{model.clusters.target_cluster.location.type}}</span>
-    {{model.clusters.target_cluster.location.src}}
+    <span ng-if="UIModel.formType === 'HDFS'">{{UIModel.target.location}}</span>
+    {{UIModel.target.path}}
+  </div>
+
+  <div>
+    <h4 class="lightSubtitle">Run On</h4>
+    <div ng-if="UIModel.runOn === 'source'">{{UIModel.source.cluster}}</div>
+    <div ng-if="UIModel.runOn === 'target'">{{UIModel.target.cluster}}</div>
   </div>
 
   <hr />
 
   <div>
     <h4 class="lightSubtitle">Schedule</h4>
-    <span>Start on: </span>{{model.start}}
+    <span>Start on: </span>{{UIModel.validity.startISO}} <br />
+    <span>End on: </span>{{UIModel.validity.endISO}}
   </div>
 
+  <div ng-if="UIModel.formType === 'HDFS'">
+    <h4 class="lightSubtitle">Max Maps</h4>
+    {{UIModel.allocation.hdfs.maxMaps}}
 
-  <div class="allocationSubBox">
-    <h4 class="lightSubtitle">Max slots</h4>
-    {{model.allocation.max_number_slots}} <span>{{model.allocation.measure}}</span>
+    <h4 class="lightSubtitle">Max Bandwidth</h4>
+    {{UIModel.allocation.hdfs.maxBandwidth}}
   </div>
-  <div class="allocationSubBox">
-    <h4 class="lightSubtitle">Max bandwidth</h4>
-    {{model.allocation.max_bandwidth}} <span>{{model.allocation.measure}}</span>
+  <div ng-if="UIModel.formType === 'HIVE'">
+
+    <h4 class="lightSubtitle">Max Maps for Distcp</h4>
+    {{UIModel.allocation.hive.maxMapsDistcp}}
+
+    <h4 class="lightSubtitle">Max Bandwidth</h4>
+    {{UIModel.allocation.hive.maxBandwidth}}
+
+    <h4 class="lightSubtitle">Max Events</h4>
+    {{UIModel.allocation.hive.maxMapsEvents}}
+
+    <h4 class="lightSubtitle">Max Maps for mirror</h4>
+    {{UIModel.allocation.hive.maxMapsMirror}}
   </div>
 
   <div>
-    <h4 ng-if="model.alerts.length > 0" class="lightSubtitle">Alerts</h4>
-
-    <div ng-repeat="alert in model.alerts">
-      <span>{{alert.email}}</span> on
-      <span ng-if="alert.start">Start</span>
-      <span ng-if="alert.finish">Finish</span>
-      <span ng-if="alert.fail">Fail</span>
-      <span ng-if="alert.abort">Abort</span>
-    </div>
-
+    <h4 ng-if="UIModel.alerts.alertsArray.length > 0" class="lightSubtitle">Alerts</h4>
+    {{ UIModel.alerts.alertsArray.join() }}
   </div>
 
   <hr />
-  <div>
-    <h4 class="lightSubtitle">Run as</h4>
-    {{model.run_as}}
-    <div>
-      <span>Permissions: </span>{{model.permission}}
-    </div>
-  </div>
-  <div>
-    <h4 class="lightSubtitle">On error</h4>
-    <span>Action:</span> {{model.on_error.action}}
-  </div>
-  <div ng-if="model.on_error.action === 'abort'">
-    <span>Options:</span> {{model.on_error.options}}
-  </div>
-  <div ng-if="model.on_error.action === 'retry'">
-    <span>Options:</span> Retry every {{model.on_error.options.retry_every.number}} {{model.on_error.options.retry_every.unit}}
-    <div>
+  <h4 class="lightSubtitle">ACL</h4>
+  <div><span>Owner:</span> {{UIModel.acl.owner}}</div>
+  <div><span>Group:</span> {{UIModel.acl.group}}</div>
+  <div><span>Permissions:</span> {{UIModel.acl.permissions}}</div>
 
-      <div ng-if="model.on_error.options.stop_on.attempts">
-        <span>Stop on:</span> {{model.on_error.options.stop_on.attempts}} attempts
-      </div>
-      <div ng-if="model.on_error.options.stop_on.without_response">
-        <span>Stop on:</span>
-        {{model.on_error.options.stop_on.without_response.number}}
-        {{model.on_error.options.stop_on.without_response.unit}} without response
-      </div>
-      <div ng-if="model.on_error.options.stop_on === 'never'">
-        <span>Stop on:</span> Never
-      </div>
-    </div>
-  </div>
+  <h4 class="lightSubtitle">Retry</h4>
+  <div><span>Policy: </span> {{UIModel.retry.policy}}</div>
+  <div><span>delay: </span> {{UIModel.retry.delay.number}} {{UIModel.retry.delay.unit}}</div>
+  <div><span>Attempts: </span> {{UIModel.retry.attempts}}</div>
 
+  <h4 class="lightSubtitle">Frequency</h4>
+  <div>{{UIModel.frequency.number}} {{UIModel.frequency.unit}}</div>
 
   <hr />
-
-
-<!--  <div class="row">
-    <div class="col-xs-24 mt20">
-      <button type="button"
-              id="summaryBack" class="btn prevBtn"
-              ng-click="goBack('form.timing')"
-              ng-disabled="buttonSpinners.backShow">
-        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-      </button>
-      <button id="summarySave"
-              class="btn nextBtn pull-right"
-              ng-click="save()" >
-        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-      </button>
-      <a class="pull-right" ng-click="cancel()">
-        Cancel
-      </a>
-    </div>
-  </div>-->
 
   <div class="row">
     <div class="col-xs-24 mt20">

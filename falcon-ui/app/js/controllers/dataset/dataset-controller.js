@@ -20,9 +20,10 @@
 
   var datasetModule = angular.module('app.controllers.dataset', [ 'app.services' ]);
 
-  datasetModule.controller('DatasetCtrl', [ "$scope", "$interval", "Falcon", "EntityModel", "$state",
+  datasetModule.controller('DatasetCtrl', [
+    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService",
     "ValidationService", "SpinnersFlag", "$timeout", "$rootScope", "clustersList",
-    function ($scope, $interval, Falcon, EntityModel, $state,
+    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService,
               validationService, SpinnersFlag, $timeout, $rootScope, clustersList) {
 
       $scope.skipUndo = false;
@@ -41,91 +42,12 @@
       $scope.switchModel = function (type) {
         $scope.model = EntityModel.datasetModel[type].process;
         $scope.UIModel.formType = type;
-        /*$scope.convertTags();
-        $scope.locateProperties();*/
+        $scope.completeModel = EntityModel.datasetModel[type];
       };
-      //--------------init-------------//
-      //$scope.switchModel('HDFS');
 
       $scope.model = EntityModel.datasetModel.HDFS.process;
-      $scope.UIModel = {
-        name: "",
-        tags: {
-          newTag: { value:"", key:"" },
-          tagsArray: [],
-          tagsString: ""
-        },
-        formType: "HDFS",
-        runOn: "source",
-        source: {
-          location: "HDFS",
-          cluster: "",
-          url: "",
-          path: "",
-          hiveDatabaseType: "databases",
-          hiveDatabases: "",
-          hiveDatabase: "",
-          hiveTables: ""
-        },
-        target: {
-          location: "HDFS",
-          cluster: "",
-          url: "",
-          path: ""
-        },
-        alerts: {
-          alert: { email: "" },
-          alertsArray: []
-        },
-        validity: {
-          start: new Date(),
-          startTime: new Date(),
-          end: new Date(),
-          endTime: new Date(),
-          tz: "GMT+00:00",
-          startISO: "",
-          endISO: ""
-        },
-        frequency: {
-          number: 5,
-          unit: 'minutes'
-        },
-        allocation: {
-          hdfs:{
-            maxMaps: 5,
-            maxBandwidth: 100
-          },
-          hive:{
-            maxMapsDistcp: 1,
-            maxMapsMirror: 5,
-            maxMapsEvents: -1,
-            maxBandwidth: 100
-          }
-        },
-        hiveOptions: {
-          source:{
-            stagingPath: "",
-            hiveServerToEndpoint: ""
-          },
-          target:{
-            stagingPath: "",
-            hiveServerToEndpoint: ""
-          }
-        },
-        retry: {
-          policy:"PERIODIC",
-          delay: {
-            unit: "minutes",
-            number: 30
-          },
-          attempts: 3
-        },
-        acl: {
-          owner: "",
-          group: "",
-          permissions: ""
-        }
-      };
+      $scope.UIModel = EntityModel.datasetModel.UIModel;
+      $scope.completeModel = EntityModel.datasetModel.HDFS;
       //-------------------------//
       $scope.checkFromSource = function () {
         if ($scope.UIModel.source.location !== "HDFS") {
@@ -139,15 +61,6 @@
           $scope.UIModel.runOn = 'source';
         }
       };
-
-
-      /*$scope.locateProperties = function () {
-
-        $scope.model.properties.property.forEach(function (item) {
-          console.log(item._name);
-        });
-      };*/
-
       //----------------TAGS---------------------//
       $scope.addTag = function () {
         $scope.UIModel.tags.tagsArray.push($scope.UIModel.tags.newTag);
@@ -177,15 +90,13 @@
       };
       //----------- Alerts -----------//
       $scope.addAlert = function () {
-        $scope.UIModel.alerts.alertsArray.push($scope.UIModel.alerts.alert);
+        $scope.UIModel.alerts.alertsArray.push($scope.UIModel.alerts.alert.email);
         $scope.UIModel.alerts.alert = { email: "" };
       };
       $scope.removeAlert = function (index) {
         $scope.UIModel.alerts.alertsArray.splice(index, 1);
       };
-
       //----------------- DATE INPUTS -------------------//
-
       $scope.dateFormat = 'MM/dd/yyyy';
 
       $scope.openStartDatePicker = function($event) {
@@ -227,16 +138,7 @@
       //-----------Timezone---------//
       $scope.$watch(function () { return $scope.UIModel.validity.tz; }, function () { return $scope.constructDate(); });
 
-
-
-
-
       //-------------------------------------//
-
-
-
-
-
 
       $scope.goNext = function (formInvalid, stateName) {
         SpinnersFlag.show = true;
@@ -249,7 +151,7 @@
         }
         validationService.displayValidations.show = false;
         validationService.displayValidations.nameShow = false;
-        createXML();
+        getClustersDefinitions();
         $state.go(stateName);
         angular.element('body, html').animate({scrollTop: 0}, 500);
       };
@@ -263,37 +165,210 @@
       };
 
       $scope.save = function () {
-        var fileStr = createXML();
-
-        Falcon.postSubmitRecipe(fileStr)
+        Falcon.postSubmitRecipe($scope.xmlString)
           .success(function (data) {
-            console.log(data);
             Falcon.logResponse('success', data, false);
           })
           .error(function (error) {
             console.log(error);
           });
-        //console.log(fileStr);
-
-
       };
+
+      $scope.sourceClusterModel = {};
+      $scope.targetClusterModel = {};
+      function getClustersDefinitions () {
+        var promisesDone = 0;
+        if ($scope.UIModel.source.cluster) {
+          Falcon.getEntityDefinition("cluster", $scope.UIModel.source.cluster)
+            .success(function (data) {
+              var clusterModel = X2jsService.xml_str2json(data);
+              $scope.sourceClusterModel = clusterModel;
+              promisesDone = promisesDone + 1;
+              if (promisesDone === 2) { createXML(); }
+
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, false, true);
+            });
+        }
+        if ($scope.UIModel.target.cluster) {
+          Falcon.getEntityDefinition("cluster", $scope.UIModel.source.cluster)
+            .success(function (data) {
+              var clusterModel = X2jsService.xml_str2json(data);
+              $scope.targetClusterModel = clusterModel;
+              promisesDone = promisesDone + 1;
+              if (promisesDone === 2) { createXML(); }
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, false, true);
+            });
+        }
+
+      }
+
+      function findInterface (array, interfaceString) {
+        var inter = "";
+        array.forEach(function (item) {
+          if (item._type === interfaceString) {
+            inter = item._endpoint;
+          }
+        });
+        return inter;
+      }
+      function replacePortInInterface (string) {
+        if (string) {
+          var splitted = string.split(':');
+          return splitted[0] + ':' + splitted[1] + ':10000';
+        }
+      }
 
 
       function createXML () {
+        //-----------NAME ---------------//
         $scope.model._name = $scope.UIModel.name;
+        //-----------TAGS ---------------//
         $scope.model.tags = $scope.UIModel.tags.tagsString;
+        //------------RETRY------------------//
+        $scope.model.retry._policy = $scope.UIModel.retry.policy;
+        $scope.model.retry._delay = $scope.UIModel.retry.delay.unit + '(' + $scope.UIModel.retry.delay.number + ')';
+        $scope.model.retry._attempts = $scope.UIModel.retry.attempts;
+        //------------ACL---------------------//
+        $scope.model.ACL._owner = $scope.UIModel.acl.owner;
+        $scope.model.ACL._group = $scope.UIModel.acl.group;
+        $scope.model.ACL._permission = $scope.UIModel.acl.permissions;
+        //-----------Frequency ---------------//
+        $scope.model.frequency = $scope.UIModel.frequency.unit + '(' + $scope.UIModel.frequency.number + ')';
+        //-----------Cluster validity ---------------//
+        $scope.model.clusters.cluster[0].validity._start = $scope.UIModel.validity.startISO;
+        $scope.model.clusters.cluster[0].validity._end = $scope.UIModel.validity.endISO;
 
+        //----------HDFS-----------------------------------------------------------------------------//
         if ($scope.UIModel.formType === 'HDFS') {
+          //-----------Cluster name ---------------//
+          if ($scope.UIModel.runOn === "source") {
+            $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
+          } else {
+            $scope.model.clusters.cluster[0]._name = $scope.UIModel.target.cluster;
+          }
+          //-----------HDFS Properties ---------------//
+          $scope.model.properties.property.forEach(function (item, index) {
+            if (item._name === 'distcpMaxMaps') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.allocation.hdfs.maxMaps;
+            }
+            if (item._name === 'distcpMapBandwidth') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.allocation.hdfs.maxBandwidth;
+            }
+            if (item._name === 'drSourceDir') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.source.path;
+            }
+            if (item._name === 'drTargetDir') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.target.path;
+            }
+            if (item._name === 'drSourceClusterFS') {
+              $scope.model.properties.property[index]._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
+            }
+            if (item._name === 'drTargetClusterFS') {
+              $scope.model.properties.property[index]._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
+            }
+            if (item._name === 'drNotifyEmail') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.alerts.alertsArray.join();
+            }
+          });
+          //------------WORKFLOW---------------//
+          $scope.model.workflow._name = $scope.UIModel.name + '-WF';
 
+        //----------HIVE-----------------------------------------------------------------------------//
         } else if ($scope.UIModel.formType === 'HIVE') {
 
-        } else {
+          //-----------Cluster name --------------------------------//
+          $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
 
+          //-----------HIVE Properties ---------------//
+          $scope.model.properties.property.forEach(function (item, index) {
+            console.log(item._name + '------index-' + index);
+            if (item._name === 'distcpMaxMaps') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.allocation.hive.maxMapsDistcp;
+            }
+            if (item._name === 'distcpMapBandwidth') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.allocation.hive.maxBandwidth;
+            }
+            if (item._name === 'sourceCluster') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.source.cluster;
+            }
+            if (item._name === 'targetCluster') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.target.cluster;
+            }
+            if (item._name === 'sourceHiveServer2Uri') {
+              $scope.model.properties.property[index]._value = replacePortInInterface(findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'registry'));
+            }
+            if (item._name === 'targetHiveServer2Uri') {
+              $scope.model.properties.property[index]._value = replacePortInInterface(findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'registry'));
+            }
+            if (item._name === 'sourceStagingPath') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.hiveOptions.source.stagingPath;
+            }
+            if (item._name === 'targetStagingPath') {
+              if ($scope.UIModel.source.hiveDatabaseType === "databases") {
+                $scope.model.properties.property[index]._value = "*";
+              } else {
+                $scope.model.properties.property[index]._value = $scope.UIModel.hiveOptions.target.stagingPath;
+              }
+            }
+            if (item._name === 'sourceNN') {
+              $scope.model.properties.property[index]._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
+            }
+            if (item._name === 'targetNN') {
+              $scope.model.properties.property[index]._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
+            }
+            if (item._name === 'sourceMetastoreUri') {
+              $scope.model.properties.property[index]._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'registry');
+            }
+            if (item._name === 'targetMetastoreUri') {
+              $scope.model.properties.property[index]._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'registry');
+            }
+            if (item._name === 'sourceTable') {
+              if ($scope.UIModel.source.hiveDatabaseType === "databases") { $scope.model.properties.property[index]._value = "*"; }
+              else { $scope.model.properties.property[index]._value = $scope.UIModel.source.hiveTables; }
+            }
+            if (item._name === 'sourceDatabase') {
+              if ($scope.UIModel.source.hiveDatabaseType === "databases") {
+                $scope.model.properties.property[index]._value = $scope.UIModel.source.hiveDatabases; }
+              else { $scope.model.properties.property[index]._value = $scope.UIModel.source.hiveDatabase; }
+            }
+            if (item._name === 'maxEvents') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.allocation.hive.maxMapsEvents;
+            }
+            if (item._name === 'replicationMaxMaps') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.allocation.hive.maxMapsMirror;
+            }
+            if (item._name === 'clusterForJobRun') {
+              if ($scope.UIModel.runOn === "source") {
+                $scope.model.properties.property[index]._value = $scope.UIModel.source.cluster;
+              } else {
+                $scope.model.properties.property[index]._value = $scope.UIModel.target.cluster;
+              }
+            }
+            if (item._name === 'clusterForJobRunWriteEP') {
+              if ($scope.UIModel.runOn === "source") {
+                $scope.model.properties.property[index]._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
+              } else {
+                $scope.model.properties.property[index]._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
+              }
+            }
+            if (item._name === 'drJobName') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.name;
+            }
+            if (item._name === 'drNotifyEmail') {
+              $scope.model.properties.property[index]._value = $scope.UIModel.alerts.alertsArray.join();
+            }
+
+          });
+
+        } else {
+          console.log('error in form type');
         }
 
-
-
-        console.log($scope.model);
+        $scope.xmlString = X2jsService.json2xml_str($scope.completeModel);
 
       }
 

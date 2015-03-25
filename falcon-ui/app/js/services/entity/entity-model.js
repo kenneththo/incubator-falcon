@@ -19,7 +19,7 @@
   'use strict';
   var module = angular.module('app.services.entity.model', []);
 
-  module.factory('EntityModel', ["X2jsService", function(X2jsService) {
+  module.factory('EntityModel', ["X2jsService", "$cookieStore", function(X2jsService, $cookieStore) {
 
     var EntityModel = {};
 
@@ -149,7 +149,84 @@
     };
 
     EntityModel.datasetModel = {
-
+      UIModel: {
+        name: "",
+        tags: {
+          newTag: { value:"", key:"" },
+          tagsArray: [],
+          tagsString: ""
+        },
+        formType: "HDFS",
+        runOn: "source",
+        source: {
+          location: "HDFS",
+          cluster: "",
+          url: "",
+          path: "",
+          hiveDatabaseType: "databases",
+          hiveDatabases: "",
+          hiveDatabase: "",
+          hiveTables: ""
+        },
+        target: {
+          location: "HDFS",
+          cluster: "",
+          url: "",
+          path: ""
+        },
+        alerts: {
+          alert: { email: "" },
+          alertsArray: []
+        },
+        validity: {
+          start: new Date(),
+          startTime: new Date(),
+          end: new Date(),
+          endTime: new Date(),
+          tz: "GMT+00:00",
+          startISO: "",
+          endISO: ""
+        },
+        frequency: {
+          number: 5,
+          unit: 'minutes'
+        },
+        allocation: {
+          hdfs:{
+            maxMaps: 5,
+            maxBandwidth: 100
+          },
+          hive:{
+            maxMapsDistcp: 1,
+            maxMapsMirror: 5,
+            maxMapsEvents: -1,
+            maxBandwidth: 100
+          }
+        },
+        hiveOptions: {
+          source:{
+            stagingPath: "",
+            hiveServerToEndpoint: ""
+          },
+          target:{
+            stagingPath: "",
+            hiveServerToEndpoint: ""
+          }
+        },
+        retry: {
+          policy:"PERIODIC",
+          delay: {
+            unit: "minutes",
+            number: 30
+          },
+          attempts: 3
+        },
+        acl: {
+          owner: $cookieStore.get('userToken').user,
+          group: "users",
+          permissions: "0x755"
+        }
+      },
       HDFS: {
         process: {
           tags: "",
@@ -170,7 +247,7 @@
             property: [
               {
                 _name: "oozie.wf.subworkflow.classpath.inheritance",
-                "_value": "true"
+                _value: "true"
               },
               {
                 _name: "distcpMaxMaps",
@@ -195,6 +272,10 @@
               {
                 _name: "drSourceClusterFS",
                 _value: "hdfs://240.0.0.10:8020"
+              },
+              {
+                _name: "drNotifyEmail",
+                _value: ""
               }
             ]
           },
@@ -298,19 +379,11 @@
               },
               {
                 _name: "sourceTable",
-                _value: "testtable_dr"
+                _value: ""
               },
               {
                 _name: "sourceDatabase",
-                _value: "default"
-              },
-              {
-                _name: "sourceDatabase",
-                _value: "db1, db2, db3"
-              },
-              {
-                _name: "sourceTable",
-                _value: "*"
+                _value: ""
               },
               {
                 _name: "maxEvents",
@@ -331,6 +404,10 @@
               {
                 _name: "drJobName",
                 _value: "hive-disaster-recovery-sowmya-1"
+              },
+              {
+                _name: "drNotifyEmail",
+                _value: ""
               }
             ]
           },

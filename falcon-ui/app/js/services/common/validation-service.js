@@ -102,6 +102,18 @@
         url: {
           empty: "You need to provide a URL",
           patternInvalid: "The URL has an invalid format. "
+        },
+        databases: {
+          empty: "You need to provide the databases",
+          patternInvalid: "The Databases have an invalid format. "
+        },
+        database: {
+          empty: "You need to provide the database",
+          patternInvalid: "The database has an invalid format. "
+        },
+        tables: {
+          empty: "You need to provide the tables",
+          patternInvalid: "The tables have an invalid format. "
         }
 
 
@@ -111,16 +123,17 @@
         id: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         password: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$"),
+        textarea: new RegExp("^([\\sa-zA-Z0-9,]){1,100}$"),
         alpha: new RegExp("^([a-zA-Z0-9]){1,100}$"),
         commaSeparated: new RegExp("^[a-zA-Z0-9,]{1,80}$"),
         unixId: new RegExp("^([a-z_][a-z0-9-_\\.\\-]{0,30})$"),
-        unixPermissions: new RegExp("^((([0-7]){1,4})|(\\*))$"),
+        unixPermissions: new RegExp("^((([x0-7]){1,5})|(\\*))$"),
         osPath: new RegExp("^[^\\0 ]+$"),
         twoDigits: new RegExp("^([0-9]){1,2}$"),
         tableUri: new RegExp("^[^\\0]+$"),
         versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"),
         url: new RegExp("^[^\\0 ]+\\.[a-zA-Z0-9]{1,3}$"),
-        number: new RegExp("^([0-9]){1,40}$"),
+        number: new RegExp("^([-0-9]){1,40}$"),
         email: new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$")
       };
 

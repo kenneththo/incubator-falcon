@@ -200,9 +200,9 @@
             <textarea name="sourceDatabasesInput"
                       class="form-control databasesTextArea"
                       ng-model="UIModel.source.hiveDatabases"
-                      ng-pattern="validations.patterns.freeText"
+                      ng-pattern="validations.patterns.textarea"
                       ng-required="UIModel.target.location === 'HDFS'"
-                      validation-message="{{validations.messages.path}}">
+                      validation-message="{{validations.messages.databases}}">
 
             </textarea>
           </label>
@@ -213,17 +213,17 @@
                    name="sourceDatabaseInput"
                    class="form-control"
                    ng-model="UIModel.source.hiveDatabase"
-                   ng-pattern="validations.patterns.osPath"
+                   ng-pattern="validations.patterns.textarea"
                    ng-required="UIModel.target.location === 'HDFS'"
-                   validation-message="{{validations.messages.path}}"/>
+                   validation-message="{{validations.messages.database}}"/>
           </label>
           <label class="db">Tables (comma separated)
             <textarea name="sourceTablesInput"
-                      class="form-control"
+                      class="form-control tablesTextArea"
                       ng-model="UIModel.source.hiveTables"
-                      ng-pattern="validations.patterns.freeText"
+                      ng-pattern="validations.patterns.textarea"
                       ng-required="UIModel.target.location === 'HDFS'"
-                      validation-message="{{validations.messages.path}}">
+                      validation-message="{{validations.messages.tables}}">
 
             </textarea>
           </label>
@@ -402,7 +402,7 @@
       </div>
 
       <div class="emailArrayRow" ng-repeat="email in UIModel.alerts.alertsArray">
-        <span>{{email.email}}</span>
+        <span>{{email}}</span>
         <button class="btn btn-default btn-xs"
                 type="button"
                 ng-click="removeAlert()">
