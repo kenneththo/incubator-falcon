@@ -8,8 +8,8 @@
     {{UIModel.formType}}
   </div>
   <div>
-    <h4 ng-if="UIModel.tags.tagsArray.length > 0" class="lightSubtitle">Tags</h4>
-    <div><span>_falcon_mirroring_type=</span>{{UIModel.formType}}</div>
+    <h4 class="lightSubtitle">Tags</h4>
+    <div><span>_falcon_mirroring_type</span> - {{UIModel.formType}}</div>
     <div ng-repeat="tag in UIModel.tags.tagsArray"><span>{{tag.key}}</span> - {{tag.value}}</div>
   </div>
 
@@ -19,19 +19,35 @@
   <div class="box">
     <h3 ng-if="UIModel.formType === 'HIVE' || UIModel.source.location === 'HDFS'">{{UIModel.source.cluster}}</h3>
 
-    <h4>Location</h4>
-    <span ng-if="UIModel.formType === 'HDFS'">{{UIModel.source.location}}</span>
-    {{UIModel.source.path}}
+    <h4 ng-if="UIModel.formType === 'HDFS'">Location</h4>
+    <div ng-if="UIModel.formType === 'HDFS'">{{UIModel.source.location}}</div>
+    <div ng-if="UIModel.formType === 'HDFS'"><span>Path:</span> {{UIModel.source.path}}</div>
+    <div ng-if="UIModel.formType === 'HDFS' && UIModel.source.location !== 'HDFS'"><span>URL:</span>{{UIModel.source.url}}</div>
+
+
+
+
+
+    <div ng-if="UIModel.formType === 'HIVE'">I want to copy <span>{{UIModel.source.hiveDatabaseType}}</span></div>
+    <div ng-if="UIModel.formType === 'HIVE' && UIModel.source.hiveDatabaseType === 'databases'"><span>Databases:</span> {{UIModel.source.hiveDatabases}}</div>
+    <div ng-if="UIModel.formType === 'HIVE' && UIModel.source.hiveDatabaseType === 'tables'"><span>From Database </span>{{UIModel.source.hiveDatabase}}</div>
+    <div ng-if="UIModel.formType === 'HIVE' && UIModel.source.hiveDatabaseType === 'tables'"><span>Tables:</span> {{UIModel.source.hiveTables}}</div>
+
+
+
+
   </div>
   <div>
     <h4 class="lightSubtitle">Target</h4>
   </div>
   <div class="box">
-    <h3 ng-if="UIModel.formType === 'HDFS' && UIModel.target.location === 'HDFS'">{{UIModel.target.cluster}}</h3>
+    <h3 ng-if="(UIModel.formType === 'HDFS' && UIModel.target.location === 'HDFS') || UIModel.formType === 'HIVE'">{{UIModel.target.cluster}}</h3>
 
-    <h4>Location</h4>
-    <span ng-if="UIModel.formType === 'HDFS'">{{UIModel.target.location}}</span>
-    {{UIModel.target.path}}
+    <h4 ng-if="UIModel.formType === 'HDFS'">Location</h4>
+    <div ng-if="UIModel.formType === 'HDFS'">{{UIModel.target.location}}</div>
+    <div ng-if="UIModel.formType === 'HDFS'"><span>Path:</span> {{UIModel.target.path}}</div>
+    <div ng-if="UIModel.formType === 'HDFS' && UIModel.target.location !== 'HDFS'"><span>URL:</span> {{UIModel.target.url}}</div>
+
   </div>
 
   <div>
