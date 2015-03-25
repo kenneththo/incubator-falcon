@@ -65,7 +65,7 @@
           if (InstanceFalcon.data !== null) {
             $scope.pages[page] = {};
             $scope.pages[page].index = page;
-            $scope.pages[page].data = InstanceFalcon.data.entity;
+            $scope.pages[page].data = InstanceFalcon.data.instances;
             $scope.pages[page].show = true;
             $scope.pages[page].enabled = true;
             $scope.pages[page].label = "" + ((offset/resultsPerPage)+1);

@@ -251,7 +251,7 @@
     responseMessage.instances = instances;
 
     var paginated = responseMessage;
-    paginated.entity = paginated.instances.slice(offset, offset+numResults);
+    paginated.instances = paginated.instances.slice(offset, offset+numResults);
     res.json(paginated);
   });
 
@@ -313,6 +313,12 @@
         };
     mockData.instancesList[type][indexInArray].status = "KILLED";
     res.json(200, responseMessage);
+  });
+
+  server.get('/api/entities/dependencies/:type/:name', function (req, res) {
+    var type = req.params.type.toUpperCase(),
+        name = req.params.name;
+    res.json(200, mockData.entityDependencies);
   });
 
 

@@ -27,7 +27,8 @@
     'app.directives.entity',
     'app.directives.check-name',
     'app.directives.validation-message',
-    'chart-module'
+    'chart-module',
+    'app.directives.dependencies-graph'
   ]);
 
   directivesModule.directive('navHeader', function () {
