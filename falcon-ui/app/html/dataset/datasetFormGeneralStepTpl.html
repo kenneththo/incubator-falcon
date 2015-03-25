@@ -15,7 +15,6 @@
                ng-required="true"
                check-name="{type:'process', check:true}"/>
       </label>
-
     </div>
 
     <div class="col-xs-24 tagsBox mt10">
@@ -53,6 +52,14 @@
           </div>
         </div>
 
+        <div class="row">
+          <div class="col-xs-10">
+            <h6>_falcon_mirroring_type</h6>
+          </div>
+          <div class="col-xs-10">
+            <h6>{{UIModel.formType}}</h6>
+          </div>
+        </div>
         <div ng-repeat="tag in UIModel.tags.tagsArray" class="row">
           <div class="col-xs-10">
             <h6>{{tag.key}}</h6>
@@ -202,8 +209,8 @@
                       ng-model="UIModel.source.hiveDatabases"
                       ng-pattern="validations.patterns.textarea"
                       ng-required="UIModel.target.location === 'HDFS'"
-                      validation-message="{{validations.messages.databases}}">
-
+                      validation-message="{{validations.messages.databases}}"
+                      ng-keydown="validations.acceptNoSpaces($event)">
             </textarea>
           </label>
         </div>
@@ -215,7 +222,8 @@
                    ng-model="UIModel.source.hiveDatabase"
                    ng-pattern="validations.patterns.textarea"
                    ng-required="UIModel.target.location === 'HDFS'"
-                   validation-message="{{validations.messages.database}}"/>
+                   validation-message="{{validations.messages.database}}"
+                   ng-keydown="validations.acceptNoSpaces($event)"/>
           </label>
           <label class="db">Tables (comma separated)
             <textarea name="sourceTablesInput"
@@ -223,8 +231,8 @@
                       ng-model="UIModel.source.hiveTables"
                       ng-pattern="validations.patterns.textarea"
                       ng-required="UIModel.target.location === 'HDFS'"
-                      validation-message="{{validations.messages.tables}}">
-
+                      validation-message="{{validations.messages.tables}}"
+                      ng-keydown="validations.acceptNoSpaces($event)">
             </textarea>
           </label>
         </div>
@@ -239,7 +247,8 @@
                id="runJobOnTargetRadio"
                ng-model="UIModel.runOn"
                value="target"
-               ng-required="true"/>
+               ng-required="true"
+               ng-disabled="UIModel.target.location !== 'HDFS'"/>
         Run job here
       </div>
 
@@ -330,6 +339,7 @@
                  is-open="$parent.startOpened"
                  ng-click="openStartDatePicker($event)"
                  ng-change="constructDate()"
+                 ng-required="true"
                  simple-date>
         </label>
       </div>
@@ -354,6 +364,7 @@
                  is-open="$parent.endOpened"
                  ng-click="openEndDatePicker($event)"
                  ng-change="constructDate()"
+                 ng-required="true"
                  simple-date>
         </label>
       </div>

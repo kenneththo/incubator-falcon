@@ -112,27 +112,29 @@
 
       $scope.constructDate = function () {
 
-        var startUTC = new Date(Date.UTC(
-              $scope.UIModel.validity.start.getUTCFullYear(),
-              $scope.UIModel.validity.start.getUTCMonth(),
-              $scope.UIModel.validity.start.getUTCDate(),
-              $scope.UIModel.validity.startTime.getHours(),
-              $scope.UIModel.validity.startTime.getMinutes(),
-              0, 0)
-            ).toUTCString() + $scope.UIModel.validity.tz.slice(3),
+        if ($scope.UIModel.validity.start && $scope.UIModel.validity.end) {
+          var startUTC = new Date(Date.UTC(
+                  $scope.UIModel.validity.start.getUTCFullYear(),
+                  $scope.UIModel.validity.start.getUTCMonth(),
+                  $scope.UIModel.validity.start.getUTCDate(),
+                  $scope.UIModel.validity.startTime.getHours(),
+                  $scope.UIModel.validity.startTime.getMinutes(),
+                  0, 0)
+              ).toUTCString() + $scope.UIModel.validity.tz.slice(3),
 
             endUTC = new Date(Date.UTC(
-              $scope.UIModel.validity.end.getUTCFullYear(),
-              $scope.UIModel.validity.end.getUTCMonth(),
-              $scope.UIModel.validity.end.getUTCDate(),
-              $scope.UIModel.validity.endTime.getHours(),
-              $scope.UIModel.validity.endTime.getMinutes(),
-              0, 0)).toUTCString() + $scope.UIModel.validity.tz.slice(3),
+                $scope.UIModel.validity.end.getUTCFullYear(),
+                $scope.UIModel.validity.end.getUTCMonth(),
+                $scope.UIModel.validity.end.getUTCDate(),
+                $scope.UIModel.validity.endTime.getHours(),
+                $scope.UIModel.validity.endTime.getMinutes(),
+                0, 0)).toUTCString() + $scope.UIModel.validity.tz.slice(3),
             startDateUTCRaw = Date.parse(startUTC),
             endDateUTCRaw = Date.parse(endUTC);
 
-        $scope.UIModel.validity.startISO = new Date(startDateUTCRaw).toISOString();
-        $scope.UIModel.validity.endISO = new Date(endDateUTCRaw).toISOString();
+          $scope.UIModel.validity.startISO = new Date(startDateUTCRaw).toISOString();
+          $scope.UIModel.validity.endISO = new Date(endDateUTCRaw).toISOString();
+        }
 
       };
       //-----------Timezone---------//
@@ -164,21 +166,14 @@
         angular.element('body, html').animate({scrollTop: 0}, 500);
       };
 
-      $scope.save = function () {
-        Falcon.postSubmitRecipe($scope.xmlString)
-          .success(function (data) {
-            Falcon.logResponse('success', data, false);
-          })
-          .error(function (error) {
-            console.log(error);
-          });
-      };
-
       $scope.sourceClusterModel = {};
       $scope.targetClusterModel = {};
       function getClustersDefinitions () {
         var promisesDone = 0;
-        if ($scope.UIModel.source.cluster) {
+        if ($scope.UIModel.source.location !== "HDFS") { promisesDone = 1; }
+        if ($scope.UIModel.target.location !== "HDFS") { promisesDone = 1; }
+
+        if ($scope.UIModel.source.location === "HDFS") {
           Falcon.getEntityDefinition("cluster", $scope.UIModel.source.cluster)
             .success(function (data) {
               var clusterModel = X2jsService.xml_str2json(data);
@@ -191,8 +186,8 @@
               Falcon.logResponse('error', err, false, true);
             });
         }
-        if ($scope.UIModel.target.cluster) {
-          Falcon.getEntityDefinition("cluster", $scope.UIModel.source.cluster)
+        if ($scope.UIModel.target.location === "HDFS") {
+          Falcon.getEntityDefinition("cluster", $scope.UIModel.target.cluster)
             .success(function (data) {
               var clusterModel = X2jsService.xml_str2json(data);
               $scope.targetClusterModel = clusterModel;
@@ -226,8 +221,6 @@
       function createXML () {
         //-----------NAME ---------------//
         $scope.model._name = $scope.UIModel.name;
-        //-----------TAGS ---------------//
-        $scope.model.tags = $scope.UIModel.tags.tagsString;
         //------------RETRY------------------//
         $scope.model.retry._policy = $scope.UIModel.retry.policy;
         $scope.model.retry._delay = $scope.UIModel.retry.delay.unit + '(' + $scope.UIModel.retry.delay.number + ')';
@@ -241,9 +234,10 @@
         //-----------Cluster validity ---------------//
         $scope.model.clusters.cluster[0].validity._start = $scope.UIModel.validity.startISO;
         $scope.model.clusters.cluster[0].validity._end = $scope.UIModel.validity.endISO;
-
         //----------HDFS-----------------------------------------------------------------------------//
         if ($scope.UIModel.formType === 'HDFS') {
+          //-----------TAGS ---------------//
+          $scope.model.tags = '_falcon_mirroring_type=HDFS,' + $scope.UIModel.tags.tagsString;
           //-----------Cluster name ---------------//
           if ($scope.UIModel.runOn === "source") {
             $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
@@ -264,11 +258,22 @@
             if (item._name === 'drTargetDir') {
               $scope.model.properties.property[index]._value = $scope.UIModel.target.path;
             }
+
             if (item._name === 'drSourceClusterFS') {
-              $scope.model.properties.property[index]._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
+              //console.log($scope.UIModel.source.location === 'HDFS');
+              if($scope.UIModel.source.location === 'HDFS') {
+                $scope.model.properties.property[index]._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
+              } else {
+                $scope.model.properties.property[index]._value = $scope.UIModel.source.url;
+              }
+
             }
             if (item._name === 'drTargetClusterFS') {
-              $scope.model.properties.property[index]._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
+              if($scope.UIModel.target.location === 'HDFS') {
+                $scope.model.properties.property[index]._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
+              } else {
+                $scope.model.properties.property[index]._value = $scope.UIModel.target.url;
+              }
             }
             if (item._name === 'drNotifyEmail') {
               $scope.model.properties.property[index]._value = $scope.UIModel.alerts.alertsArray.join();
@@ -279,7 +284,8 @@
 
         //----------HIVE-----------------------------------------------------------------------------//
         } else if ($scope.UIModel.formType === 'HIVE') {
-
+          //-----------TAGS ---------------//
+          $scope.model.tags = '_falcon_mirroring_type=HIVE,' + $scope.UIModel.tags.tagsString;
           //-----------Cluster name --------------------------------//
           $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
 
@@ -371,6 +377,32 @@
         $scope.xmlString = X2jsService.json2xml_str($scope.completeModel);
 
       }
+
+      $scope.save = function () {
+        SpinnersFlag.show = true;
+
+        /*Falcon.postSubmitRecipe($scope.xmlString)
+          .success(function (data) {
+            Falcon.logResponse('success', data, false);
+          })
+          .error(function (error) {
+            console.log(error);
+          });*/
+
+        Falcon.postSubmitEntity($scope.xmlString, 'process')
+          .success(function (response) {
+            $scope.skipUndo = true;
+            Falcon.logResponse('success', response, false);
+            $state.go('main');
+          })
+          .error(function (err) {
+            Falcon.logResponse('error', err, false);
+            SpinnersFlag.show = false;
+            angular.element('body, html').animate({scrollTop: 0}, 300);
+          });
+
+
+      };
 
 
 

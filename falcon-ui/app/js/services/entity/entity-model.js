@@ -181,7 +181,7 @@
         validity: {
           start: new Date(),
           startTime: new Date(),
-          end: new Date(),
+          end: "",
           endTime: new Date(),
           tz: "GMT+00:00",
           startISO: "",
