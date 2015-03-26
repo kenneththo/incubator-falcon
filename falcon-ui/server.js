@@ -321,6 +321,21 @@
     res.json(200, mockData.entityDependencies);
   });
 
+  server.get('/api/graphs/lineage/vertices', function (req, res) {
+    res.json(200, mockData.vertices);
+  });
+
+  server.get('/api/graphs/lineage/vertices/:id/:direction', function (req, res) {
+    var type = req.params.id,
+        direction = req.params.direction;
+    res.json(200, mockData.verticesDirection);
+  });
+
+  server.get('/api/graphs/lineage/properties/:id', function (req, res) {
+    var type = req.params.id;
+    res.json(200, mockData.verticesProps);
+  });
+
 
   /*server.post('/api/entities/prepareAndSubmitRecipe', function (req, res) {
     var file = req.text,

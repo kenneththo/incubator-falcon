@@ -512,6 +512,40 @@
           "type": "cluster"
         }
       ]
+    },
+    vertices = {
+      "results": [
+        {
+          "timestamp":"2014-04-21T20:55Z",
+          "name":"sampleIngestProcess",
+          "type":"process-instance",
+          "version":"2.0.0",
+          "_id":4,
+          "_type":"vertex"
+        }
+      ],
+      "totalSize": 1
+    },
+    verticesDirection = {
+      "results":[
+        {
+          "_id":"Q5V-4-5g",
+          "_type":"edge",
+          "_outV":4,
+          "_inV":8,
+          "_label":"output"
+        }
+      ],
+      "totalSize":1
+    },
+    verticesProps = {
+      "results":
+      {
+        "timestamp":"2014-04-25T22:20Z",
+        "name":"local",
+        "type":"cluster-entity"
+      },
+      "totalSize":3
     };
 
   exports.findByNameInList = findByNameInList;
@@ -520,5 +554,8 @@
   exports.definitions = definitions;
   exports.instancesList = instancesList;
   exports.entityDependencies = entityDependencies;
+  exports.vertices = vertices;
+  exports.verticesDirection = verticesDirection;
+  exports.verticesProps = verticesProps;
 
 })();

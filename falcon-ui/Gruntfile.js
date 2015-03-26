@@ -58,8 +58,8 @@
             'app/js/lib/ng-tags-input.js',
             'app/js/lib/popover.js',
             'app/js/lib/ng-mask.min.js',
-            //'app/js/lib/dust-full-2.0.0.min.js',
             'app/js/lib/dagre.min.js'
+            //'app/js/lib/dust-full-2.0.0.min.js'
           ],
           dest: 'dist/js/vendor.min.js'
         }
