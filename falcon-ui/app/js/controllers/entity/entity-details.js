@@ -39,6 +39,7 @@
 
       $scope.pages = [];
       $scope.nextPages = false;
+      $scope.mirrorTag = "_falcon_mirroring_type";
 
       if($scope.entity.type === "feed"){
         $scope.feed = serializer.preDeserialize($scope.entity.model, "feed");
@@ -166,6 +167,33 @@
               Falcon.logResponse('error', err, type);
 
             });
+      };
+
+      $scope.isMirror = function(tags){
+        var flag = false;
+        if(tags.indexOf($scope.mirrorTag) !== -1){
+          flag = true;
+        }
+        return flag;
+      };
+
+      $scope.displayIcon = function (type, model) {
+        if(type === "FEED"){
+          $scope.entityTypeLabel = "Feed";
+          return "entypo download";
+        }else if(type === "PROCESS"){
+          var tags = model.process.tags;
+          if($scope.isMirror(tags)){
+            $scope.entityTypeLabel = "Mirror";
+            return "glyphicon glyphicon-duplicate";
+          }else{
+            $scope.entityTypeLabel = "Process";
+            return "entypo cycle";
+          }
+        }else{
+          $scope.entityTypeLabel = "Process";
+          return "entypo cycle";
+        }
       };
       
     }

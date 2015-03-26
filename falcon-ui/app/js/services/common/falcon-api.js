@@ -203,7 +203,7 @@
     };
 
     Falcon.searchInstances = function (type, name, offset, start, end, status, orderBy, sortOrder) {
-      var searchUrl = "../api/instance/running/" + type + "/" + name + "?colo=*";
+      var searchUrl = "../api/instance/list/" + type + "/" + name + "?colo=*";
       if(start !== undefined && start !== ""){
         searchUrl += "&start="+start;
       }

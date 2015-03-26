@@ -270,7 +270,7 @@
           }else if(type === "PROCESS" && scope.isMirror(tags)){
             return "glyphicon glyphicon-duplicate";
           }else{
-            return "entypo download";
+            return "entypo cycle";
           }
         };
 
