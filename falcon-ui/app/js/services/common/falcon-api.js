@@ -176,7 +176,16 @@
     Falcon.searchEntities = function (name, tags, entityType, offset) {
       var searchUrl = "../api/entities/list/";
       if(entityType !== undefined && entityType !== ""){
-        searchUrl += entityType;
+        if(entityType === "mirror"){
+          if(tags === undefined || tags === ""){
+            tags = "_falcon_mirroring_type";
+          }else{
+            tags += ",_falcon_mirroring_type";
+          }
+          searchUrl += "process";
+        }else{
+          searchUrl += entityType;
+        }
       }else{
         searchUrl += "all";
       }

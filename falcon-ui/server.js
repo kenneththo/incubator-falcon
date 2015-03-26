@@ -38,7 +38,7 @@
     var index = 0;
     for(var j=0; j<list.length; j++){
       for(var k=0; k<list[j].list.tag.length; k++){
-        if(list[j].list.tag[k] === tag){
+        if(list[j].list.tag[k].indexOf(tag) !== -1){
             result[index++] = list[j];
           break;
         }
@@ -92,7 +92,7 @@
 
     if(type === "all"){
       paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
-          mockData.entitiesList.process.entity, mockData.entitiesList.dataset.entity);
+          mockData.entitiesList.process.entity);
     }else{
       paginated.entity = paginated.entity.concat(mockData.entitiesList[type].entity);
     }
@@ -136,20 +136,25 @@
     var type = req.params.type.toUpperCase(),
       text = req.text,
       name,
+      tags,
       indexInArray,
       responseSuccessMessage,
       responseFailedMessage,
-      initialIndex = text.indexOf("name") + 6,
-      finalIndex = getFinalIndexOfName(),
+      initialIndexName = text.indexOf("name") + 6,
+      finalIndexName = getFinalIndexOfName(),
+      initialIndexTags = text.indexOf("<tags>")+6,
+      finalIndexTags = text.indexOf("</tags>"),
       i;
     function getFinalIndexOfName () {
-      for (i = initialIndex; i < text.length; i++) {
+      for (i = initialIndexName; i < text.length; i++) {
         if (text[i] === '"' || text[i] === "'") {
           return i;
         }
       }
     }
-    name = text.slice(initialIndex, finalIndex);
+    name = text.slice(initialIndexName, finalIndexName);
+    tags = text.slice(initialIndexTags, finalIndexTags);
+    tags = tags.split(",");
     responseSuccessMessage = {"status": "SUCCEEDED", "message": "default/successful (" + type + ") " + name + "\n\n","requestId":"default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"};
     responseFailedMessage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><result><status>FAILED</status><message>(' + type + ') '+ name +' already registered with configuration store. Can\'t be submitted again. Try removing before submitting.</message><requestId>586fffcd-10c1-4975-8dda-4b34a712f2f4</requestId></result>';
 
@@ -158,7 +163,7 @@
     if (!mockData.definitions[type][name]) {
       mockData.definitions[type][name] = text;
       mockData.entitiesList[type.toLowerCase()].entity.push(
-        {"type": type, "name": name, "status": "SUBMITTED"}
+        {"type": type, "name": name, "status": "SUBMITTED", "list":{"tag":tags}}
       );
       res.send(200, responseSuccessMessage);
     } else {

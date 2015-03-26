@@ -78,6 +78,7 @@
         }, true);
 
         scope.selectedRows = [];
+        scope.mirrorTag = "_falcon_mirroring_type";
 
         scope.checkedRow = function (name) {
           var isInArray = false;
@@ -251,6 +252,26 @@
 
         scope.scopeGoPage = function (page) {
           scope.goPage(page);
+        };
+
+        scope.isMirror = function(tags){
+          var flag = false;
+          tags.forEach(function(tag) {
+            if(tag.indexOf(scope.mirrorTag) !== -1){
+              flag = true;
+            }
+          });
+          return flag;
+        };
+
+        scope.displayIcon = function (type, tags) {
+          if(type === "FEED"){
+            return "entypo download";
+          }else if(type === "PROCESS" && scope.isMirror(tags)){
+            return "glyphicon glyphicon-duplicate";
+          }else{
+            return "entypo download";
+          }
         };
 
       }
