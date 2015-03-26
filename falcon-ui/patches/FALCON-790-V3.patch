@@ -1,0 +1,2004 @@
+From b63f8efc4880b2d8aba4f4a332b70b4552546377 Mon Sep 17 00:00:00 2001
+From: Armando Reyna <armando.reyna@globant.com>
+Date: Fri, 13 Feb 2015 18:31:15 -0600
+Subject: [PATCH] Falcon-UI Integration, Stage 04, Process
+
+---
+ falcon-ui/app/config/loginData.js                  |   5 +
+ falcon-ui/app/html/directives/entitiesListDv.html  |   2 +-
+ falcon-ui/app/html/directives/navDv.html           |   5 +-
+ .../html/process/processFormClustersStepTpl.html   |  96 ++++++++++++
+ .../html/process/processFormGeneralStepTpl.html    | 119 +++++++++++++++
+ .../processFormInputsAndOutputsStepTpl.html        | 149 ++++++++++++++++++
+ .../html/process/processFormPropertiesStepTpl.html | 122 +++++++++++++++
+ .../html/process/processFormSummaryStepTpl.html    | 168 +++++++++++++++++++++
+ falcon-ui/app/html/process/processFormTpl.html     |  95 ++++++++++++
+ falcon-ui/app/js/controllers/controllers.js        |   1 +
+ .../controllers/process/process-clusters-ctrl.js   |  71 +++++++++
+ .../process/process-general-information-ctrl.js    |  66 ++++++++
+ .../process/process-inputs-and-outputs-ctrl.js     |  76 ++++++++++
+ .../app/js/controllers/process/process-module.js   |  33 ++++
+ .../process/process-properties-controller.js       |  34 +++++
+ .../js/controllers/process/process-root-ctrl.js    | 117 ++++++++++++++
+ .../js/controllers/process/process-summary-ctrl.js |  83 ++++++++++
+ .../controllers/process/ProcessClustersCtrlSpec.js | 107 +++++++++++++
+ .../process/ProcessGeneralInformationCtrlSpec.js   | 111 ++++++++++++++
+ .../process/ProcessInputsAndOutputsCtrlSpec.js     |  52 +++++++
+ .../process/ProcessPropertiesControllerSpec.js     |  44 ++++++
+ .../controllers/process/ProcessRootCtrlSpec.js     | 136 +++++++++++++++++
+ .../controllers/process/ProcessSummaryCtrlSpec.js  |  88 +++++++++++
+ 23 files changed, 1778 insertions(+), 2 deletions(-)
+ create mode 100644 falcon-ui/app/config/loginData.js
+ create mode 100644 falcon-ui/app/html/process/processFormClustersStepTpl.html
+ create mode 100644 falcon-ui/app/html/process/processFormGeneralStepTpl.html
+ create mode 100644 falcon-ui/app/html/process/processFormInputsAndOutputsStepTpl.html
+ create mode 100644 falcon-ui/app/html/process/processFormPropertiesStepTpl.html
+ create mode 100644 falcon-ui/app/html/process/processFormSummaryStepTpl.html
+ create mode 100644 falcon-ui/app/html/process/processFormTpl.html
+ create mode 100644 falcon-ui/app/js/controllers/process/process-clusters-ctrl.js
+ create mode 100644 falcon-ui/app/js/controllers/process/process-general-information-ctrl.js
+ create mode 100644 falcon-ui/app/js/controllers/process/process-inputs-and-outputs-ctrl.js
+ create mode 100644 falcon-ui/app/js/controllers/process/process-module.js
+ create mode 100644 falcon-ui/app/js/controllers/process/process-properties-controller.js
+ create mode 100644 falcon-ui/app/js/controllers/process/process-root-ctrl.js
+ create mode 100644 falcon-ui/app/js/controllers/process/process-summary-ctrl.js
+ create mode 100644 falcon-ui/app/test/controllers/process/ProcessClustersCtrlSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/process/ProcessGeneralInformationCtrlSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/process/ProcessInputsAndOutputsCtrlSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/process/ProcessPropertiesControllerSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/process/ProcessRootCtrlSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/process/ProcessSummaryCtrlSpec.js
+
+diff --git a/falcon-ui/app/config/loginData.js b/falcon-ui/app/config/loginData.js
+new file mode 100644
+index 0000000..ecd6701
+--- /dev/null
++++ b/falcon-ui/app/config/loginData.js
+@@ -0,0 +1,5 @@
++{
++  "timeOut": 900000,
++  "user": "ambari-qa",
++  "password": "admin"
++}
+diff --git a/falcon-ui/app/html/directives/entitiesListDv.html b/falcon-ui/app/html/directives/entitiesListDv.html
+index f41b9f1..6ac950f 100644
+--- a/falcon-ui/app/html/directives/entitiesListDv.html
++++ b/falcon-ui/app/html/directives/entitiesListDv.html
+@@ -43,7 +43,7 @@
+   </thead>
+   <tbody>
+     
+-    <tr ng-if="input.length > 0 && type !== 'process'" class="buttonsRow">
++    <tr ng-if="input.length > 0" class="buttonsRow">
+       <td class="buttonCell" colspan="4">
+         <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-hide="selectedDisabledButtons.schedule" ng-if="type !== 'cluster'">
+             <span class="entypo play"></span> Schedule
+diff --git a/falcon-ui/app/html/directives/navDv.html b/falcon-ui/app/html/directives/navDv.html
+index c145145..ad1223d 100644
+--- a/falcon-ui/app/html/directives/navDv.html
++++ b/falcon-ui/app/html/directives/navDv.html
+@@ -32,6 +32,9 @@
+         <div ng-click="resetFeed()">
+           <span class="entypo download"></span> Feed
+         </div>
++        <div id="createProcessButton" ng-click="resetProcess()">
++          <span class="entypo cycle"></span> Process
++        </div>
+       </div>
+ 
+       <div class="uploadNavWrapper">
+@@ -42,6 +45,6 @@
+           Browse for the XML file
+         </div>
+       </div>
+-
++      
+   </div>
+ </nav>
+diff --git a/falcon-ui/app/html/process/processFormClustersStepTpl.html b/falcon-ui/app/html/process/processFormClustersStepTpl.html
+new file mode 100644
+index 0000000..47886a2
+--- /dev/null
++++ b/falcon-ui/app/html/process/processFormClustersStepTpl.html
+@@ -0,0 +1,96 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="processForm" class="mt10">
++  <div class="col-sm-offset-1 col-sm-22">
++    <div ng-repeat="cluster in process.clusters" class="row">
++      <div class="col-xs-24 detailsBox processCluster">       
++          
++        <h5>Cluster</h5>
++        <div class="row">
++          <div class="col-xs-24">
++            <label class="light">Name</label>
++            <select ng-model="cluster.name" ng-required="true" class="form-control padding0" validation-message="{{validations.messages.cluster}}">
++              <option value="" disabled selected style='display:none;'>-Select cluster-</option>
++              <option ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
++            </select>
++          </div>
++        </div>
++        <div class="clearfix"></div>
++        
++        <h5>Validity</h5>
++        <div class="row">
++          <div class="col-xs-12">
++       
++            <div>Start</div>
++           
++            <div class="input-group input-group-xs">
++              <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.start)"></span>
++              <input type="text" class="form-control" placeholder="Start Date"
++                     datepicker-popup="{{dateFormat}}"
++                     ng-model="cluster.validity.start.date"
++                     is-open="cluster.validity.start.opened"
++                     ng-required="true">
++            </div>     
++          </div>
++    
++          <div class="col-xs-12">
++            <div>End</div>
++            
++            <div class="input-group input-group-xs">
++              <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.end)"></span>
++              <input type="text" class="form-control" placeholder="End Date"
++                     datepicker-popup="{{dateFormat}}"
++                     ng-model="cluster.validity.end.date"
++                     is-open="cluster.validity.end.opened"
++                     ng-required="true">
++            </div>    
++          </div>
++          <div class="col-xs-24 mt10">
++            <div class="btn btn-default pull-right btn-xs" ng-click="removeCluster($index)" ng-if="!$first">
++              - delete
++            </div>
++          </div>
++        </div>
++        
++        
++        
++      </div>
++    </div>
++  </div>
++  <div class="col-xs-24 mt10">
++    <div class="btn btn-default btn-xs" ng-click="addCluster()">
++      + add cluster
++    </div>
++  </div>
++  <div class="col-xs-24">
++    <div class="row feedBottomButtons">
++      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.process.properties')" >
++        Previous
++      </div>
++      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.io')" >
++        Next
++      </div>
++      <u class="col-xs-3 pull-right" ui-sref="main">
++        Cancel
++      </u>
++    </div>
++  </div>
++  
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/process/processFormGeneralStepTpl.html b/falcon-ui/app/html/process/processFormGeneralStepTpl.html
+new file mode 100644
+index 0000000..4f41e39
+--- /dev/null
++++ b/falcon-ui/app/html/process/processFormGeneralStepTpl.html
+@@ -0,0 +1,119 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="processForm" class="mt10">
++ 
++    <div class="col-xs-24">
++      <label class="light">Name</label>
++      <input type="text" class="form-control" ng-keydown="validations.acceptNoSpaces($event)"
++             check-name="{type:'process', check:cloningMode}" ng-class="{fakeInvalid:!validations.nameAvailable}"
++             ng-disabled="!cloningMode" id="entityNameField" ng-model="process.name"
++             ng-required="true" ng-maxlength="39" ng-pattern="validations.patterns.name"/>
++    </div>
++
++    <div class="col-xs-24">
++      <label class="light">Tags</label>
++    </div>
++
++    <div id="tagsSection" class="col-xs-24">
++      <div ng-repeat="tag in process.tags">
++        <div class="row dynamic-table-spacer">
++          <div class="col-xs-10">
++            <input type="text" class="form-control" ng-model="tag.key" placeholder="key"
++                   ng-pattern="validations.patterns.alpha" ng-required="tag.value"/>
++          </div>
++          <div class="col-xs-11">
++            <input type="text" class="form-control" placeholder="value"
++                   ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key"/>
++          </div>
++          <div class="col-xs-3">
++            <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-if="$index>0">
++              <span class="entypo minus"></span> delete
++            </div>
++          </div>
++        </div>
++      </div>
++    </div>
++    <div class="col-xs-24 mt10 mb10">
++      <div class="btn btn-default btn-xs" ng-click="addTag()">
++        <span class="entypo plus"></span> add tag
++      </div>
++    </div>
++
++  <h4 class="col-xs-24">Workflow</h4>
++
++  <div class="col-xs-24">
++    <div class="light">Name</div>
++    <input type="text" class="form-control" validation-message="{{validations.messages.name}}"
++           id="workflowNameField"
++           ng-model="process.workflow.name"
++           ng-required="true"
++           ng-maxlength="39"
++           ng-pattern="validations.patterns.name"/>
++  </div>
++
++  <div id="engineSection" class="col-xs-24">
++    <label class="light">Engine</label>
++    <div class="row">
++      <div class="col-xs-4" ng-class="{fakeInvalidRadio:!process.workflow.engine}">
++        <input type="radio" id="oozieEngineRadio"  ng-change="selectWorkflow()" ng-model="process.workflow.engine" value="oozie" ng-required="!process.workflow.engine"/> Oozie
++      </div>
++      <div class="col-xs-4" ng-class="{fakeInvalidRadio:!process.workflow.engine}">
++        <input type="radio" id="pigEngineRadio" ng-change="selectWorkflow()" ng-model="process.workflow.engine" value="pig" ng-required="!process.workflow.engine"/> Pig
++      </div>
++      <div class="col-xs-4" ng-class="{fakeInvalidRadio:!process.workflow.engine}">
++        <input type="radio" id="hiveEngineRadio" ng-change="selectWorkflow()" ng-model="process.workflow.engine" value="hive" ng-required="!process.workflow.engine"/> Hive
++      </div>
++      <select id="engineVersionField" ng-model="process.workflow.version"
++        ng-required="true" ng-show="process.workflow.engine" validation-message="{{validations.messages.engine}}">
++        
++        <option value="" disabled selected style='display:none;'>-Select {{process.workflow.engine}} version-</option>
++        
++        <option ng-repeat="version in versions"
++          id="{{process.workflow.engine}}Version{{$index}}"
++          value="{{version}}"
++          ng-selected="process.workflow.version === version">
++          {{version}}
++        </option>
++      </select>
++    </div>
++  </div>
++  <div class="col-xs-24">
++    <label class="light">Path</label>
++    <input type="text" class="form-control"
++           id="pathField"
++           ng-model="process.workflow.path"
++           ng-required="true"
++           ng-maxlength="200"
++           ng-pattern="validations.patterns.osPath"/>
++  </div>
++
++  <div class="col-xs-24">
++    <div class="feedBottomButtons row">
++      <div id="nextButton"
++           class="btn btn-default col-xs-6 pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.properties')" >
++        Next
++      </div>
++      <u class="col-xs-3 pull-right" ng-click="cancel()" ui-sref="main">
++        Cancel
++      </u>
++    </div>
++  </div>
++
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/process/processFormInputsAndOutputsStepTpl.html b/falcon-ui/app/html/process/processFormInputsAndOutputsStepTpl.html
+new file mode 100644
+index 0000000..6ed54e1
+--- /dev/null
++++ b/falcon-ui/app/html/process/processFormInputsAndOutputsStepTpl.html
+@@ -0,0 +1,149 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="processForm">
++  <div class="col-sm-offset-1 col-sm-22">
++    <h4 ng-if="process.inputs.length === 0">Inputs</h4>
++
++    <div ng-repeat="input in process.inputs" class="row">
++      <h4 class="col-xs-24">Input</h4>
++  
++      <div class="col-xs-24 detailsBox processCluster">
++
++          <div class="row">
++            <div class="col-xs-24">
++              <label class="light">Name</label>
++              <input type="text" class="form-control" validation-message="{{validations.messages.name}}"
++                     ng-model="input.name"
++                     ng-required="true"
++                     ng-maxlength="39"
++                     ng-pattern="validations.patterns.name"/>
++            </div>
++          </div>
++
++        <div class="row">
++          <div class="col-xs-24">
++            <label class="light">Feed</label>
++  
++            <select ng-model="input.feed" ng-required="true" class="col-sm-24 form-control padding0"
++                    validation-message="{{validations.messages.feed}}">
++              <option value="" disabled selected style='display:none;'>-Select feed-</option>
++              <option ng-repeat="feedItem in feedsList">{{feedItem.name}}</option>
++            </select>
++          </div>
++        </div>
++
++          <div class="clearfix"></div>
++          <h5>Instance</h5>
++  
++          <div class="row">
++            <div class="col-xs-12">
++              <label class="light">Start</label>
++  
++              <input type="text" class="form-control" validation-message="{{validations.messages.value}}"
++                     ng-model="input.start"
++                     ng-required="true"
++                     ng-maxlength="39"/>
++  
++            </div>
++            <div class="col-xs-12">
++              <label class="light">End</label>
++  
++              <input type="text" class="form-control" validation-message="{{validations.messages.value}}"
++                     ng-model="input.end"
++                     ng-required="true"
++                     ng-maxlength="39"/>
++            </div>
++            
++            <div class="col-xs-24 mt10">
++              <div class="btn btn-default pull-right btn-xs" ng-click="removeInput($index)">
++                - delete
++              </div>
++            </div>
++          </div>  
++      </div>
++    </div>
++
++    <div class="btn btn-default btn-xs mt10 mb10" ng-click="addInput()">
++      + add input
++    </div>
++
++    <h4 ng-if="process.outputs.length === 0">Outputs</h4>
++
++    <div ng-repeat="output in process.outputs" class="row">
++      <h4 class="col-xs-24">Output</h4>
++  
++      <div class="col-xs-24 detailsBox processCluster">
++        <div class="row">
++          <div class="col-xs-24">
++            <label class="light">Name</label>
++            <input type="text" class="form-control" validation-message="{{validations.messages.name.patternInvalid}}"
++                   ng-model="output.name"
++                   ng-required="true"
++                   ng-maxlength="39"
++                   ng-pattern="validations.patterns.id"/>
++          </div>
++        </div>
++        <div class="row">
++          <div class="col-xs-24">
++            <label class="light">Feed</label>
++            <select ng-model="output.feed" ng-required="true" class="col-sm-24 form-control padding0"
++                    validation-message="{{validations.messages.feed}}" >
++              <option value="" disabled selected style='display:none;'>-Select feed-</option>
++              <option ng-repeat="feedItem in feedsList">{{feedItem.name}}</option>
++            </select>
++          </div>
++        </div>
++        <div class="clearfix"></div>
++        <h5>Instance</h5>
++        <div class="row">
++          <div class="col-xs-24">
++            <label class="light">Instance</label>
++
++            <input type="text" class="form-control" validation-message="{{validations.messages.value}}"
++                   ng-model="output.outputInstance"
++                   ng-required="true"
++                   ng-maxlength="39"/>
++          </div>
++        </div>
++        <div class="row mt10">
++          <div class="btn btn-default pull-right btn-xs" ng-click="removeOutput($index)">
++            - delete
++          </div>
++        </div>
++  
++      </div>
++    </div>
++
++    <div class="btn btn-default btn-xs mb10 mt10" ng-click="addOutput()">
++      + add output
++    </div>
++  </div>
++  <div class="row feedBottomButtons">
++    <div class="btn btn-default col-xs-6" ng-click="goBack('forms.process.clusters')">
++      Previous
++    </div>
++    <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.summary')" >
++      Next
++    </div>
++    <u class="col-xs-3 pull-right" ui-sref="main">
++      Cancel
++    </u>
++  </div>
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/process/processFormPropertiesStepTpl.html b/falcon-ui/app/html/process/processFormPropertiesStepTpl.html
+new file mode 100644
+index 0000000..5732060
+--- /dev/null
++++ b/falcon-ui/app/html/process/processFormPropertiesStepTpl.html
+@@ -0,0 +1,122 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="processForm" class="mt10">
++
++  <h5 class="col-xs-24">Timing</h5>
++
++  <div class="col-xs-24 mb10">
++    <label class="light">Timezone</label>
++    <time-zone-select ng-model="process.timezone"></time-zone-select>
++  </div>
++
++  <div class="col-xs-9">
++    <div class="inlineInputsGroup">
++      <div>Frequency</div>
++      <span>Every</span>
++      <input type="text" class="form-control" validation-message="{{validations.messages.number}}"
++             ng-model="process.frequency.quantity" ng-keydown="validations.acceptOnlyNumber($event)"
++             id="frequencyQuantity"
++             ng-required="true"
++             ng-pattern="validations.patterns.twoDigits"/>
++             
++      <select 
++        ng-model="process.frequency.unit"
++        ng-required="true">
++        <option selected value="minutes">minutes</option>
++        <option value="hours">hours</option>
++        <option value="days">days</option>
++        <option value="months">months</option>
++      </select>
++    </div>
++  </div>
++  <div class="col-xs-7">
++    <div class="inlineInputsGroup">
++      <div>Maximum Parallel Instances</div>
++      <select
++        ng-model="process.parallel"
++        ng-required="true">
++        <option ng-repeat="value in [1,2,3,4,5,6,7,8,9,10,11,12]">{{value}}</option>
++      </select>
++    </div>
++  </div>
++  <div class="col-xs-8">
++    <div class="inlineInputsGroup">
++      <div>Order</div>
++      <select ng-model="process.order" ng-required="true" validation-message="{{validations.messages.option}}">
++        <option value="" disabled selected style='display:none;'>-Select order-</option>
++        <option ng-repeat="value in ['FIFO', 'LIFO', 'LAST_ONLY']">{{value}}</option>
++      </select>
++    </div>
++  </div>
++  <div class="clearfix mb10"></div>
++  <h4 class="col-xs-24">Retry</h4>
++
++  <div class="col-xs-9 inlineInputsGroup">
++      <div class="mt10 mb10">Policy</div>
++      <select ng-model="process.retry.policy" ng-required="true" validation-message="{{validations.messages.option}}">
++        <option value="" disabled selected style='display:none;'>-Select policy-</option>
++        <option ng-repeat="value in ['periodic', 'exp-backoff', 'final']">{{value}}</option>
++      </select>
++    </div>
++  </div>
++  <div class="col-xs-7 inlineInputsGroup">
++      <div class="mt10">Attempts</div>
++
++      <input type="text" class="form-control" validation-message="{{validations.messages.number}}"
++             ng-model="process.retry.attempts" ng-keydown="validations.acceptOnlyNumber($event)"
++             id="attemptsField"
++             ng-required="true"
++             ng-pattern="validations.patterns.twoDigits"/>
++    </div>
++  </div>
++  <div class="col-xs-8">
++    <div class="inlineInputsGroup">
++      <div class="mt10">Delay</div>
++      <span>Up to</span>
++      <input type="text" class="form-control"
++             ng-model="process.retry.delay.quantity" validation-message="{{validations.messages.number}}"
++             id="delayQuantity" ng-keydown="validations.acceptOnlyNumber($event)"
++             ng-required="true"
++             ng-pattern="validations.patterns.twoDigits"/>
++             
++      <select ng-model="process.retry.delay.unit" ng-required="true" validation-message="{{validations.messages.option}}">
++        <option value="" disabled selected style='display:none;'>-Select delay-</option>
++        <option value="minutes">minutes</option>
++        <option value="hours">hours</option>
++        <option value="days">days</option>
++        <option value="months">months</option>
++      </select>
++    </div>
++  </div>
++
++  <div class="col-xs-24">
++    <div class="feedBottomButtons row">
++      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.process.general')">
++        Previous
++      </div>
++      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(processForm.$invalid, 'forms.process.clusters')" >
++        Next
++      </div>
++      <u class="col-xs-3 pull-right" ui-sref="main">
++        Cancel
++      </u>
++    </div>
++  </div>
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/process/processFormSummaryStepTpl.html b/falcon-ui/app/html/process/processFormSummaryStepTpl.html
+new file mode 100644
+index 0000000..6c554da
+--- /dev/null
++++ b/falcon-ui/app/html/process/processFormSummaryStepTpl.html
+@@ -0,0 +1,168 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="processForm" class="mt10">
++
++  <div class="row">
++    <h4 class="col-sm-24">Process</h4>
++
++    <div class="clearfix hidden-md">&nbsp</div>
++
++    <label class="col-sm-24">Name</label>
++    <label class="col-sm-24 light">{{process.name}}</label>
++
++    <div class="clearfix hidden-md">&nbsp</div>
++
++    <label class="col-sm-24">Tags</label>
++    <div class="col-sm-24">
++      <div ng-repeat="tag in process.tags | filter:{key: '!!'}">
++        {{tag.key}} = {{tag.value}}
++      </div>
++      <div ng-show="!hasTags()">No tags selected</div>
++    </div>
++
++    <div class="clearfix hidden-md">&nbsp</div>
++
++    <h4 class="col-sm-24">Workflow</h4>
++    <div class="clearfix hidden-md">&nbsp</div>
++    <div class="row">
++      <div class="col-sm-8">
++        <label class="col-sm-24">Name</label>
++        <label class="col-sm-24 light">{{process.workflow.name}}</label>
++      </div>
++      <div class="col-sm-8">
++        <label class="col-sm-24">Engine</label>
++        <label class="col-sm-24 light">{{process.workflow.engine}}</label>
++      </div>
++      <div class="col-sm-8">
++        <label class="col-sm-24">Version</label>
++        <label class="col-sm-24 light">{{process.workflow.version}}</label>
++      </div>
++    </div>
++    <label class="col-sm-24">Path</label>
++    <label class="col-sm-24 light">{{process.workflow.path}}</label>
++
++
++    <h4 class="col-sm-24">Timing</h4>
++    <div class="clearfix hidden-md">&nbsp</div>
++    <label class="col-sm-24">Timezone</label>
++    <label class="col-sm-24 light">{{optional(process.timezone)}}</label>
++    <div class="row">
++      <div class="col-sm-8">
++        <label class="col-sm-24">Frequency</label>
++        <label class="col-sm-24 light">Every {{process.frequency.quantity}} {{process.frequency.unit}}</label>
++      </div>
++      <div class="col-sm-8">
++        <label class="col-sm-24">Max. parallel instances</label>
++        <label class="col-sm-24 light">{{process.parallel}}</label>
++      </div>
++      <div class="col-sm-8">
++        <label class="col-sm-24">Order</label>
++        <label class="col-sm-24 light">{{optional(process.order)}}</label>
++      </div>
++    </div>
++    <div class="clearfix hidden-md">&nbsp</div>
++    <h4 class="col-sm-24">Retry</h4>
++    <div class="clearfix hidden-md">&nbsp</div>
++    <div class="row">
++      <div class="col-sm-8">
++        <label class="col-sm-24">Policy</label>
++        <label class="col-sm-24 light">{{process.retry.policy}}</label>
++      </div>
++      <div class="col-sm-8">
++        <label class="col-sm-24">Attempts</label>
++        <label class="col-sm-24 light">{{process.retry.attempts}}</label>
++      </div>
++      <div class="col-sm-8">
++        <label class="col-sm-24">Delay</label>
++        <label class="col-sm-24 light">Up to {{process.retry.delay.quantity}} {{process.retry.delay.unit}}</label>
++      </div>
++    </div>
++    <div class="clearfix hidden-md">&nbsp</div>
++    <h4 class="col-sm-24">Clusters</h4>
++    <div ng-repeat="cluster in process.clusters">
++      <div class="row col-sm-offset-1 col-sm-22 detailsBox">
++        <label class="col-sm-24">Name</label>
++        <label class="col-sm-24 light">{{cluster.name}}</label>
++        <div class="clearfix hidden-md">&nbsp</div>
++        <h4 class="col-sm-24">Validity</h4>
++        <div class="row">
++          <div class="col-sm-12">
++            <label class="col-sm-24">Start</label>
++            <label class="col-sm-24 light">{{cluster.validity.start.date}} {{cluster.validity.start.time}}</label>
++          </div>
++          <div class="col-sm-12">
++            <label class="col-sm-24">End</label>
++            <label class="col-sm-24 light">{{cluster.validity.end.date}} {{cluster.validity.end.time}}</label>
++          </div>
++        </div>
++      </div>
++    </div>
++    <div class="clearfix hidden-md">&nbsp</div>
++    <h4 class="col-sm-24">Inputs</h4>
++    <div ng-repeat="input in process.inputs">
++      <div class="row col-sm-offset-1 col-sm-22 detailsBox">
++        <label class="col-sm-24">Name</label>
++        <label class="col-sm-24 light">{{input.name}}</label>
++        <label class="col-sm-24">Feed</label>
++        <label class="col-sm-24 light">{{input.feed}}</label>
++        <div class="clearfix hidden-md">&nbsp</div>
++        <h4 class="col-sm-24">Instance</h4>
++        <div class="row">
++          <div class="col-sm-12">
++            <label class="col-sm-24">Start</label>
++            <label class="col-sm-24 light">{{input.start}}</label>
++          </div>
++          <div class="col-sm-12">
++            <label class="col-sm-24">End</label>
++            <label class="col-sm-24 light">{{input.end}}</label>
++          </div>
++        </div>
++      </div>
++    </div>
++    <h4 class="col-sm-24">Outputs</h4>
++    <div ng-repeat="output in process.outputs">
++      <div class="row col-sm-offset-1 col-sm-22 detailsBox">
++        <label class="col-sm-24">Name</label>
++        <label class="col-sm-24 light">{{output.name}}</label>
++        <label class="col-sm-24">Feed</label>
++        <label class="col-sm-24 light">{{output.feed}}</label>
++        <div class="clearfix hidden-md">&nbsp</div>
++        <h4 class="col-sm-24">Instance</h4>
++        <label class="col-sm-24">Instance</label>
++        <label class="col-sm-24 light">{{output.outputInstance}}</label>
++      </div>
++    </div>
++  </div>
++  <div class="clearfix hidden-md">&nbsp</div>
++
++  <div class="row feedBottomButtons">
++    <div class="btn btn-default col-sm-6" ng-click="goBack('forms.process.io')">
++      Previous
++    </div>
++    <div class="btn btn-default col-sm-6 pull-right"
++         ng-disabled="processForm.$invalid"
++         ng-click="saveEntity()">
++      Save
++    </div>
++    <u class="col-sm-3 pull-right" ui-sref="main">
++      Cancel
++    </u>
++  </div>
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/process/processFormTpl.html b/falcon-ui/app/html/process/processFormTpl.html
+new file mode 100644
+index 0000000..7bf423e
+--- /dev/null
++++ b/falcon-ui/app/html/process/processFormTpl.html
+@@ -0,0 +1,95 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div class="col-sm-24 entityForm">
++  <div class="col-sm-22 col-sm-offset-2">
++    <div class="row">
++      <h3 id="formTitle" class="col-sm-24">
++        New Process
++      </h3>
++      <div class="col-sm-15 detailsBox">
++
++        <div class="processProgressBox" ng-class="{
++          general:isActive('forms.process.general'),
++          properties:isActive('forms.process.properties'),
++          clusters:isActive('forms.process.clusters'),
++          inputsAndOutputs: isActive('forms.process.io'),
++          summary:isActive('forms.process.summary')
++          }">
++          <div class="progressBar col-md-24">
++            <div>
++              <span>
++                <div class="fir">1<span class="entypo check"></span></div>
++                <h6>General</h6>
++              </span>
++              <span>
++                <div class="sec">2<span class="entypo check"></span></div>
++                <h6>Properties</h6>
++              </span>
++              <span>
++                <div class="thi">3<span class="entypo check"></span></div>
++                <h6>Clusters</h6>
++              </span>
++              <span>
++                <div class="fou">4<span class="entypo check"></span></div>
++                <h6>Inputs & Outputs</h6>
++              </span>
++              <span>
++                <div class="fif">5<span class="entypo check"></span></div>
++                <h6>Summary</h6>
++              </span>
++            </div>
++          </div>
++        </div>
++       
++        <div class="row">
++          <div class="col-sm-offset-1 col-sm-22">
++            <fieldset id="fieldWrapper" ng-disabled="!editXmlDisabled">
++              <div ui-view class="formViewContainer"></div>
++            </fieldset>
++          </div>
++        </div>
++        
++      </div>
++
++      <div class="col-sm-8 detailsBox col-sm-offset-1">
++        <div class="row">
++
++          <h5 class="col-xs-13 col-xs-offset-1 noSpecial">XML Preview</h5>  
++          <div class="col-xs-9">
++            <div id="editXmlButton" class="btn btn-default btn-xs pull-right" ng-click="toggleEditXml()" ng-class="{'btn-warning':!editXmlDisabled}">
++              Edit XML
++            </div>
++          </div>
++
++          <div class="col-sm-24">
++            <div class="row">
++              <div class="col-sm-22 col-sm-offset-1">
++                <textarea ng-model="prettyXml" rows="35" class="form-control" ng-disabled="editXmlDisabled">
++                </textarea>
++              </div>
++            </div>
++          </div>
++          
++        </div>
++      </div>
++      
++    </div>
++  </div>
++</div>
+diff --git a/falcon-ui/app/js/controllers/controllers.js b/falcon-ui/app/js/controllers/controllers.js
+index 0d4d0df..9fa878e 100644
+--- a/falcon-ui/app/js/controllers/controllers.js
++++ b/falcon-ui/app/js/controllers/controllers.js
+@@ -25,6 +25,7 @@
+                                       'app.controllers.view',
+                                       'app.controllers.cluster',
+                                       'app.controllers.feed',
++                                      'app.controllers.process',
+                                       'app.controllers.entity'   
+                                     ]);
+ 
+diff --git a/falcon-ui/app/js/controllers/process/process-clusters-ctrl.js b/falcon-ui/app/js/controllers/process/process-clusters-ctrl.js
+new file mode 100644
+index 0000000..b588c84
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-clusters-ctrl.js
+@@ -0,0 +1,71 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.process');
++
++  feedModule.controller('ProcessClustersCtrl',
++    ['$scope', 'clustersList', 'EntityFactory', function($scope, clustersList, entityFactory) {
++
++    $scope.init = function() {
++      $scope.dateFormat = 'dd-MMMM-yyyy';
++    };
++
++    $scope.openDatePicker = function($event, container) {
++      $event.preventDefault();
++      $event.stopPropagation();
++      container.opened = true;
++    };
++
++    $scope.addCluster = function() {
++      $scope.process.clusters.push(entityFactory.newCluster());
++    };
++
++    $scope.removeCluster = function(index) {
++      if(index >= 0 && $scope.process.clusters.length > 1) {
++        $scope.process.clusters.splice(index, 1);
++      }
++    };
++
++    unwrapClusters(clustersList);
++
++    function unwrapClusters(clusters) {
++      $scope.clusterList = [];
++      var typeOfData = Object.prototype.toString.call(clusters.entity);
++      if(typeOfData === "[object Array]") {
++        $scope.clusterList = clusters.entity;
++      } else if(typeOfData === "[object Object]") {
++        $scope.clusterList = [clusters.entity];
++      } else {
++        //console.log("type of data not recognized"); 
++      }
++    }
++
++    $scope.init();
++
++  }]);
++
++})();
+diff --git a/falcon-ui/app/js/controllers/process/process-general-information-ctrl.js b/falcon-ui/app/js/controllers/process/process-general-information-ctrl.js
+new file mode 100644
+index 0000000..ec689f3
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-general-information-ctrl.js
+@@ -0,0 +1,66 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.process');
++
++  feedModule.controller('ProcessGeneralInformationCtrl', [ '$scope', function($scope) {
++    var availableVerions = {
++      oozie: ['3.1.3-incubating', '3.2.0-incubating', '3.3.0', '3.3.1', '3.3.2', '4.0.0', '4.0.1'],
++      pig: ['pig-0.10.0', 'pig-0.10.1', 'pig-0.11.0', 'pig-0.11.1', 'pig-0.12.0', 'pig-0.12.1', 'pig-0.13.0', 'pig-0.8.0', 'pig-0.8.1', ' pig-0.9.0', ' pig-0.9.1', 'pig-0.9.2'],
++      hive: ['hive-0.10.0', 'hive-0.11.0', 'hive-0.12.0', 'hive-0.13.0', 'hive-0.13.1', 'hive-0.6.0', 'hive-0.7.0', 'hive-0.8.0', 'hive-0.8.1', 'hive-0.9.0']
++    };
++    $scope.nameValid = false;
++    
++    $scope.init = function() {
++      $scope.versions = [];
++    };
++
++    $scope.addTag = function() {
++      $scope.process.tags.push({key: null, value: null});
++    };
++
++    $scope.removeTag = function(index) {
++      if(index >= 0 && $scope.process.tags.length > 1) {
++        $scope.process.tags.splice(index, 1);
++      }
++    };
++
++    $scope.selectWorkflow = function() {
++      
++      if($scope.process.workflow) {        
++        var engine = $scope.process.workflow.engine;
++        $scope.versions = availableVerions[engine];
++      }
++    };
++
++    $scope.init();
++    $scope.selectWorkflow();
++
++  }]);
++
++
++})();
+diff --git a/falcon-ui/app/js/controllers/process/process-inputs-and-outputs-ctrl.js b/falcon-ui/app/js/controllers/process/process-inputs-and-outputs-ctrl.js
+new file mode 100644
+index 0000000..c9b22d0
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-inputs-and-outputs-ctrl.js
+@@ -0,0 +1,76 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.process');
++
++  feedModule.controller('ProcessInputsAndOutputsCtrl',
++
++    ['$scope', 'EntityFactory', 'feedsList', function($scope, entityFactory, feedsList) {
++
++      $scope.init = function() {
++
++      };
++
++      $scope.addInput = function() {
++        $scope.process.inputs.push(entityFactory.newInput());
++      };
++
++      $scope.removeInput = function(index) {
++        if(index >= 0) {
++          $scope.process.inputs.splice(index, 1);
++        }
++      };
++
++      $scope.addOutput = function() {
++        $scope.process.outputs.push(entityFactory.newOutput());
++      };
++
++      $scope.removeOutput = function(index) {
++        if(index >= 0) {
++          $scope.process.outputs.splice(index, 1);
++        }
++      };
++
++
++      unwrapClusters(feedsList);
++
++      function unwrapClusters(feeds) {
++        $scope.feedsList = [];
++        var typeOfData = Object.prototype.toString.call(feeds.entity);
++        if(typeOfData === "[object Array]") {
++          $scope.feedsList = feeds.entity;
++        } else if(typeOfData === "[object Object]") {
++          $scope.feedsList = [feeds.entity];
++        } else {
++          //console.log("type of data not recognized");
++        }
++      }
++
++      $scope.init();
++
++    }]);
++})();
+diff --git a/falcon-ui/app/js/controllers/process/process-module.js b/falcon-ui/app/js/controllers/process/process-module.js
+new file mode 100644
+index 0000000..dbbcc6f
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-module.js
+@@ -0,0 +1,33 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  angular.module('app.controllers.process', [
++    'app.services',
++    'app.controllers.entity'
++  ]);
++
++})();
+diff --git a/falcon-ui/app/js/controllers/process/process-properties-controller.js b/falcon-ui/app/js/controllers/process/process-properties-controller.js
+new file mode 100644
+index 0000000..d4e747c
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-properties-controller.js
+@@ -0,0 +1,34 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.process');
++
++  feedModule.controller('ProcessPropertiesCtrl', [ '$scope', function() {
++
++  }]);
++
++})();
+diff --git a/falcon-ui/app/js/controllers/process/process-root-ctrl.js b/falcon-ui/app/js/controllers/process/process-root-ctrl.js
+new file mode 100644
+index 0000000..ba69705
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-root-ctrl.js
+@@ -0,0 +1,117 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.process');
++
++  feedModule.controller('ProcessRootCtrl', [
++    '$scope', '$state', '$interval', '$controller', 'EntityFactory',
++    'EntitySerializer', 'X2jsService', 'ValidationService',
++    function ($scope, $state, $interval, $controller, entityFactory, serializer, X2jsService, validationService) {
++
++      $scope.entityType = 'process';
++
++        //extending root controller
++      $controller('EntityRootCtrl', {
++        $scope: $scope
++      });
++
++      $scope.init = function() {
++        $scope.baseInit();
++        var type = $scope.entityType;
++        $scope[type] = $scope.loadOrCreateEntity();
++      };
++
++      $scope.isActive = function (route) {
++        return route === $state.$current.name;
++      };
++
++      $scope.loadOrCreateEntity = function() {
++        var type = $scope.entityType;
++        var model = $scope.models[type + 'Model'];
++        $scope.models[type + 'Model'] = null;
++        if(model) {
++          return serializer.preDeserialize(model, type);
++        }
++        return entityFactory.newEntity(type);
++      };
++
++      $scope.init();
++
++      $scope.transform = function() {
++        var type = $scope.entityType;
++        var xml = serializer.serialize($scope[type], $scope.entityType);
++        $scope.prettyXml = X2jsService.prettifyXml(xml);
++        $scope.xml = xml;
++        return xml;
++      };
++
++      var xmlPreviewCallback = function() {
++        var type = $scope.entityType;
++        if($scope.editXmlDisabled) {
++          try {
++            $scope.transform();
++          } catch (exception) {
++            console.log('error when transforming xml');
++            console.log(exception);
++          }
++        } else {
++          try {
++            $scope[type] = serializer.deserialize($scope.prettyXml, type);
++          } catch (exception) {
++            console.log('user entered xml incorrect format');
++            console.log(exception);
++          }
++        }
++
++      };
++
++      var xmlPreviewWorker = $interval(xmlPreviewCallback, 1000);
++
++      $scope.$on('$destroy', function() {
++        $interval.cancel(xmlPreviewWorker);
++      });
++
++      //---------------------------------//
++      $scope.goNext = function (formInvalid, stateName) {
++        if (!validationService.nameAvailable || formInvalid) {
++          validationService.displayValidations.show = true;
++          validationService.displayValidations.nameShow = true;
++          return;
++        }
++        validationService.displayValidations.show = false;
++        validationService.displayValidations.nameShow = false;
++        $state.go(stateName);
++      };
++      $scope.goBack = function (stateName) {
++        validationService.displayValidations.show = false;
++        validationService.displayValidations.nameShow = false;
++        $state.go(stateName);
++      };
++    }
++  ]);
++
++}());
+diff --git a/falcon-ui/app/js/controllers/process/process-summary-ctrl.js b/falcon-ui/app/js/controllers/process/process-summary-ctrl.js
+new file mode 100644
+index 0000000..d81bb62
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/process/process-summary-ctrl.js
+@@ -0,0 +1,83 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.process');
++
++  feedModule.controller('ProcessSummaryCtrl', [ '$scope', '$state', '$timeout', '$filter', 'Falcon',
++                                                  function($scope, $state, $timeout, $filter, Falcon) {
++
++    $scope.init = function() {
++      if($scope.transform) {
++        $scope.transform();
++      }
++    };
++
++    $scope.hasTags = function() {
++      var filteredTags = $filter('filter')($scope.process.tags, {key: '!!'});
++      return filteredTags.length > 0;
++    };
++
++    $scope.optional = function(input, output) {
++      return input ? (output || input) : 'Not specified';
++    };
++
++    $scope.saveEntity = function() {
++      var type = $scope.entityType;
++      if(!$scope.$parent.cloningMode) { 
++        Falcon.logRequest();
++        Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
++          .success(function (response) {
++             Falcon.logResponse('success', response, false); 
++             $state.go('main'); 
++
++          })
++          .error(function (err) {   
++            Falcon.logResponse('error', err, false);          
++          });
++      } 
++      else {
++        Falcon.logRequest();
++        Falcon.postSubmitEntity($scope.xml, $scope.entityType)
++          .success(function (response) {
++             Falcon.logResponse('success', response, false); 
++             $state.go('main'); 
++ 
++          })
++          .error(function (err) {   
++            Falcon.logResponse('error', err, false);          
++          });
++      }
++
++      $scope.editingMode = false;
++      $scope.cloningMode = false;
++    };
++
++    $scope.init();
++
++  }]);
++
++})();
+diff --git a/falcon-ui/app/test/controllers/process/ProcessClustersCtrlSpec.js b/falcon-ui/app/test/controllers/process/ProcessClustersCtrlSpec.js
+new file mode 100644
+index 0000000..7273fbf
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/process/ProcessClustersCtrlSpec.js
+@@ -0,0 +1,107 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('ProcessClustersCtrl', function () {
++    beforeEach(module('app.controllers.process'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.process = {};
++      controller = $controller('ProcessClustersCtrl', {
++        $scope: scope,
++        clustersList: []
++      });
++    }));
++
++    describe('init', function() {
++      it('Should add date format', function() {
++        scope.init();
++
++        expect(scope.dateFormat).toBe('dd-MMMM-yyyy');
++      });
++    });
++
++    describe('openDatePicker', function() {
++      it('Should set the container opened property to true', function() {
++        var eventMock = {
++          preventDefault: angular.noop,
++          stopPropagation: angular.noop
++        };
++        var container = {
++          opened: false
++        };
++
++        scope.openDatePicker(eventMock, container);
++
++        expect(scope.dateFormat).toBe('dd-MMMM-yyyy');
++      });
++    });
++
++    describe('addCluster', function() {
++
++      it('Should add a new empty cluster', function() {
++        scope.process.clusters = [{}];
++
++        scope.addCluster();
++
++        expect(scope.process.clusters.length).toEqual(2);
++      });
++    });
++
++    describe('removeCluster', function() {
++      it('Should remove a cluster at the specified index', function() {
++        scope.process.clusters = [
++          {name: 'cluster1'},
++          {name: 'cluster2'},
++          {name: 'cluster3'}
++        ];
++
++        scope.removeCluster(1);
++
++        expect(scope.process.clusters.length).toEqual(2);
++        expect(scope.process.clusters).toEqual([{name: 'cluster1'}, {name: 'cluster3'}]);
++      });
++
++      it('Should not delete if there is only one element', function() {
++        scope.process.clusters = [{name: 'cluster1'}];
++
++        scope.removeCluster(0);
++
++        expect(scope.process.clusters).toEqual([{name: 'cluster1'}]);
++      });
++
++      it('Should not delete if index is not passed in', function() {
++        scope.process.clusters= [
++          {name: 'cluster1'},
++          {name: 'cluster2'}
++        ];
++
++        scope.removeCluster();
++
++        expect(scope.process.clusters).toEqual([{name: 'cluster1'}, {name: 'cluster2'}]);
++      });
++
++    });
++
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/process/ProcessGeneralInformationCtrlSpec.js b/falcon-ui/app/test/controllers/process/ProcessGeneralInformationCtrlSpec.js
+new file mode 100644
+index 0000000..6008456
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/process/ProcessGeneralInformationCtrlSpec.js
+@@ -0,0 +1,111 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++
++  describe('ProcessGeneralInformationCtrl', function () {
++    beforeEach(module('app.controllers.process'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.entityType = 'process';
++      scope.process = {
++        tags: [{key: null, value: null}]
++      };
++
++      controller = $controller('ProcessGeneralInformationCtrl', {
++        $scope: scope
++      });
++    }));
++
++
++    it('Should add a new empty tag', function() {
++      expect(scope.process.tags.length).toEqual(1);
++
++      scope.addTag();
++
++      expect(scope.process.tags.length).toEqual(2);
++      expect(scope.process.tags[1]).toEqual({key: null, value: null});
++    });
++
++    it('Should remove a tag at the specified index', function() {
++      scope.process.tags = [
++        {key: 'key0', value: 'value0'},
++        {key: 'key1', value: 'value1'},
++        {key: 'key2', value: 'value2'}
++      ];
++
++      scope.removeTag(1);
++
++      expect(scope.process.tags.length).toEqual(2);
++      expect(scope.process.tags).toEqual([{key: 'key0', value: 'value0'}, {key: 'key2', value: 'value2'}]);
++    });
++
++    it('Should not delete if there is only one element', function() {
++      scope.process.tags = [{key: 'key', value: 'value'}];
++
++      scope.removeTag(0);
++
++      expect(scope.process.tags).toEqual([{key: 'key', value: 'value'}]);
++    });
++
++    it('Should not delete if index is not passed in', function() {
++      scope.process.tags = [
++        {key: 'key0', value: 'value0'},
++        {key: 'key1', value: 'value1'}
++      ];
++
++      scope.removeTag();
++
++      expect(scope.process.tags).toEqual([{key: 'key0', value: 'value0'}, {key: 'key1', value: 'value1'}]);
++    });
++  })
++
++  describe('Versions', function() {
++    it('Should display the oozie versions when oozie workflow is selected', function() {
++      var expectedVersions = ['3.1.3-incubating', '3.2.0-incubating', '3.3.0', '3.3.1', '3.3.2', '4.0.0', '4.0.1'];
++      scope.process.workflow = {engine: 'oozie'};
++
++      scope.selectWorkflow();
++
++      expect(scope.versions).toEqual(expectedVersions);
++    });
++
++    it('Should display the pig versions when pig workflow is selected', function() {
++      var expectedVersions = ['pig-0.10.0', 'pig-0.10.1', 'pig-0.11.0', 'pig-0.11.1', 'pig-0.12.0', 'pig-0.12.1', 'pig-0.13.0', 'pig-0.8.0', 'pig-0.8.1', ' pig-0.9.0', ' pig-0.9.1', 'pig-0.9.2'];
++      scope.process.workflow = {engine: 'pig'};
++
++      scope.selectWorkflow();
++
++      expect(scope.versions).toEqual(expectedVersions);
++    });
++
++    it('Should display the hive versions when hive workflow is selected', function() {
++      var expectedVersions = ['hive-0.10.0', 'hive-0.11.0', 'hive-0.12.0', 'hive-0.13.0', 'hive-0.13.1', 'hive-0.6.0', 'hive-0.7.0', 'hive-0.8.0', 'hive-0.8.1', 'hive-0.9.0'];
++      scope.process.workflow = {engine: 'hive'};
++
++      scope.selectWorkflow();
++
++      expect(scope.versions).toEqual(expectedVersions);
++    });
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/process/ProcessInputsAndOutputsCtrlSpec.js b/falcon-ui/app/test/controllers/process/ProcessInputsAndOutputsCtrlSpec.js
+new file mode 100644
+index 0000000..a20a37a
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/process/ProcessInputsAndOutputsCtrlSpec.js
+@@ -0,0 +1,52 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('ProcessInputsAndOutputsCtrl', function () {
++    beforeEach(module('app.controllers.process'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.process = {
++        inputs: []
++      };
++      controller = $controller('ProcessInputsAndOutputsCtrl', {
++        $scope: scope,
++        feedsList: []
++      });
++    }));
++
++
++    describe('addInput', function() {
++
++      it('Should add a new empty input', function() {
++        expect(scope.process.inputs.length).toEqual(0);
++
++        scope.addInput();
++
++        expect(scope.process.inputs.length).toEqual(1);
++      });
++
++    });
++
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/process/ProcessPropertiesControllerSpec.js b/falcon-ui/app/test/controllers/process/ProcessPropertiesControllerSpec.js
+new file mode 100644
+index 0000000..91364b5
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/process/ProcessPropertiesControllerSpec.js
+@@ -0,0 +1,44 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('ProcessPropertiesCtrl', function () {
++    beforeEach(module('app.controllers.process'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++
++      controller = $controller('ProcessPropertiesCtrl', {
++        $scope: scope,
++        $state: {}
++      });
++    }));
++
++    describe('Desc', function() {
++
++      it('Should', function() {
++      });
++
++    });
++
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/process/ProcessRootCtrlSpec.js b/falcon-ui/app/test/controllers/process/ProcessRootCtrlSpec.js
+new file mode 100644
+index 0000000..78cf26a
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/process/ProcessRootCtrlSpec.js
+@@ -0,0 +1,136 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++  var controllerProvider;
++  var entityFactoryMock;
++  var serializerMock;
++
++  describe('ProcessRootCtrl', function () {
++
++    beforeEach(module('app.controllers.process'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.models = {};
++      controllerProvider = $controller;
++      entityFactoryMock = jasmine.createSpyObj('EntityFactory', ['newEntity']);
++      serializerMock = jasmine.createSpyObj('EntitySerializer', ['preDeserialize']);
++
++      controller = $controller('ProcessRootCtrl', {
++        $scope: scope,
++        $state: {
++          $current:{
++            name: 'forms.process.general'
++          },
++          go: angular.noop
++        },
++        EntityFactory: entityFactoryMock,
++        EntitySerializer: serializerMock
++      });
++    }));
++
++
++    it('Should be of type process', function() {
++      expect(scope.entityType).toBe('process');
++    });
++
++    it('Should be initialized properly', function() {
++      scope.init();
++
++      expect(scope.editXmlDisabled).toBe(true);
++    });
++
++    it('Should toggle editXmlDisable value to true', function() {
++      scope.editXmlDisabled = false;
++
++      scope.toggleEditXml();
++
++      expect(scope.editXmlDisabled).toBe(true);
++    });
++
++    it('Should return true when the current state is the general view', function() {
++      expect(scope.isActive('forms.process.general')).toBe(true);
++    });
++
++    it('Should return true when the current state is not the general view', function() {
++      expect(scope.isActive('forms.process.properties')).toBe(false);
++    });
++
++    it('Should deserialize the entity if the xml is found on the scope', function() {
++
++      controller = createController();
++      var createdProcess =  {};
++      var deserialzedProcess =  {};
++      var processModel = {name: 'ProcessName'};
++      serializerMock.preDeserialize.andReturn(deserialzedProcess);
++      entityFactoryMock.newEntity.andReturn(createdProcess);
++      scope.models.processModel = processModel;
++
++      var process = scope.loadOrCreateEntity();
++
++      expect(serializerMock.preDeserialize).toHaveBeenCalledWith(processModel, 'process');
++      expect(process).toNotBe(createdProcess);
++      expect(process).toBe(deserialzedProcess);
++    });
++
++    it('Should not deserialize the entity if the xml is not found on the scope', function() {
++      controller = createController();
++      var createdProcess =  {};
++      var deserialzedProcess =  {};
++      serializerMock.preDeserialize.andReturn(deserialzedProcess);
++      entityFactoryMock.newEntity.andReturn(createdProcess);
++
++      var process = scope.loadOrCreateEntity();
++
++      expect(serializerMock.preDeserialize).not.toHaveBeenCalled();
++      expect(process).toBe(createdProcess);
++      expect(process).toNotBe(deserialzedProcess);
++    });
++
++    it('Should clear the processModel from the scope', function() {
++      controller = createController();
++      entityFactoryMock.newEntity.andReturn({});
++      scope.models.processModel = {};
++
++      scope.loadOrCreateEntity();
++
++      expect(scope.models.processModel).toBe(null);
++    });
++
++
++  });
++
++  function createController() {
++    return controllerProvider('ProcessRootCtrl', {
++      $scope: scope,
++      $state: {
++        $current:{
++          name: 'forms.process.general'
++        },
++        go: angular.noop
++      },
++      EntityFactory: entityFactoryMock,
++      EntitySerializer: serializerMock
++    });
++  }
++
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/process/ProcessSummaryCtrlSpec.js b/falcon-ui/app/test/controllers/process/ProcessSummaryCtrlSpec.js
+new file mode 100644
+index 0000000..67990d9
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/process/ProcessSummaryCtrlSpec.js
+@@ -0,0 +1,88 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope, controller, falconServiceMock;
++
++  describe('ProcessSummaryCtrl', function () {
++    beforeEach(module('app.controllers.process'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      falconServiceMock = jasmine.createSpyObj('Falcon', ['postUpdateEntity', 'postSubmitEntity', 'logRequest', 'logResponse']);
++
++      scope = $rootScope.$new();
++      scope.process = {};
++      scope.entityType = 'process';
++      controller = $controller('ProcessSummaryCtrl', {
++        $scope: scope,
++        Falcon: falconServiceMock,
++        $state: {
++          $current:{
++            name: 'main.forms.feed.general'
++          },
++          go: angular.noop
++        }
++      });
++    }));
++
++
++    describe('saveEntity', function() {
++      it('Should save the update the entity if in edit mode', function() {
++        falconServiceMock.postUpdateEntity.andReturn(successResponse({}));
++        scope.editingMode = true;//---this line doesnt work
++        scope.$parent.cloningMode = false;
++        scope.process = { name:  'ProcessOne'};
++        scope.xml = '<process/>';
++
++        scope.saveEntity();
++
++        expect(scope.editingMode).toBe(false);
++        expect(falconServiceMock.postSubmitEntity).not.toHaveBeenCalled();
++        expect(falconServiceMock.postUpdateEntity).toHaveBeenCalledWith('<process/>', 'process', 'ProcessOne');
++      });
++
++      it('Should save the update the entity if in cloning mode', function() {
++        falconServiceMock.postSubmitEntity.andReturn(successResponse({}));
++        scope.cloningMode = true;//---this line doesnt work
++        scope.$parent.cloningMode = true;
++        scope.process = { name:  'ProcessOne'};
++        scope.xml = '<process/>';
++
++        scope.saveEntity();
++
++        expect(scope.cloningMode).toBe(false);
++        expect(falconServiceMock.postSubmitEntity).toHaveBeenCalledWith('<process/>', 'process');
++        expect(falconServiceMock.postUpdateEntity).not.toHaveBeenCalled();
++      });
++
++    });
++
++    function successResponse(value) {
++      var fakePromise = {};
++      fakePromise.success = function(callback) {
++        callback(value);
++        return fakePromise;
++      };
++      fakePromise.error = angular.noop;
++      return fakePromise;
++    }
++
++
++  });
++
++})();
+\ No newline at end of file
+-- 
+1.9.3
+

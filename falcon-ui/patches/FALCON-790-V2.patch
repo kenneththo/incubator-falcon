@@ -1,0 +1,2099 @@
+From 0480cac4b6606b192b732e7933fdd975e24bde40 Mon Sep 17 00:00:00 2001
+From: Armando Reyna <armando.reyna@globant.com>
+Date: Fri, 13 Feb 2015 18:28:50 -0600
+Subject: [PATCH] Falcon-UI Integration, Stage 03, Feed
+
+---
+ falcon-ui/app/html/directives/entitiesListDv.html  |   2 +-
+ falcon-ui/app/html/directives/navDv.html           |   3 +
+ .../app/html/feed/feedFormClustersStepTpl.html     | 152 +++++++++++++++++
+ .../app/html/feed/feedFormGeneralStepTpl.html      | 121 ++++++++++++++
+ .../app/html/feed/feedFormLocationStepTpl.html     | 105 ++++++++++++
+ .../app/html/feed/feedFormPropertiesStepTpl.html   | 160 ++++++++++++++++++
+ .../app/html/feed/feedFormSummaryStepTpl.html      | 159 ++++++++++++++++++
+ falcon-ui/app/html/feed/feedFormTpl.html           |  97 +++++++++++
+ falcon-ui/app/html/login.html                      | 103 ------------
+ falcon-ui/app/js/controllers/controllers.js        |   1 +
+ .../controllers/feed/feed-clusters-controller.js   | 117 +++++++++++++
+ .../feed/feed-general-information-controller.js    |  48 ++++++
+ .../controllers/feed/feed-location-controller.js   |  44 +++++
+ falcon-ui/app/js/controllers/feed/feed-module.js   |  34 ++++
+ .../controllers/feed/feed-properties-controller.js |  42 +++++
+ .../app/js/controllers/feed/feed-root-ctrl.js      | 178 ++++++++++++++++++++
+ .../js/controllers/feed/feed-summary-controller.js |  48 ++++++
+ .../feed/FeedGeneralInformationControllerSpec.js   |  83 ++++++++++
+ .../controllers/feed/FeedLocationControllerSpec.js |  62 +++++++
+ .../feed/FeedPropertiesControllerSpec.js           |  81 +++++++++
+ .../app/test/controllers/feed/FeedRootCtrlSpec.js  | 181 +++++++++++++++++++++
+ .../controllers/feed/FeedSummaryControllerSpec.js  |  68 ++++++++
+ 22 files changed, 1785 insertions(+), 104 deletions(-)
+ create mode 100644 falcon-ui/app/html/feed/feedFormClustersStepTpl.html
+ create mode 100644 falcon-ui/app/html/feed/feedFormGeneralStepTpl.html
+ create mode 100644 falcon-ui/app/html/feed/feedFormLocationStepTpl.html
+ create mode 100644 falcon-ui/app/html/feed/feedFormPropertiesStepTpl.html
+ create mode 100644 falcon-ui/app/html/feed/feedFormSummaryStepTpl.html
+ create mode 100644 falcon-ui/app/html/feed/feedFormTpl.html
+ delete mode 100644 falcon-ui/app/html/login.html
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-clusters-controller.js
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-general-information-controller.js
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-location-controller.js
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-module.js
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-properties-controller.js
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-root-ctrl.js
+ create mode 100644 falcon-ui/app/js/controllers/feed/feed-summary-controller.js
+ create mode 100644 falcon-ui/app/test/controllers/feed/FeedGeneralInformationControllerSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/feed/FeedLocationControllerSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/feed/FeedPropertiesControllerSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/feed/FeedRootCtrlSpec.js
+ create mode 100644 falcon-ui/app/test/controllers/feed/FeedSummaryControllerSpec.js
+
+diff --git a/falcon-ui/app/html/directives/entitiesListDv.html b/falcon-ui/app/html/directives/entitiesListDv.html
+index 539a708..f41b9f1 100644
+--- a/falcon-ui/app/html/directives/entitiesListDv.html
++++ b/falcon-ui/app/html/directives/entitiesListDv.html
+@@ -43,7 +43,7 @@
+   </thead>
+   <tbody>
+     
+-    <tr ng-if="input.length > 0 && type === 'cluster'" class="buttonsRow">
++    <tr ng-if="input.length > 0 && type !== 'process'" class="buttonsRow">
+       <td class="buttonCell" colspan="4">
+         <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-hide="selectedDisabledButtons.schedule" ng-if="type !== 'cluster'">
+             <span class="entypo play"></span> Schedule
+diff --git a/falcon-ui/app/html/directives/navDv.html b/falcon-ui/app/html/directives/navDv.html
+index 1f67962..c145145 100644
+--- a/falcon-ui/app/html/directives/navDv.html
++++ b/falcon-ui/app/html/directives/navDv.html
+@@ -29,6 +29,9 @@
+         <div ng-click="resetCluster()">
+           <span class="entypo archive"></span> Cluster
+         </div>
++        <div ng-click="resetFeed()">
++          <span class="entypo download"></span> Feed
++        </div>
+       </div>
+ 
+       <div class="uploadNavWrapper">
+diff --git a/falcon-ui/app/html/feed/feedFormClustersStepTpl.html b/falcon-ui/app/html/feed/feedFormClustersStepTpl.html
+new file mode 100644
+index 0000000..8d2322f
+--- /dev/null
++++ b/falcon-ui/app/html/feed/feedFormClustersStepTpl.html
+@@ -0,0 +1,152 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="feedForm">
++  <div ng-repeat="cluster in feed.clusters">
++    <div class="row">
++      <h4 class="col-sm-24">{{capitalize(cluster.type)}} Cluster </h4>
++    </div>
++
++    <div class="row detailsBox">
++      <div class="col-sm-offset-1 col-sm-22">
++
++        <div class="row">
++          <div class="col-xs-24">
++            <select ng-model="cluster.name" validation-message="{{validations.messages.cluster}}"
++                    ng-required="true" class="col-sm-24 form-control padding0">
++              <option value="" disabled selected style='display:none;'>-Select cluster-</option>
++              <option ng-repeat="clusterItem in clusterList">{{clusterItem.name}}</option>
++            </select>
++          </div>
++            
++
++          <div class="col-xs-24 feedLocationNavBox nopointer">
++            <h4 class="col-xs-7" ng-show="!feed.storage.fileSystem.active">Default Storage type</h4>
++            <h4 class="col-xs-7" ng-show="feed.storage.fileSystem.active">Storage type</h4>
++
++            <div class="col-xs-17 feedLocationNav">
++              <div class="btn btn-default pull-right" ng-class="{active: feed.storage.catalog.active}">
++                Catalog Storage
++              </div>
++              <div class="btn btn-default pull-right" ng-class="{active: feed.storage.fileSystem.active}">
++                File System
++              </div>
++              <div class="clearfix"></div>
++            </div>
++          </div>
++
++          <div class="col-xs-19">
++            <label>Location</label>
++            <label class="light">(if not defined, will use default location)</label>
++          </div>
++
++          <div class="col-xs-24"
++               ng-show="feed.storage.fileSystem.active"
++               ng-repeat="location in cluster.storage.fileSystem.locations">
++            <label class="light">{{location.type}} path</label>
++            <input type="text" class="form-control" ng-model="location.path" ng-pattern="validations.patterns.osPath" />
++          </div>
++
++          <div class="col-xs-24 mb10" ng-show="feed.storage.catalog.active">
++            <label class="light">Table uri</label>
++            <input type="text" class="form-control" ng-model="cluster.storage.catalog.catalogTable.uri" ng-pattern="validations.patterns.osPath"/>
++          </div>
++
++          <label class="col-xs-24"> Validity </label>
++
++          <div class="col-xs-12">
++           
++              <label class="light col-xs-24">Start</label>
++            
++              <div class="input-group input-group-xs">
++                <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.start)"></span>
++                <input type="text" class="form-control" placeholder="Select start Date"
++                  datepicker-popup="{{dateFormat}}"
++                  ng-model="cluster.validity.start.date"
++                  is-open="cluster.validity.start.opened"
++                  ng-required="true">
++              </div>
++            
++          </div>
++          <div class="col-xs-12">
++            <timepicker class="timePicker" ng-model="cluster.validity.start.time" hour-step="1" minute-step="1" ></timepicker>
++          </div>
++          <div class="col-xs-12">
++           
++            <label class="light col-xs-24">End</label>
++           
++            <div class="input-group input-group-xs">
++              <span class="input-group-addon btn btn-default entypo calendar" ng-click="openDatePicker($event, cluster.validity.end)"></span>
++              <input type="text" class="form-control" placeholder="Select end Date"
++                     datepicker-popup="{{dateFormat}}"
++                     ng-model="cluster.validity.end.date"
++                     is-open="cluster.validity.end.opened"
++                     ng-required="true">
++            </div>
++          </div>
++          <div class="col-xs-12">
++            <timepicker class="timePicker" ng-model="cluster.validity.end.time" hour-step="1" minute-step="1" ></timepicker>
++          </div>
++
++
++          <label class="light col-xs-24"> Retention </label>
++
++          <div class="col-xs-24 inlineInputsGroup">
++            <input type="text" class="form-control" validation-message="{{validations.messages.number}}"
++                   ng-required="true" ng-model="cluster.retention.quantity" ng-keydown="validations.acceptOnlyNumber($event)"
++                   ng-pattern="validations.patterns.twoDigits">
++
++            <select ng-model="cluster.retention.unit"
++                    ng-required="true">
++              <option selected value="minutes">minutes</option>
++              <option value="hours">hours</option>
++              <option value="days">days</option>
++              <option value="months">months</option>
++            </select>
++          </div>
++
++          <div class="row"  ng-if="cluster.type !== 'source'">
++            <div class="btn btn-default pull-right btn-xs" ng-click="removeCluster($index)">
++              - delete
++            </div>
++          </div>
++
++        </div>
++
++      </div>
++    </div>
++  </div>
++
++  <div class="btn btn-default btn-xs" ng-click="addCluster()">
++    + add cluster
++  </div>
++  <div class="col-xs-24">
++    <div class="row feedBottomButtons">
++      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.location')" >
++        Previous
++      </div>
++      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.summary')" >
++        Next
++      </div>
++      <u class="col-xs-3 pull-right" ui-sref="main">
++        Cancel
++      </u>
++    </div>
++  </div>
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/feed/feedFormGeneralStepTpl.html b/falcon-ui/app/html/feed/feedFormGeneralStepTpl.html
+new file mode 100644
+index 0000000..3e2ecb9
+--- /dev/null
++++ b/falcon-ui/app/html/feed/feedFormGeneralStepTpl.html
+@@ -0,0 +1,121 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="feedForm">
++
++
++    <div class="col-sm-24">
++      <label class="light">Name</label>
++      <input type="text" class="form-control" ng-disabled="!cloningMode" ng-keydown="validations.acceptNoSpaces($event)"
++             check-name="{type:'feed', check:cloningMode}" ng-class="{fakeInvalid:!validations.nameAvailable}"
++             ng-model="feed.name" ng-required="true" ng-pattern="validations.patterns.name"/>
++    </div>
++    <div class="col-sm-24">
++      <label class="light">Description</label>
++      <input type="text" class="form-control"
++        ng-model="feed.description"
++        ng-pattern="validations.patterns.freeText"/>
++    </div>
++
++    <div class="col-sm-24">
++      <label class="light">Tags</label>
++    </div>
++
++    <div class="col-sm-24">
++      <div ng-repeat="tag in feed.tags">
++        <div class="row dynamic-table-spacer">
++          <div class="col-xs-10">
++            <input type="text" class="form-control" ng-model="tag.key"
++              ng-pattern="validations.patterns.alpha" ng-required="tag.value" placeholder="key"/>
++          </div>
++          <div class="col-xs-11">
++            <input type="text" class="form-control"
++              ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" placeholder="value"/>
++          </div>
++          <div class="col-xs-3">
++            <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-if="$index>0">
++              <span class="entypo minus"></span> delete
++            </div>
++          </div>
++        </div>
++      </div>
++    </div>
++    <div class="col-sm-24 dynamic-table-spacer">
++      <div class="btn btn-default btn-xs" ng-click="addTag()">
++        <span class="entypo plus"></span> add tag
++      </div>
++    </div>
++
++    <div class="col-sm-24">
++      <label class="light">Groups (comma separated)</label>
++      <input type="text" class="form-control"
++        ng-pattern="validations.patterns.commaSeparated"
++        ng-model="feed.groups"/>
++    </div>
++
++    <h4 class="col-sm-24"> Access Control List </h4>
++    <div class="col-sm-8">
++      <label class="light">Owner</label>
++      <input type="text" class="form-control"
++        ng-pattern="validations.patterns.unixId"
++        ng-model="feed.ACL.owner"/>
++    </div>
++    <div class="col-sm-8">
++      <label class="light">Group</label>
++      <input type="text" class="form-control"
++       ng-pattern="validations.patterns.unixId"
++       ng-model="feed.ACL.group"/>
++    </div>
++    <div class="col-sm-8">
++      <label class="light">Permissions</label>
++      <input type="text" class="form-control"
++        ng-pattern="validations.patterns.unixPermissions"
++        ng-model="feed.ACL.permission"/>
++    </div>
++
++    <h4 class="col-sm-24">Schema</h4>
++    <div class="col-sm-12">
++      <label class="light">Location</label>
++      <input type="text" class="form-control" validation-message="{{validations.messages.location}}"
++        ng-maxlength="200"
++        ng-pattern="validations.patterns.osPath"
++        ng-model="feed.schema.location"
++        ng-required="true"/>
++    </div>
++    <div class="col-sm-12">
++      <label class="light">Provider</label>
++      <input type="text" class="form-control" validation-message="{{validations.messages.provider}}"
++        ng-pattern="validations.patterns.osPath"
++        ng-model="feed.schema.provider"
++        ng-required="true"/>
++    </div>
++  
++
++  <div class="col-xs-24">
++    <div class="feedBottomButtons row">
++      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.properties')">
++        Next
++      </div>
++      <u class="col-xs-3 pull-right" ng-click="cancel()" ui-sref="main">
++        Cancel
++      </u>
++    </div>
++  </div>
++
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/feed/feedFormLocationStepTpl.html b/falcon-ui/app/html/feed/feedFormLocationStepTpl.html
+new file mode 100644
+index 0000000..7e5b6c0
+--- /dev/null
++++ b/falcon-ui/app/html/feed/feedFormLocationStepTpl.html
+@@ -0,0 +1,105 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="feedForm">
++  <div class="col-xs-24">
++  <div class="row">
++    <div class="col-xs-24 feedLocationNavBox">
++      <h4 class="col-xs-10" ng-show="feed.storage.fileSystem.active">Default Storage type </h4>
++      <h4 class="col-xs-10" ng-show="feed.storage.catalog.active"> Storage type </h4>
++
++      <div class="col-xs-14 feedLocationNav">
++        <div class="btn btn-default pull-right"
++          ng-class="{active: feed.storage.catalog.active}"
++          ng-click="toggleStorage()">
++          Catalog Storage
++        </div>
++        <div class="btn btn-default pull-right"
++          ng-class="{active: feed.storage.fileSystem.active}"
++          ng-click="toggleStorage()">
++          File System
++        </div>
++        
++      </div>
++      <div class="clearfix"></div>
++    </div>
++    <h4 class="col-xs-12">Default Location</h4>
++    <div class="col-xs-24">
++      <div ng-show="feed.storage.fileSystem.active"
++        ng-repeat="location in feed.storage.fileSystem.locations" class="row">
++  
++        <div class="col-xs-8">
++          <label class="light">{{capitalize(location.type)}} path</label>
++        </div>
++        <div class="pull-right" ng-show="location.focused">
++          <label class="light">add</label>
++          <label ng-repeat="timeVariable in ['${YEAR}', '${MONTH}', '${DAY} ', '${HOUR}']"
++                 ng-click="appendVariable(timeVariable, location, 'path')">
++            {{timeVariable}}
++          </label>
++        </div>
++        <div class="clearfix hidden-md"></div>
++        <div class="col-xs-24">
++          <input type="text" class="form-control" validation-message="{{validations.messages.path}}"
++            ng-required="true"
++            ng-model="location.path"
++            ng-pattern="validations.patterns.osPath"
++            ng-focus="location.focused = true"/>
++        </div>
++      </div>
++    </div>
++    
++
++    <div ng-show="feed.storage.catalog.active">
++      <div class="col-xs-8">
++        <label class="light">Table uri</label>
++      </div>
++
++      <div class="pull-right" ng-show="feed.storage.catalog.catalogTable.focused">
++        <label class="light">add</label>
++        <label ng-repeat="timeVariable in ['${YEAR}', '${MONTH}', '${DAY} ', '${HOUR}']"
++               ng-click="appendVariable(timeVariable, feed.storage.catalog.catalogTable, 'uri')">
++          {{timeVariable}}
++        </label>
++      </div>
++
++      <div class="col-xs-24">
++        <input type="text" class="form-control"
++          ng-model="feed.storage.catalog.catalogTable.uri"
++          ng-pattern="validations.patterns.tableUri"
++          ng-required="feed.storage.catalog.active" validation-message="{{validations.messages.path}}"
++          ng-focus="feed.storage.catalog.catalogTable.focused = true"/>
++      </div>
++
++    </div>
++  </div>
++
++  <div class="row feedBottomButtons">
++    <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.properties')" >
++      Previous
++    </div>
++    <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
++      Next
++    </div>
++    <u class="col-xs-3 pull-right" ui-sref="main">
++      Cancel
++    </u>
++  </div>
++</div>
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/feed/feedFormPropertiesStepTpl.html b/falcon-ui/app/html/feed/feedFormPropertiesStepTpl.html
+new file mode 100644
+index 0000000..007fd91
+--- /dev/null
++++ b/falcon-ui/app/html/feed/feedFormPropertiesStepTpl.html
+@@ -0,0 +1,160 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="feedForm">
++
++    <h5 class="col-xs-24 mb10">Timing</h5>
++
++    <div class="col-xs-9 inlineInputsGroup">   
++      <div class="light">Frequency</div>
++      <span>Every</span>
++      <input type="text" class="form-control" validation-message="{{validations.messages.number}}"
++             ng-model="feed.frequency.quantity"
++             ng-required="true"
++             ng-keydown="validations.acceptOnlyNumber($event)"
++             ng-pattern="validations.patterns.twoDigits"/>
++
++      <select       
++        ng-model="feed.frequency.unit"
++        ng-required="true">
++        <option selected value="minutes">minutes</option>
++        <option value="hours">hours</option>
++        <option value="days">days</option>
++        <option value="months">months</option>
++      </select>
++    </div>
++
++    <div class="col-xs-9 inlineInputsGroup">   
++      <div class="light"><input type="checkbox" ng-model="feed.lateArrival.active" />Late Arrival</div>
++      <span>Up to</span>
++  
++      <input type="text" class="form-control" ng-keydown="validations.acceptOnlyNumber($event)"
++        ng-model="feed.lateArrival.cutOff.quantity"
++        ng-disabled="!feed.lateArrival.active"
++        ng-pattern="validations.patterns.twoDigits"
++        ng-required="feed.lateArrival.active"/>
++  
++      <select
++        ng-model="feed.lateArrival.cutOff.unit" ng-disabled="!feed.lateArrival.active"
++        ng-required="feed.lateArrival.active">
++        <option selected value="minutes">minutes</option>
++        <option value="hours">hours</option>
++        <option value="days">days</option>
++        <option value="months">months</option>
++      </select>
++    </div>
++    <div class="col-xs-6 inlineInputsGroup">
++      <div class="light">Availability Flag</div>
++      <input type="text" id="availInput" class="form-control"
++        ng-model="feed.availabilityFlag"
++        ng-pattern="validations.patterns.alpha">
++    </div>
++  </div>
++
++  <div class="col-xs-24">
++    <div class="row mt20">
++      <label class="col-xs-5 light">Timezone</label> 
++      <time-zone-select ng-model="feed.timezone" class="col-xs-19"></time-zone-select>
++  
++      <h5 class="col-xs-24">Properties</h5>
++  
++      <div class="col-xs-5">
++        <label class="light">Name</label>
++      </div>
++      <div class="col-xs-19">
++        <label class="light">Value</label>
++      </div>
++      <div class="col-xs-24" id="feedPropertiesBox">
++        <div ng-repeat="property in feed.properties" class="row">
++         
++          <label class="col-xs-5">{{property.key}}</label>
++        
++          <div class="col-xs-19" ng-if="property.key !== 'timeout' && property.key !== 'jobPriority'">
++            <input type="text" class="form-control"
++              ng-model="property.value"
++              ng-patter="validations.patterns.alpha"/>
++          </div>
++          <div class="col-xs-19 inlineInputsGroup" ng-if="property.key === 'timeout'">
++            At
++            <input type="text" class="form-control" ng-keydown="validations.acceptOnlyNumber($event)"
++                   ng-model="property.value.quantity"
++                   ng-pattern="validations.patterns.twoDigits"/>
++            <select
++              ng-model="property.value.unit">
++              <option selected value="minutes">minutes</option>
++              <option value="hours">hours</option>
++              <option value="days">days</option>
++              <option value="months">months</option>
++            </select>
++          </div>
++          <div class="col-xs-19" ng-if="property.key === 'jobPriority'">
++            <select ng-model="property.value" class="form-control padding0">
++              <option value="" disabled selected style='display:none;'>-Select job-</option>
++              <option value="VERY_HIGH">Very high</option>
++              <option value="HIGH">High</option>
++              <option value="NORMAL">Normal</option>
++              <option value="LOW">Low</option>
++              <option value="VERY_LOW">Very Low</option>
++            </select>
++          </div>
++        </div>
++      </div>
++      <div class="col-xs-24">
++        <div ng-repeat="property in feed.customProperties" class="row">
++          <div class="col-xs-5 mt10">
++            <input type="text" class="form-control" placeholder="key"
++              ng-model="property.key"
++              ng-pattern="validations.patterns.alpha"
++              ng-required="property.value"/>
++          </div>
++    
++          <div class="col-xs-15 mt10">
++            <input type="text" class="form-control" placeholder="value"
++              ng-model="property.value"
++              ng-pattern="validations.patterns.alpha"
++              ng-required="property.key"/>
++          </div>
++          <div class="col-xs-4 mt10"> 
++            <div class="btn btn-default btn-xs mt1" ng-click="removeCustomProperty($index)" ng-if="$index>0">
++              <span class="entypo minus"></span> delete
++            </div>   
++          </div>
++        </div>
++      </div>
++      <div class="col-xs-24 mt10">
++        <div class="btn btn-default btn-xs" ng-click="addCustomProperty()">
++          <span class="entypo plus"></span> add property
++        </div>
++      </div>
++    </div>
++  </div>
++  <div class="col-xs-24">
++    <div class="feedBottomButtons row">
++      <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.general')">
++        Previous
++      </div>
++      <div class="btn btn-default col-xs-6 pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.location')">
++        Next
++      </div>
++      <u class="col-xs-3 pull-right" ui-sref="main">
++        Cancel
++      </u>
++    </div>
++  </div>
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/feed/feedFormSummaryStepTpl.html b/falcon-ui/app/html/feed/feedFormSummaryStepTpl.html
+new file mode 100644
+index 0000000..f67fa91
+--- /dev/null
++++ b/falcon-ui/app/html/feed/feedFormSummaryStepTpl.html
+@@ -0,0 +1,159 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div class="row">
++  <h4 class="col-sm-24">
++    General
++  </h4>
++  <div class="col-sm-12">
++    <label>Name</label>: {{feed.name}}
++  </div>
++  <div class="col-sm-12">
++    <label>Description</label>: {{optional(feed.description)}}
++  </div>
++
++  <h4 class="col-sm-24">
++    Tags
++  </h4>
++  <div class="col-sm-24">
++    <div ng-repeat="tag in feed.tags | filter:{key: '!!'}">
++      {{tag.key}} = {{tag.value}}
++    </div>
++    <div ng-show="!hasTags()">No tags selected</div>
++  </div>
++
++  <h4 class="col-sm-24">
++    Groups
++  </h4>
++  <div class="col-sm-24">
++    {{feed.groups}}
++    <div ng-show="!feed.groups">No groups selected</div>
++  </div>
++
++  <h4 class="col-sm-24">
++    Access Control List
++  </h4>
++  <div class="col-sm-8">
++    <label>Owner</label>: {{optional(feed.ACL.owner)}}
++  </div>
++  <div class="col-sm-8">
++    <label>Group</label>: {{optional(feed.ACL.group)}}
++  </div>
++  <div class="col-sm-8">
++    <label>Permissions</label>: {{optional(feed.ACL.permission)}}
++  </div>
++
++  <h4 class="col-sm-24">
++    Schema
++  </h4>
++
++  <div class="col-sm-12">
++    <label>Location</label>: {{optional(feed.schema.location)}}
++  </div>
++  <div class="col-sm-12">
++    <label>Provider</label>: {{optional(feed.schema.provider)}}
++  </div>
++
++  <h4 class="col-sm-24">
++    Properties
++  </h4>
++
++  <div class="col-sm-8">
++    <label>Frequency</label>: <frequency value="feed.frequency" prefix="Every"/>
++  </div>
++  <div class="col-sm-8">
++    <label>Late Arrival</label>: <frequency value="feed.lateArrival.cutOff" prefix="Up to"/>
++  </div>
++  <div class="col-sm-8">
++    <label>Availability Flag</label>: {{optional(feed.availabilityFlag)}}
++  </div>
++
++  <div class="col-sm-8" ng-repeat="property in feed.properties">
++    <label>{{property.key}}</label>:
++    <span ng-if="property.key !== 'timeout'">{{optional(property.value)}}</span>
++    <frequency ng-if="property.key === 'timeout'" value="property.value" prefix="at"/>
++  </div>
++
++  <div class="col-sm-8" ng-repeat="property in feed.customProperties | filter: {key: '!!'}">
++    <label>{{property.key}}</label>: {{property.value}}
++  </div>
++
++  <h4 class="col-sm-8" >
++    Default Storage Type:
++  </h4>
++
++  <div class="col-sm-8 light" ng-show="feed.storage.fileSystem.active">File System</div>
++  <div class="col-sm-8 light" ng-show="feed.storage.catalog.active">Catalog Storage</div>
++
++  <h4 class="col-sm-24" >Default Location:</h4>
++
++  <div ng-repeat="location in feed.storage.fileSystem.locations" ng-show="feed.storage.fileSystem.active">
++    <label class="col-sm-24" >{{capitalize(location.type)}}</label>
++    <div class="col-sm-24">{{optional(location.path)}}</div>
++  </div>
++
++  <div ng-show="feed.storage.catalog.active">
++    <label class="col-sm-24" >Table uri</label>
++    <div class="col-sm-24">{{optional(feed.storage.catalog.catalogTable.uri)}}</div>
++  </div>
++
++  <div ng-repeat="cluster in feed.clusters" >
++    <h4 class="col-sm-24" >{{capitalize(cluster.type)}} Cluster</h4>
++
++    <div class="col-sm-12">
++      <label>Name</label>: {{cluster.name}}
++    </div>
++    <div class="clearfix hidden-md"></div>
++
++    <div class="col-sm-12">
++      <label>Start</label>: {{cluster.validity.start.date}} {{cluster.validity.start.time}}
++    </div>
++    <div class="col-sm-12">
++      <label>End</label>: {{cluster.validity.end.date}} {{cluster.validity.end.time}}
++    </div>
++    <div class="col-sm-24">
++      <label>Timezone</label>: {{feed.timezone}}
++    </div>
++    <div class="col-sm-24">
++      <label>Retention</label>: <frequency value="cluster.retention" prefix="Archive in"/>
++    </div>
++  </div>
++  <div class="clearfix hidden-md"></div>
++  <h4 class="col-sm-24" >Location</h4>
++  <div ng-repeat="location in cluster.storage.fileSystem.locations" ng-show="cluster.storage.fileSystem">
++    <label class="col-sm-24" >{{capitalize(location.type)}}</label>
++    <div class="col-sm-24">{{optional(location.path)}}</div>
++  </div>
++  <div ng-show="cluster.storage.catalog.active">
++    <label class="col-sm-24" >Table uri</label>
++    <div class="col-sm-24">{{optional(cluster.storage.catalog.catalogTable.uri)}}</div>
++  </div>
++</div>
++
++<div class="feedBottomButtons row">
++  <div class="btn btn-default col-xs-6" ng-click="goBack('forms.feed.clusters')" >
++    Previous
++  </div>
++  <div class="btn btn-default col-xs-6 pull-right" ng-click="saveEntity()">
++    Save
++  </div>
++  <u class="col-xs-3 pull-right" ui-sref="main">
++    Cancel
++  </u>
++</div>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/feed/feedFormTpl.html b/falcon-ui/app/html/feed/feedFormTpl.html
+new file mode 100644
+index 0000000..c05b963
+--- /dev/null
++++ b/falcon-ui/app/html/feed/feedFormTpl.html
+@@ -0,0 +1,97 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div class="col-sm-24 feedForm">
++  <div class="col-sm-22 col-sm-offset-2">
++    <div class="row">
++      <h3 class="col-sm-24">
++        New Feed
++      </h3>
++      <div class="col-sm-15 detailsBox">
++
++        <div class="feedProgressBox" ng-class="{
++          general:isActive('forms.feed.general'),
++          properties:isActive('forms.feed.properties'),
++          location:isActive('forms.feed.location'),
++          clusters:isActive('forms.feed.clusters'),
++          summary:isActive('forms.feed.summary')
++          }">
++          <div class="progressBar col-md-24">
++            <div>
++              <span>
++                <div class="fir">1<span class="entypo check"></span></div>              
++                <h6>General</h6>
++              </span>
++              <span>
++                <div class="sec">2<span class="entypo check"></span></div>
++                <h6>Properties</h6>
++              </span>
++              <span>
++                <div class="thi">3<span class="entypo check"></span></div>
++                <h6>Location</h6>
++              </span>
++              <span>
++                <div class="fou">4<span class="entypo check"></span></div>
++                <h6>Clusters</h6>
++              </span>
++              <span>
++                <div class="fif">5<span class="entypo check"></span></div>
++                <h6>Summary</h6>
++              </span>
++            </div>  
++          </div>
++        </div>
++     
++        <div class="row">
++          <div class="col-sm-offset-1 col-sm-22">
++            <fieldset ng-disabled="!editXmlDisabled">
++              <div ui-view class="formViewContainer"></div>
++            </fieldset>
++          </div>
++        </div>
++    
++      </div>
++
++      <div class="col-sm-8 detailsBox col-sm-offset-1">
++        <div class="row">
++
++          <h5 class="col-xs-13 col-xs-offset-1 noSpecial">XML Preview</h5>  
++          
++          <div class="col-xs-9">
++            <div class="btn btn-default btn-xs pull-right" ng-click="toggleEditXml()" ng-class="{'btn-warning':!editXmlDisabled}">
++              Edit XML
++            </div>
++          </div>
++
++          <div class="col-xs-24">
++            <div class="row">
++              <div class="col-sm-22 col-sm-offset-1">
++                <textarea ng-model="prettyXml" rows="35" class="form-control" ng-disabled="editXmlDisabled">
++                </textarea>
++                {{xmlEditValidationError}}
++              </div>
++            </div>
++          </div>
++          
++        </div>
++      </div>
++
++    </div>
++  </div>
++</div>
+diff --git a/falcon-ui/app/html/login.html b/falcon-ui/app/html/login.html
+deleted file mode 100644
+index b982640..0000000
+--- a/falcon-ui/app/html/login.html
++++ /dev/null
+@@ -1,103 +0,0 @@
+-	<!--
+-	/**
+-	 * Licensed to the Apache Software Foundation (ASF) under one
+-	 * or more contributor license agreements.  See the NOTICE file
+-	 * distributed with this work for additional information
+-	 * regarding copyright ownership.  The ASF licenses this file
+-	 * to you under the Apache License, Version 2.0 (the
+-	 * "License"); you may not use this file except in compliance
+-	 * with the License.  You may obtain a copy of the License at
+-	 *
+-	 *     http://www.apache.org/licenses/LICENSE-2.0
+-	 *
+-	 * Unless required by applicable law or agreed to in writing, software
+-	 * distributed under the License is distributed on an "AS IS" BASIS,
+-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-	 * See the License for the specific language governing permissions and
+-	 * limitations under the License.
+-	 */
+-	-->
+-
+-	<form name="loginForm" ng-submit="loggUser(loginForm)" novalidate>
+-
+-	  <div class="col-sm-24 dashboardBox login" ng-class="{showValidationStyle:showLoginVal.show}"> 
+-	    <div class="row">   
+-	      <div class="col-sm-6"></div>
+-	      <div class="col-sm-12">
+-		
+-		<div class="col-sm-15 detailsBox centered">
+-		  <h3>Login</h3>
+-		  
+-		  <div class="clearfix hidden-md">&nbsp</div> 
+-		  
+-		  <div class="row">
+-		    <div class="col-sm-offset-1 col-sm-22 hint">
+-		        Default user: ambari-qa &nbsp Password: admin
+-		    </div>
+-		  </div>
+-		  
+-		  <div class="row">
+-		    <div class="col-sm-offset-1 col-sm-22">      
+-		      <div class="clearfix hidden-md">&nbsp</div>
+-		    </div>
+-		  </div>     
+-
+-		  <div class="row">
+-		    <div class="col-sm-offset-1 col-sm-22">
+-		        <label class="light">User</label>
+-		        <input type="text" class="form-control" 
+-		          name="user"
+-		          ng-model="login.user"
+-		          ng-required="true"
+-		          validation-message="{{validations.messages.user}}"
+-		          ng-pattern="validations.patterns.id" autofocus/>
+-		        <div class="error" ng-messages="loginForm.user.$error">
+-		        </div>  
+-		    </div>
+-		  </div>
+-		  
+-		  <div class="row">
+-		    <div class="col-sm-offset-1 col-sm-22">      
+-		      <div class="clearfix hidden-md">&nbsp</div>
+-		    </div>
+-		  </div>  
+-		        
+-		  <div class="row">
+-		    <div class="col-sm-offset-1 col-sm-22">      
+-		        <label class="light">Password</label>
+-		        <input type="password" class="form-control"
+-		          name="password"
+-		          ng-model="login.password"You need to provide a colo
+-		          ng-required="validations.password.required"
+-		          validation-message="{{validations.messages.password}}"
+-		          ng-pattern="validations.freeText.pattern"/>
+-		        <div class="error" ng-messages="loginForm.password.$error" ng-show="loginForm.password.$dirty">
+-		          <div ng-message="login">
+-		            The user/password you have entered is invalid.
+-		          </div>
+-		        </div>  
+-		    </div>
+-		   </div>
+-		   
+-		   <div class="row">
+-		     <div class="col-sm-offset-1 col-sm-22">      
+-		       <div class="clearfix hidden-md">&nbsp</div>
+-		     </div>
+-		   </div>        
+-		   
+-		   <div class="row">
+-		    <div class="col-sm-offset-1 col-sm-22">     
+-		        <button type="submit" class="btn btn-default col-xs-6 pull-right dynamic-table-spacer">
+-		          Login
+-		        </button> 
+-		    </div>
+-		  </div>  
+-		        
+-		</div>
+-		
+-	      </div>
+-	      <div class="col-sm-6"></div>
+-	    </div>
+-	  </div>
+-	  
+-	  </form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/js/controllers/controllers.js b/falcon-ui/app/js/controllers/controllers.js
+index e56297c..0d4d0df 100644
+--- a/falcon-ui/app/js/controllers/controllers.js
++++ b/falcon-ui/app/js/controllers/controllers.js
+@@ -24,6 +24,7 @@
+                                       'app.controllers.dashboardCtrl',
+                                       'app.controllers.view',
+                                       'app.controllers.cluster',
++                                      'app.controllers.feed',
+                                       'app.controllers.entity'   
+                                     ]);
+ 
+diff --git a/falcon-ui/app/js/controllers/feed/feed-clusters-controller.js b/falcon-ui/app/js/controllers/feed/feed-clusters-controller.js
+new file mode 100644
+index 0000000..55a5651
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-clusters-controller.js
+@@ -0,0 +1,117 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.feed');
++
++  feedModule.controller('FeedClustersController', ["$scope","clustersList", "EntityFactory",
++
++    function($scope, clustersList, entityFactory) {
++
++      unwrapClusters(clustersList);
++
++      $scope.updateRetention = function() {
++        if($scope.selectedCluster.retention.action === 'archive' && $scope.selectedCluster.type === 'source') {
++          $scope.allClusters.length = 0;
++          $scope.allClusters.concat($scope.feed.clusters);
++
++          $scope.feed.clusters.length = 0;
++          $scope.feed.clusters.push($scope.sourceCluster);
++          $scope.feed.clusters.push($scope.archiveCluster);
++
++          $scope.sourceCluster.selected = false;
++          $scope.archiveCluster.selected = true;
++          $scope.archiveCluster.active = true;
++          $scope.selectedCluster = $scope.archiveCluster;
++        }
++
++        if($scope.selectedCluster.retention.action !== 'archive'&& $scope.selectedCluster.type === 'source' && $scope.archiveCluster.active) {
++          $scope.archiveCluster.selected = false;
++          $scope.feed.clusters.length = 0;
++          $scope.allClusters.length = 0;
++          $scope.feed.clusters.push($scope.sourceCluster);
++          $scope.sourceCluster.selected = true;
++          $scope.archiveCluster.active = false;
++        }
++      };
++
++      $scope.addCluster = function() {
++        $scope.selectedCluster.selected = false;
++        var cluster = $scope.newCluster(true);
++        $scope.feed.clusters.push(cluster);
++        $scope.selectedCluster = cluster;
++      };
++
++      $scope.newCluster = function(selected) {
++        return entityFactory.newCluster('target', selected);
++      };
++
++      $scope.handleCluster = function(cluster, index) {
++        if(cluster.selected) {
++          $scope.removeCluster(index);
++        } else {
++          $scope.selectCluster(cluster);
++        }
++      };
++
++      $scope.selectCluster = function (cluster) {
++        $scope.selectedCluster.selected = false;
++        cluster.selected = true;
++        $scope.selectedCluster = cluster;
++      };
++
++      $scope.removeCluster = function(index) {
++        if(index >= 0 && $scope.feed.clusters.length > 1 &&
++          $scope.feed.clusters[index].type !== 'source' &&
++          !$scope.archiveCluster.active) {
++          $scope.feed.clusters.splice(index, 1);
++          $scope.selectCluster($scope.sourceCluster);
++        }
++      };
++
++      function unwrapClusters(clusters) {
++        $scope.clusterList = [];
++        var typeOfData = Object.prototype.toString.call(clusters.entity);
++        if(typeOfData === "[object Array]") {
++          $scope.clusterList = clusters.entity;
++        } else if(typeOfData === "[object Object]") {
++          $scope.clusterList = [clusters.entity];
++        } else {
++          //console.log("type of data not recognized");
++        }
++      }
++
++
++      $scope.selectedCluster = $scope.selectedCluster || $scope.feed.clusters[0];
++      $scope.sourceCluster = $scope.sourceCluster || $scope.feed.clusters[0];
++      $scope.archiveCluster = $scope.newCluster(false);
++      $scope.archiveCluster.active = false;
++      $scope.allClusters = [];
++
++
++    }]);
++
++})();
+diff --git a/falcon-ui/app/js/controllers/feed/feed-general-information-controller.js b/falcon-ui/app/js/controllers/feed/feed-general-information-controller.js
+new file mode 100644
+index 0000000..40dbdbc
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-general-information-controller.js
+@@ -0,0 +1,48 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.feed');
++
++
++  feedModule.controller('FeedGeneralInformationController', [ "$scope", function ($scope) {
++
++    $scope.nameValid = false;
++
++    $scope.addTag = function () {
++      $scope.feed.tags.push({key: null, value: null});
++    };
++
++    $scope.removeTag = function (index) {
++      if (index >= 0 && $scope.feed.tags.length > 1) {
++        $scope.feed.tags.splice(index, 1);
++      }
++    };
++
++  }]);
++
++
++}());
+diff --git a/falcon-ui/app/js/controllers/feed/feed-location-controller.js b/falcon-ui/app/js/controllers/feed/feed-location-controller.js
+new file mode 100644
+index 0000000..bbb488b
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-location-controller.js
+@@ -0,0 +1,44 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.feed');
++
++  feedModule.controller('FeedLocationController', [ "$scope",function($scope) {
++
++    $scope.toggleStorage = function() {
++      toggle($scope.feed.storage.fileSystem);
++      toggle($scope.feed.storage.catalog);
++    };
++
++    function toggle(storage) {
++      storage.active = !storage.active;
++    }
++
++  }]);
++
++
++})();
+diff --git a/falcon-ui/app/js/controllers/feed/feed-module.js b/falcon-ui/app/js/controllers/feed/feed-module.js
+new file mode 100644
+index 0000000..4ad3308
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-module.js
+@@ -0,0 +1,34 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  angular.module('app.controllers.feed',
++    [
++     'app.controllers.entity',
++     'app.services'    
++    ]);
++
++})();
+diff --git a/falcon-ui/app/js/controllers/feed/feed-properties-controller.js b/falcon-ui/app/js/controllers/feed/feed-properties-controller.js
+new file mode 100644
+index 0000000..0f10ac9
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-properties-controller.js
+@@ -0,0 +1,42 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.feed');
++
++  feedModule.controller('FeedPropertiesController', [ "$scope",function($scope) {
++    $scope.addCustomProperty = function () {
++      $scope.feed.customProperties.push({key: null, value: null});
++    };
++
++    $scope.removeCustomProperty = function (index) {
++      if(index >= 0 && $scope.feed.customProperties.length > 1) {
++        $scope.feed.customProperties.splice(index, 1);
++      }
++    };
++  }]);
++
++})();
+diff --git a/falcon-ui/app/js/controllers/feed/feed-root-ctrl.js b/falcon-ui/app/js/controllers/feed/feed-root-ctrl.js
+new file mode 100644
+index 0000000..27dad77
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-root-ctrl.js
+@@ -0,0 +1,178 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * 'License'); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an 'AS IS' BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.feed');
++
++  feedModule.controller('FeedController',
++    [ '$scope', '$state', '$timeout',
++      'Falcon', 'X2jsService',
++      'JsonTransformerFactory', 'EntityFactory',
++      'EntitySerializer', '$interval',
++      '$controller', "ValidationService",
++      function($scope, $state, $timeout, Falcon,
++               X2jsService, transformerFactory, entityFactory,
++               serializer, $interval, $controller, validationService) {
++
++        $scope.entityType = 'feed';
++
++        //extending root controller
++        $controller('EntityRootCtrl', {
++          $scope: $scope
++        });
++
++        $scope.loadOrCreateEntity = function() {
++          var type = $scope.entityType;
++          var model = $scope.models[type + 'Model'];
++          $scope.models[type + 'Model'] = null;
++          return model ? serializer.preDeserialize(model, type) : entityFactory.newEntity(type);
++        };
++
++        $scope.init = function() {
++          $scope.baseInit();
++          var type = $scope.entityType;
++          $scope[type] = $scope.loadOrCreateEntity();
++          $scope.dateFormat ='dd-MMMM-yyyy';
++        };
++
++        $scope.openDatePicker = function($event, container) {
++          $event.preventDefault();
++          $event.stopPropagation();
++          container.opened = true;
++        };
++
++        $scope.init();
++
++        $scope.transform = function() {
++          var type = $scope.entityType;
++          var xml = serializer.serialize($scope[type], $scope.entityType);
++          $scope.prettyXml = X2jsService.prettifyXml(xml);
++          $scope.xml = xml;
++          return xml;
++        };
++
++        $scope.saveEntity = function() {
++          var type = $scope.entityType;
++          if(!$scope.$parent.cloningMode) {
++            Falcon.logRequest();
++            Falcon.postUpdateEntity($scope.xml, $scope.entityType, $scope[type].name)
++              .success(function (response) {
++                Falcon.logResponse('success', response, false); 
++                $state.go('main');
++              })
++              .error(function(err) {
++                Falcon.logResponse('error', err, false);
++              });
++          } else {
++            Falcon.logRequest();
++            Falcon.postSubmitEntity($scope.xml, $scope.entityType)
++              .success(function (response) {
++                Falcon.logResponse('success', response, false); 
++                $state.go('main');
++              })
++              .error(function(err) {
++                Falcon.logResponse('error', err, false);
++              });
++          }
++
++          $scope.editingMode = false;
++          $scope.cloningMode = false;
++        };
++
++        $scope.isActive = function (route) {
++          return route === $state.$current.name;
++        };
++
++        $scope.parseDate = function(input) {
++          return input ? input.split('T')[0] : input;
++        };
++
++        $scope.parseTime = function(input) {
++          if (input) {
++            var partialTime = input.split('T')[1].split(':');
++            partialTime = partialTime[0] + ':' + partialTime[1];
++            return partialTime;
++          }
++          return 'Not defined';
++        };
++
++        $scope.appendVariable = function(timeVariable, holder, fieldName) {
++          holder[fieldName] = holder[fieldName] ? (holder[fieldName] + '-' + timeVariable) : timeVariable;
++          holder.focused = false;
++        };
++
++        var xmlPreviewCallback = function() {
++          var type = $scope.entityType;
++          if($scope.editXmlDisabled) {
++            try {
++              $scope.transform();
++            } catch (exception) {
++              console.log('error when transforming xml');
++              console.log(exception);
++            }
++          } else {
++            try {
++              $scope[type] = serializer.deserialize($scope.prettyXml, type);
++            } catch (exception) {
++              console.log('user entered xml incorrect format');
++              console.log(exception);
++            }
++          }
++
++        };
++
++        var xmlPreviewWorker = $interval(xmlPreviewCallback, 1000);
++
++        $scope.$on('$destroy', function () {
++          $interval.cancel(xmlPreviewWorker);
++        });
++
++        //$scope.nameValid = $scope.$parent.nameValid;
++        /*
++        * needed for validation
++        * */
++        $scope.goNext = function (formInvalid, stateName) {
++          if (!validationService.nameAvailable || formInvalid) {
++            validationService.displayValidations.show = true;
++            validationService.displayValidations.nameShow = true;
++            return;
++          }
++          validationService.displayValidations.show = false;
++          validationService.displayValidations.nameShow = false;
++          $state.go(stateName);
++        };
++        $scope.goBack = function (stateName) {
++          validationService.displayValidations.show = false;
++          validationService.displayValidations.nameShow = false;
++          $state.go(stateName);
++        };
++
++      }]);
++
++
++  
++
++})();
+diff --git a/falcon-ui/app/js/controllers/feed/feed-summary-controller.js b/falcon-ui/app/js/controllers/feed/feed-summary-controller.js
+new file mode 100644
+index 0000000..77e1dcc
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/feed/feed-summary-controller.js
+@@ -0,0 +1,48 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires clusters the list of clusters to display for selection of source
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon entity service
++   */
++  var feedModule = angular.module('app.controllers.feed');
++
++  feedModule.controller('FeedSummaryController', [ "$scope", "$filter", function($scope, $filter) {
++
++    if($scope.transform) {
++      $scope.transform();
++    }
++
++    $scope.hasTags = function() {
++      var filteredTags = $filter('filter')($scope.feed.tags, {key: '!!'});
++      return filteredTags.length > 0;
++    };
++
++    $scope.optional = function(input, output) {
++      return input ? (output || input) : 'Not specified';
++    };
++
++  }]);
++
++
++})();
+diff --git a/falcon-ui/app/test/controllers/feed/FeedGeneralInformationControllerSpec.js b/falcon-ui/app/test/controllers/feed/FeedGeneralInformationControllerSpec.js
+new file mode 100644
+index 0000000..34c39cb
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/feed/FeedGeneralInformationControllerSpec.js
+@@ -0,0 +1,83 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++
++  describe('FeedGeneralInformationController', function () {
++    beforeEach(module('app.controllers.feed'));
++
++    beforeEach(inject(function($q, $rootScope, $controller, $filter) {
++      scope = $rootScope.$new();
++      scope.feed = {
++        tags: [{key: null, value: null}]
++      };
++
++      controller = $controller('FeedGeneralInformationController', {
++        $scope: scope,
++        $state: {},
++        $filter: $filter
++      });
++    }));
++
++
++    it('Should add a new empty tag', function() {
++      expect(scope.feed.tags.length).toEqual(1);
++
++      scope.addTag();
++
++      expect(scope.feed.tags.length).toEqual(2);
++      expect(scope.feed.tags[1]).toEqual({key: null, value: null});
++    });
++
++    it('Should remove a tag at the specified index', function() {
++      scope.feed.tags = [
++        {key: 'key0', value: 'value0'},
++        {key: 'key1', value: 'value1'},
++        {key: 'key2', value: 'value2'}
++      ];
++
++      scope.removeTag(1);
++
++      expect(scope.feed.tags.length).toEqual(2);
++      expect(scope.feed.tags).toEqual([{key: 'key0', value: 'value0'}, {key: 'key2', value: 'value2'}]);
++    });
++
++    it('Should not delete if there is only one element', function() {
++      scope.feed.tags = [{key: 'key', value: 'value'}];
++
++      scope.removeTag(0);
++
++      expect(scope.feed.tags).toEqual([{key: 'key', value: 'value'}]);
++    });
++
++    it('Should not delete if index is not passed in', function() {
++      scope.feed.tags = [
++        {key: 'key0', value: 'value0'},
++        {key: 'key1', value: 'value1'}
++      ];
++
++      scope.removeTag();
++
++      expect(scope.feed.tags).toEqual([{key: 'key0', value: 'value0'}, {key: 'key1', value: 'value1'}]);
++    });
++  })
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/feed/FeedLocationControllerSpec.js b/falcon-ui/app/test/controllers/feed/FeedLocationControllerSpec.js
+new file mode 100644
+index 0000000..8c584af
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/feed/FeedLocationControllerSpec.js
+@@ -0,0 +1,62 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('FeedLocationController', function () {
++    beforeEach(module('app.controllers.feed'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.feed = {
++       storage: {
++         fileSystem: {
++           active: true,
++           locations: [
++             {type: 'data', path: '/'},
++             {type: 'stats', path: '/'},
++             {type: 'meta', path: '/'}
++           ]
++         },
++         catalog: {
++           active: false,
++           catalogTable: {
++             uri: null
++           }
++         }
++       }
++      };
++
++      controller = $controller('FeedLocationController', {
++        $scope: scope,
++        $state: {}
++      });
++    }));
++
++    it('Should toggle the default selected storage from file system to catalog', function() {
++      scope.toggleStorage();
++
++      expect(scope.feed.storage.catalog.active).toBe(true);
++      expect(scope.feed.storage.fileSystem.active).toBe(false);
++    });
++
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/feed/FeedPropertiesControllerSpec.js b/falcon-ui/app/test/controllers/feed/FeedPropertiesControllerSpec.js
+new file mode 100644
+index 0000000..5a0160c
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/feed/FeedPropertiesControllerSpec.js
+@@ -0,0 +1,81 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('FeedPropertiesController', function () {
++    beforeEach(module('app.controllers.feed'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.feed = {
++        customProperties: [{key: null, value: null}]
++      };
++
++      controller = $controller('FeedPropertiesController', {
++        $scope: scope,
++        $state: {}
++      });
++    }));
++
++    it('Should add a new empty property', function() {
++      expect(scope.feed.customProperties.length).toEqual(1);
++
++      scope.addCustomProperty();
++
++      expect(scope.feed.customProperties.length).toEqual(2);
++      expect(scope.feed.customProperties[1]).toEqual({key: null, value: null});
++    });
++
++    it('Should remove a property at the specified index', function() {
++      scope.feed.customProperties = [
++        {key: 'key0', value: 'value0'},
++        {key: 'key1', value: 'value1'},
++        {key: 'key2', value: 'value2'}
++      ];
++
++      scope.removeCustomProperty(1);
++
++      expect(scope.feed.customProperties.length).toEqual(2);
++      expect(scope.feed.customProperties).toEqual([{key: 'key0', value: 'value0'}, {key: 'key2', value: 'value2'}]);
++    });
++
++    it('Should not delete if there is only one element', function() {
++      scope.feed.customProperties = [{key: 'key', value: 'value'}];
++
++      scope.removeCustomProperty(0);
++
++      expect(scope.feed.customProperties).toEqual([{key: 'key', value: 'value'}]);
++    });
++
++    it('Should not delete if index is not passed in', function() {
++      scope.feed.customProperties = [
++        {key: 'key0', value: 'value0'},
++        {key: 'key1', value: 'value1'}
++      ];
++
++      scope.removeCustomProperty();
++
++      expect(scope.feed.customProperties).toEqual([{key: 'key0', value: 'value0'}, {key: 'key1', value: 'value1'}]);
++    });
++
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/feed/FeedRootCtrlSpec.js b/falcon-ui/app/test/controllers/feed/FeedRootCtrlSpec.js
+new file mode 100644
+index 0000000..d6f76b6
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/feed/FeedRootCtrlSpec.js
+@@ -0,0 +1,181 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('FeedRootCtrl', function () {
++    var entityFactoryMock;
++    var serializerMock;
++    var controllerProvider;
++    var falconServiceMock;
++
++    beforeEach(module('app.controllers.feed'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.models = {};
++      entityFactoryMock = jasmine.createSpyObj('EntityFactory', ['newEntity']);
++      serializerMock = jasmine.createSpyObj('EntitySerializer', ['preDeserialize']);
++      falconServiceMock = jasmine.createSpyObj('Falcon', ['postUpdateEntity', 'postSubmitEntity', 'logRequest', 'logResponse']);
++      controllerProvider = $controller;
++
++      controller = $controller('FeedController', {
++        $scope: scope,
++        $state: {
++          $current:{
++            name: 'main.forms.feed.general'
++          },
++          go: angular.noop
++        },
++        Falcon: falconServiceMock
++      });
++    }));
++
++    it('Should be of type feed', function() {
++      expect(scope.entityType).toBe('feed');
++    });
++
++    describe('init', function() {
++      it('Should be initialized properly', function() {
++
++        scope.init();
++
++        expect(scope.feed.name).toBe("");
++        expect(scope.feed.description).toBe(null);
++        expect(scope.feed.groups).toBe(null);
++      });
++    });
++
++    it('Should return true when the current state is the general view', function() {
++      expect(scope.isActive('main.forms.feed.general')).toBe(true);
++    });
++
++    it('Should return true when the current state is not the general view', function() {
++      expect(scope.isActive('main.forms.feed.location')).toBe(false);
++    });
++
++
++    describe('loadOrCreateEntity()', function() {
++      it('Should deserialize the entity if the xml is found on the scope', function() {
++
++        controller = createController();
++        var createdFeed =  {};
++        var deserialzedFeed =  {};
++        var feedModel = {name: 'FeedName'};
++        
++        
++        serializerMock.preDeserialize.andReturn(deserialzedFeed);
++        entityFactoryMock.newEntity.andReturn(createdFeed);
++        scope.models.feedModel = feedModel;
++
++        var feed = scope.loadOrCreateEntity();
++
++        expect(serializerMock.preDeserialize).toHaveBeenCalledWith(feedModel, 'feed');
++        expect(feed).toNotBe(createdFeed);
++        expect(feed).toBe(deserialzedFeed);
++      });
++
++      it('Should not deserialize the entity if the xml is not found on the scope', function() {
++        controller = createController();
++        var createdFeed =  {};
++        var deserialzedFeed =  {};
++        serializerMock.preDeserialize.andReturn(deserialzedFeed);
++        entityFactoryMock.newEntity.andReturn(createdFeed);
++
++
++        var feed = scope.loadOrCreateEntity();
++
++        expect(serializerMock.preDeserialize).not.toHaveBeenCalled();
++        expect(feed).toBe(createdFeed);
++        expect(feed).toNotBe(deserialzedFeed);
++      });
++
++      it('Should clear the feedModel from the scope', function() {
++        controller = createController();
++        entityFactoryMock.newEntity.andReturn({});
++        scope.models.feedModel = {};
++
++        scope.loadOrCreateEntity();
++
++        expect(scope.models.feedModel).toBe(null);
++      });
++
++
++    });
++
++    describe('saveEntity', function() {
++      it('Should save the update the entity if in edit mode', function() {
++        falconServiceMock.postUpdateEntity.andReturn(successResponse({}));
++        scope.editingMode = true;//i think this one should be deprecated, because it doesnt work in the real app, just in the tests
++        scope.cloningMode = false;
++        scope.feed = { name:  'FeedOne'};
++        scope.xml = '<feed/>';
++        
++        scope.saveEntity();
++
++        expect(scope.editingMode).toBe(false);
++        expect(falconServiceMock.postSubmitEntity).not.toHaveBeenCalled();
++        expect(falconServiceMock.postUpdateEntity).toHaveBeenCalledWith('<feed/>', 'feed', 'FeedOne');
++      });
++
++      it('Should save the update the entity if in cloning mode', function() {
++        falconServiceMock.postSubmitEntity.andReturn(successResponse({}));
++        scope.cloningMode = true;//i think this one should be deprecated, because it doesnt work in the real app, just in the tests
++        scope.feed = { name:  'FeedOne'};
++        scope.xml = '<feed/>';
++        scope.$parent.cloningMode = true;
++        
++        scope.saveEntity();
++
++        expect(scope.cloningMode).toBe(false);
++        expect(falconServiceMock.postSubmitEntity).toHaveBeenCalledWith('<feed/>', 'feed');
++        expect(falconServiceMock.postUpdateEntity).not.toHaveBeenCalled();
++      });
++
++    });
++
++    function createController() {
++      return controllerProvider('FeedController', {
++        $scope: scope,
++        $state: {
++          $current:{
++            name: 'main.forms.feed.general'
++          },
++          go: angular.noop
++        },
++        Falcon: {},
++        EntityFactory: entityFactoryMock,
++        EntitySerializer: serializerMock
++      });
++    }
++
++    function successResponse(value) {
++      var fakePromise = {};
++      fakePromise.success = function(callback) {
++        callback(value);
++        return fakePromise;
++      };
++      fakePromise.error = angular.noop;
++      return fakePromise;
++    }
++
++  });
++
++})();
+\ No newline at end of file
+diff --git a/falcon-ui/app/test/controllers/feed/FeedSummaryControllerSpec.js b/falcon-ui/app/test/controllers/feed/FeedSummaryControllerSpec.js
+new file mode 100644
+index 0000000..90d3fb9
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/feed/FeedSummaryControllerSpec.js
+@@ -0,0 +1,68 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var scope;
++  var controller;
++
++  describe('FeedSummaryController', function () {
++    beforeEach(module('app.controllers.feed'));
++
++    beforeEach(inject(function($q, $rootScope, $controller) {
++      scope = $rootScope.$new();
++      scope.feed = {};
++
++      controller = $controller('FeedSummaryController', {
++        $scope: scope,
++        $state: {}
++      });
++    }));
++
++
++    it('Should return false when there are no tags on the feed', function() {
++      scope.feed.tags = [];
++
++      expect(scope.hasTags()).toBe(false);
++    });
++
++    it('Should return false when there are with empty keys on the feed', function() {
++      scope.feed.tags = [{key: null, value: null}];
++
++      expect(scope.hasTags()).toBe(false);
++    });
++
++
++    it('Should return "Not specified if not present" if empty string', function() {
++      expect(scope.optional('')).toBe('Not specified');
++    });
++
++    it('Should return "Not specified if not present" if empty string', function() {
++      expect(scope.optional()).toBe('Not specified');
++    });
++
++    it('Should return the specified value if the expression is true', function() {
++      expect(scope.optional(true, 'Up 2 hours')).toBe('Up 2 hours');
++    });
++
++    it('Should return "Not specified if the expression is false', function() {
++      expect(scope.optional(false, 'Up 2 hours')).toBe('Not specified');
++    });
++
++  });
++
++})();
+\ No newline at end of file
+-- 
+1.9.3
+

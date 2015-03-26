@@ -1,0 +1,1112 @@
+From 8886d0d6f552d6e435a379914bb9098f271906a8 Mon Sep 17 00:00:00 2001
+From: Armando Reyna <armando.reyna@globant.com>
+Date: Fri, 13 Feb 2015 18:25:39 -0600
+Subject: [PATCH] Falcon-UI Integration, Stage 02, Cluster
+
+---
+ .../html/cluster/clusterFormGeneralStepTpl.html    | 201 ++++++++++++
+ .../html/cluster/clusterFormSummaryStepTpl.html    |  77 +++++
+ falcon-ui/app/html/cluster/clusterFormTpl.html     |  71 +++++
+ falcon-ui/app/html/directives/entitiesListDv.html  |  25 ++
+ falcon-ui/app/html/directives/navDv.html           |   4 +
+ .../app/js/controllers/cluster/cluster-module.js   | 306 +++++++++++++++++++
+ falcon-ui/app/js/controllers/controllers.js        |   1 +
+ .../test/controllers/cluster/cluster-moduleSpec.js | 336 +++++++++++++++++++++
+ 8 files changed, 1021 insertions(+)
+ create mode 100644 falcon-ui/app/html/cluster/clusterFormGeneralStepTpl.html
+ create mode 100644 falcon-ui/app/html/cluster/clusterFormSummaryStepTpl.html
+ create mode 100644 falcon-ui/app/html/cluster/clusterFormTpl.html
+ create mode 100644 falcon-ui/app/js/controllers/cluster/cluster-module.js
+ create mode 100644 falcon-ui/app/test/controllers/cluster/cluster-moduleSpec.js
+
+diff --git a/falcon-ui/app/html/cluster/clusterFormGeneralStepTpl.html b/falcon-ui/app/html/cluster/clusterFormGeneralStepTpl.html
+new file mode 100644
+index 0000000..2ef813f
+--- /dev/null
++++ b/falcon-ui/app/html/cluster/clusterFormGeneralStepTpl.html
+@@ -0,0 +1,201 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form name="clusterForm">
++  <div class="col-sm-24">
++    <label class="light">Name</label>
++    <input type="text" class="form-control nameInput" ng-pattern="validations.patterns.name"
++           ng-model="clusterEntity.clusterModel.cluster._name" ng-required="true"
++           ng-keydown="validations.acceptNoSpaces($event)"
++           check-name="{type:'cluster', check:true}" ng-class="{fakeInvalid:!validations.nameAvailable}"
++           ng-disabled="xmlPreview.edit" />
++           <!--check-type="cluster" check-name-flag="nameValid" check="true"-->
++
++  </div>
++  <div class="col-sm-12">
++    <label class="light">Colo</label>
++    <input type="text" class="form-control" ng-pattern="validations.patterns.freeText"
++           ng-required="true" ng-disabled="xmlPreview.edit"
++           ng-model="clusterEntity.clusterModel.cluster._colo" validation-message="{{validations.messages.colo}}"/>
++  </div>
++  <div class="col-sm-12">
++    <label class="light">Description</label>
++    <input type="text" class="form-control" ng-pattern="validations.patterns.freeText"
++           ng-required="true" ng-disabled="xmlPreview.edit" validation-message="{{validations.messages.description}}"
++           ng-model="clusterEntity.clusterModel.cluster._description" />
++  </div>
++  
++  <div class="col-xs-24">
++    <label class="light">Tags</label>
++  </div>
++  
++  <div class="col-xs-24">
++    <div ng-repeat="tag in tagsArray" class="row dynamic-table-spacer">   
++      <div class="col-xs-10">
++        <input type="text" class="form-control" ng-model="tag.key" ng-disabled="xmlPreview.edit" placeholder="key"
++               ng-pattern="validations.patterns.alpha" ng-required="tag.value"/>
++      </div>
++      <div class="col-xs-11">
++        <input type="text" class="form-control" ng-disabled="xmlPreview.edit" placeholder="value"
++               ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key"/>
++      </div>
++      <div class="col-xs-3">
++        <div class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
++          <span class="entypo minus"></span> delete
++        </div>
++      </div>
++    </div>   
++  </div>
++
++  <div class="col-sm-24 dynamic-table-spacer">
++    <div class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit">
++      <span class="entypo plus"></span> add tag
++    </div>
++  </div>
++  <h4 class="col-sm-24"> Access Control List </h4>
++  <div class="col-sm-8">
++    <label class="light">Owner</label>
++    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" ng-pattern="validations.patterns.unixId"
++           ng-model="clusterEntity.clusterModel.cluster.ACL._owner"/>
++  </div>
++  <div class="col-sm-8">
++    <label class="light">Group</label>
++    <input type="text" class="form-control" ng-disabled="xmlPreview.edit" ng-pattern="validations.patterns.unixId"
++           ng-model="clusterEntity.clusterModel.cluster.ACL._group"/>
++  </div>
++  <div class="col-sm-8">
++    <label class="light">Permissions</label>
++    <input type="text" class="form-control" ng-disabled="xmlPreview.edit"
++           ng-pattern="validations.patterns.unixPermissions"
++           ng-model="clusterEntity.clusterModel.cluster.ACL._permission"/>
++  </div>
++  
++  <h4 class="col-sm-24"> Interfaces </h4> 
++  <label class="col-xs-4">
++    Type
++  </label>
++  <label class="col-xs-16">
++    Endpoint
++  </label>
++  <label class="col-xs-4">
++    Version
++  </label>
++  <div id="interfaces-detail" class="col-sm-24"
++       ng-repeat="_interface in clusterEntity.clusterModel.cluster.interfaces.interface">
++    <div class="row">
++      <div class="col-xs-4">
++        <label>
++          <input type="checkbox" ng-checked="registry.check" ng-model="registry.check"
++                 ng-if="_interface._type === 'registry'" ng-disabled="xmlPreview.edit"/> {{_interface._type}}
++        </label>
++      </div>
++      <div class="col-xs-16">
++        <input type="text" class="form-control" ng-pattern="validations.patterns.osPath"
++               ng-model="_interface._endpoint"
++               ng-disabled="_interface._type === 'registry' && !registry.check || xmlPreview.edit"/>
++      </div>
++      <div class="col-xs-4">
++        <input type="text" class="form-control" ng-pattern="validations.patterns.versionNumbers"
++               ng-disabled="(_interface._type === 'registry' && !registry.check) || xmlPreview.edit"
++               ng-model="_interface._version">
++      </div>
++    </div>
++  </div>
++
++  <h4 class="col-xs-24"> Properties </h4>
++  <label class="col-xs-7">name</label><label class="col-xs-17">value</label>
++  <div ng-repeat="property in clusterEntity.clusterModel.cluster.properties.property">
++    <div class="col-xs-7 dynamic-table-spacer">
++      <input type="text" class="form-control" ng-model="property._name"
++             ng-pattern="validations.patterns.alpha" ng-disabled="xmlPreview.edit"
++             ng-required="property._value" placeholder="name" />
++    </div>
++    <div class="col-xs-15 dynamic-table-spacer">
++      <input type="text" class="form-control" ng-model="property._value" ng-pattern="validations.patterns.alpha"
++             ng-disabled="xmlPreview.edit" ng-required="property._name" placeholder="value" />
++    </div>
++    <div class="col-xs-2 dynamic-table-spacer">
++      <div class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
++           ng-disabled="xmlPreview.edit">
++        <span class="entypo minus"></span> delete
++      </div>
++    </div>
++    <div class="clearfix hidden-md"></div>
++  </div>
++  <div class="col-xs-24 dynamic-table-spacer">
++    <div class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit">
++      <span class="entypo plus"></span> add property
++    </div>
++  </div>
++
++  <h4 class="col-xs-24"> Location </h4>
++  <label class="col-xs-7">name</label><label class="col-xs-17">path</label>
++  <div ng-repeat="location in clusterEntity.clusterModel.cluster.locations.location" class="col-xs-24">
++
++    <div class="row" ng-if="location._name === 'staging' || location._name === 'working' || location._name === 'temp'">
++      <div class="col-xs-7 dynamic-table-spacer">
++        {{location._name}}
++      </div>
++      <div class="col-xs-15 dynamic-table-spacer">
++        <input type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
++               ng-disabled="xmlPreview.edit" ng-required="true" validation-message="{{validations.messages.location}}"/>
++      </div>
++      <div class="col-xs-2 dynamic-table-spacer"></div>     
++      <div class="clearfix hidden-md"></div>
++    </div>
++
++    <div class="row" ng-if="location._name !== 'staging' && location._name !== 'working' && location._name !== 'temp'">
++      <div class="col-xs-7 dynamic-table-spacer">
++        <input type="text" class="form-control" ng-model="location._name" ng-pattern="validations.patterns.alpha"
++               ng-disabled="xmlPreview.edit" ng-required="location._path" placeholder="name" />
++      </div>
++      <div class="col-xs-15 dynamic-table-spacer">   
++        <input type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
++               ng-disabled="xmlPreview.edit" ng-required="location._name" placeholder="path" />
++      </div>
++      <div class="col-xs-2 dynamic-table-spacer">
++        <div class="btn btn-default btn-xs" ng-click="removeLocation($index)" ng-if="$index>3"
++             ng-disabled="xmlPreview.edit" >
++          <span class="entypo minus"></span> delete
++        </div>
++      </div>    
++      <div class="clearfix hidden-md"></div>
++    </div>
++    
++  </div>
++
++  <div class="col-xs-24 dynamic-table-spacer">
++    <div class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit">
++      <span class="entypo plus"></span> add location
++    </div>
++  </div>
++  <div class="col-xs-24">
++    <div class="row mt20">
++      <div class="btn btn-default col-xs-6 mt10" ui-sref="main">
++        Cancel
++      </div>
++      <div class="btn btn-default col-xs-6 pull-right mt10" ng-disabled="xmlPreview.edit"
++           ng-click="goSummaryStep(clusterForm.$invalid)">
++        Next
++      </div>
++
++    </div>
++  </div>
++
++</form>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/cluster/clusterFormSummaryStepTpl.html b/falcon-ui/app/html/cluster/clusterFormSummaryStepTpl.html
+new file mode 100644
+index 0000000..d13b3f5
+--- /dev/null
++++ b/falcon-ui/app/html/cluster/clusterFormSummaryStepTpl.html
+@@ -0,0 +1,77 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div class="row clusterSummaryRow">
++  <div class="col-sm-24">
++    <label>Name</label>: {{clusterEntity.clusterModel.cluster._name}}
++  </div>
++  <div class="col-sm-24">
++    <label>Colo</label>: {{clusterEntity.clusterModel.cluster._colo}}
++  </div>
++  <div class="col-sm-24">
++    <label>Description</label>: {{clusterEntity.clusterModel.cluster._description}}
++  </div>
++  <div class="col-sm-24" ng-if="clusterEntity.clusterModel.cluster.tags">
++    <label>Tags</label>: {{clusterEntity.clusterModel.cluster.tags}}
++  </div>
++  <h4 class="col-sm-24" ng-if="clusterEntity.clusterModel.cluster.ACL">
++    ACL
++  </h4>
++  <div class="col-sm-24" ng-if="clusterEntity.clusterModel.cluster.ACL" >
++    <label>Owner</label>: {{clusterEntity.clusterModel.cluster.ACL._owner}}
++    <label>Group</label>: {{clusterEntity.clusterModel.cluster.ACL._group}}
++    <label>Permission</label>: {{clusterEntity.clusterModel.cluster.ACL._permission}}
++  </div>
++  <h4 class="col-sm-24">
++    Interfaces
++  </h4>
++
++  <div class="col-sm-24" ng-repeat="_interface in clusterEntity.clusterModel.cluster.interfaces.interface">
++    <label>{{_interface._type}}</label>: {{_interface._endpoint}} - {{ _interface._version }}
++  </div>
++
++  <h4 class="col-sm-24" ng-if="clusterEntity.clusterModel.cluster.properties">
++    Properties
++  </h4>
++
++  <div class="col-sm-24" ng-if="clusterEntity.clusterModel.cluster.properties.property.length > 0" 
++    ng-repeat="property in clusterEntity.clusterModel.cluster.properties.property">
++    <label>{{property._name}}</label>: {{property._value}}
++  </div>
++
++  <h4 class="col-sm-24">
++    Locations
++  </h4>
++
++  <div class="col-sm-24" ng-repeat="location in clusterEntity.clusterModel.cluster.locations.location">
++    <label>{{location._name}}</label>: {{location._path}}
++  </div>
++</div>
++
++
++<div class="row clusterSummaryRow mt20">
++  <div class="btn btn-default col-xs-6" ui-sref="forms.cluster.general" ng-click="goGeneralStep()">
++    Previous
++  </div>
++
++  <div class="btn btn-default col-xs-6 pull-right" ng-click="saveCluster()" ng-disabled="xmlPreview.edit">
++    Save
++  </div>
++
++</div>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/cluster/clusterFormTpl.html b/falcon-ui/app/html/cluster/clusterFormTpl.html
+new file mode 100644
+index 0000000..4da4cf6
+--- /dev/null
++++ b/falcon-ui/app/html/cluster/clusterFormTpl.html
+@@ -0,0 +1,71 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div class="col-sm-24 clusterForm">
++  <div class="col-sm-22 col-sm-offset-2">
++    <div class="row">
++      <h3 class="col-sm-24">
++        New Cluster
++      </h3>
++      <div class="col-sm-15 detailsBox">
++        <div class="clusterProgressBox" ng-class="{summary:secondStep===true}">        
++          <div class="progressBar col-md-24">
++            <div>
++              <span>
++                <div>1<span class="entypo check"></span></div>              
++                <h6>General</h6>
++              </span>
++              <span>
++                <div>2</div>
++                <h6>Summary</h6>
++              </span>
++            </div>           
++          </div>
++        </div>      
++        <div class="row">
++          <div class="col-xs-offset-1 col-xs-22" ui-view></div>
++        </div>        
++      </div>
++
++      <div class="col-sm-8 detailsBox col-sm-offset-1">
++        <div class="row">
++         
++          <h5 class="col-xs-13 col-xs-offset-1 noSpecial">XML Preview</h5>  
++    
++          <div class="col-xs-9">
++            <div class="btn btn-default btn-xs pull-right" ng-click="xmlPreview.editXML()" ng-class="{'btn-warning':xmlPreview.edit}">
++              Edit XML
++            </div>
++          </div>
++        
++          <div class="col-xs-24">
++            <div class="row">
++              <div class="col-xs-22 col-xs-offset-1">
++                <textarea ng-model="prettyXml" rows="35" class="form-control" ng-disabled="!xmlPreview.edit">
++                </textarea>
++              </div>
++            </div>
++          </div>
++          
++        </div>
++      </div>
++      
++    </div>
++  </div>
++</div>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/directives/entitiesListDv.html b/falcon-ui/app/html/directives/entitiesListDv.html
+index b8a45f8..539a708 100644
+--- a/falcon-ui/app/html/directives/entitiesListDv.html
++++ b/falcon-ui/app/html/directives/entitiesListDv.html
+@@ -43,6 +43,31 @@
+   </thead>
+   <tbody>
+     
++    <tr ng-if="input.length > 0 && type === 'cluster'" class="buttonsRow">
++      <td class="buttonCell" colspan="4">
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-hide="selectedDisabledButtons.schedule" ng-if="type !== 'cluster'">
++            <span class="entypo play"></span> Schedule
++        </div>
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeResume()" ng-hide="selectedDisabledButtons.resume" ng-if="type !== 'cluster'">
++            <span class="entypo play"></span> Resume
++        </div>
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-hide="selectedDisabledButtons.suspend" ng-if="type !== 'cluster'">
++            <span class="entypo paus"></span> Suspend
++        </div>
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeEdit()" ng-hide="selectedRows.length === 0 || selectedRows.length > 1" ng-if="type !== 'cluster'">
++            <span class="entypo cog"></span> Edit
++        </div>
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeClone()" ng-hide="selectedRows.length === 0 || selectedRows.length > 1">
++            <span class="entypo docs"></span> Copy
++        </div>
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="scopeRemove()" ng-hide="selectedRows.length === 0">
++            <span class="entypo trash"></span> Delete
++        </div>
++        <div class="btn btn-default btn-xs buttons-to-show" ng-click="download()" ng-hide="selectedRows.length === 0 || selectedRows.length > 1">
++            <span class="entypo down"></span> Download XML
++        </div>
++      </td>
++    </tr> 
+     <tr ng-if="input.length === 0 && !server.responses.listLoaded[type]">
+       <td> loading {{ type }}s </td>
+     </tr>
+diff --git a/falcon-ui/app/html/directives/navDv.html b/falcon-ui/app/html/directives/navDv.html
+index f003ff8..1f67962 100644
+--- a/falcon-ui/app/html/directives/navDv.html
++++ b/falcon-ui/app/html/directives/navDv.html
+@@ -25,6 +25,10 @@
+       </h1>
+ 
+       <div class="createNavWrapper">
++        <h4>Create an entity</h4>
++        <div ng-click="resetCluster()">
++          <span class="entypo archive"></span> Cluster
++        </div>
+       </div>
+ 
+       <div class="uploadNavWrapper">
+diff --git a/falcon-ui/app/js/controllers/cluster/cluster-module.js b/falcon-ui/app/js/controllers/cluster/cluster-module.js
+new file mode 100644
+index 0000000..d00a937
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/cluster/cluster-module.js
+@@ -0,0 +1,306 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  /***
++   * @ngdoc controller
++   * @name app.controllers.feed.FeedController
++   * @requires EntityModel the entity model to copy the feed entity from
++   * @requires Falcon the falcon service to talk with the Falcon REST API
++   */
++  var clusterModule = angular.module('app.controllers.cluster', [ 'app.services' ]);
++
++  clusterModule.controller('ClusterFormCtrl', [
++    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "ValidationService",
++    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, validationService) {
++
++      $scope.clusterEntity = EntityModel;
++      $scope.xmlPreview = { edit: false };
++      $scope.secondStep = false;
++
++      function normalizeModel() {
++        //------------INTERFACE-----------//
++        var requiredInterfaceFields = ["readonly", "write", "execute", "workflow", "messaging", "registry"],
++          requiredLocationFields = ["staging", "temp", "working", ""],
++          modelInterfaceArray = $scope.clusterEntity.clusterModel.cluster.interfaces.interface,
++          modelLocationsArray = $scope.clusterEntity.clusterModel.cluster.locations.location;
++
++        modelInterfaceArray.forEach(function (element) {
++          requiredInterfaceFields.forEach(function (requiredField) {
++            if (element._type === requiredField) { requiredInterfaceFields.splice(requiredField, 1); }
++          });
++        });
++        $scope.registry = { check: true };
++        requiredInterfaceFields.forEach(function (fieldToPush) {
++          var fieldObject = { _type: fieldToPush, _endpoint: "", _version: "" };
++          if (fieldToPush === "registry") { $scope.registry = { check: false }; }
++          modelInterfaceArray.push(fieldObject);
++        });
++        //--------------TAGS--------------//
++        if ($scope.clusterEntity.clusterModel.cluster.tags === "" ||
++            $scope.clusterEntity.clusterModel.cluster.tags === undefined) {
++          $scope.clusterEntity.clusterModel.cluster.tags = "";
++          $scope.tagsArray = [{key: null, value: null}];
++        } else {
++          $scope.splitTags();
++        }
++        //-------------ACL----------------//
++        if (!$scope.clusterEntity.clusterModel.cluster.ACL) {
++          $scope.clusterEntity.clusterModel.cluster.ACL = {
++            _owner: "", _group: "", _permission: ""
++          };
++        }
++        //------------Location------------//
++        modelLocationsArray.forEach(function(element) {
++          requiredLocationFields.forEach(function(requiredField) {
++            if(element._name === requiredField) { requiredLocationFields.splice(requiredField, 1); }
++          });
++        });
++        requiredLocationFields.forEach(function(fieldToPush) {
++          var fieldObject = {_name: fieldToPush, _path: ""};
++          modelLocationsArray.push(fieldObject);
++        });
++        //----------Properties -------------//
++        if(!$scope.clusterEntity.clusterModel.cluster.properties) {
++          $scope.clusterEntity.clusterModel.cluster.properties = { property : [{ _name: "", _value: ""}] };
++        }
++
++      }
++
++      function cleanModel() {
++        //if registry check is false backups the object and removes it from array
++        if (!$scope.registry.check) {
++          $scope.clusterEntity.clusterModel.cluster.interfaces.interface.forEach(function(registry, index) {
++            if (registry._type === "registry") {
++              $scope.backupRegistryObject = $scope.clusterEntity.clusterModel.cluster.interfaces.interface[index];
++              $scope.clusterEntity.clusterModel.cluster.interfaces.interface.splice(index, 1);
++            }
++          });
++        }
++        //deletes property empty last object and array if empty
++        var lastOne = $scope.clusterEntity.clusterModel.cluster.properties.property.length - 1;
++        if (
++          $scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._name === "" ||
++          $scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._name === undefined ||
++          $scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._value === "" ||
++          $scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._value === undefined
++        ) {
++
++          $scope.removeProperty(lastOne);
++        }
++        if ($scope.clusterEntity.clusterModel.cluster.properties.property.length === 0) {
++          delete $scope.clusterEntity.clusterModel.cluster.properties;
++        }
++        var lastLocationIndex = $scope.clusterEntity.clusterModel.cluster.locations.location.length - 1;
++        if (
++          $scope.clusterEntity.clusterModel.cluster.locations.location[lastLocationIndex]._name === "" ||
++          $scope.clusterEntity.clusterModel.cluster.locations.location[lastLocationIndex]._name === undefined ||
++          $scope.clusterEntity.clusterModel.cluster.locations.location[lastLocationIndex]._path === "" ||
++          $scope.clusterEntity.clusterModel.cluster.locations.location[lastLocationIndex]._path === undefined
++        ) {
++          $scope.removeLocation(lastLocationIndex);
++        }
++        //deletes ACL if empty
++        if ($scope.clusterEntity.clusterModel.cluster.ACL &&
++            $scope.clusterEntity.clusterModel.cluster.ACL._owner === "") {
++          delete $scope.clusterEntity.clusterModel.cluster.ACL;
++        }
++        //deletes tags if empty
++        if ($scope.clusterEntity.clusterModel.cluster.tags.length === 0) {
++          delete $scope.clusterEntity.clusterModel.cluster.tags;
++        }
++        //moves properties to be the last element if acl exists
++        $scope.arrangeFieldsOrder();
++      }
++      $scope.arrangeFieldsOrder = function () {
++        var BK = $scope.clusterEntity.clusterModel.cluster,
++          orderedObj = {};
++
++        orderedObj._xmlns = 'uri:falcon:cluster:0.1';
++        orderedObj._name = BK._name;
++        orderedObj._description = BK._description;
++        orderedObj._colo = BK._colo;
++
++        if (BK.tags) { orderedObj.tags = BK.tags; }
++        if (BK.interfaces) { orderedObj.interfaces = BK.interfaces; }
++        if (BK.locations) { orderedObj.locations = BK.locations; }
++        if (BK.ACL) { orderedObj.ACL = BK.ACL; }
++        if (BK.properties) { orderedObj.properties = BK.properties; }
++
++        delete $scope.clusterEntity.clusterModel.cluster;
++        $scope.clusterEntity.clusterModel.cluster = orderedObj;
++
++      };
++      //--------------TAGS------------------------//
++
++      $scope.convertTags = function () {
++        var result = [];
++        $scope.tagsArray.forEach(function(element) {
++          if(element.key && element.value) {
++            result.push(element.key + "=" + element.value);
++          }
++        });
++        result = result.join(",");
++        $scope.clusterEntity.clusterModel.cluster.tags = result;
++      };
++      $scope.splitTags = function () {
++        $scope.tagsArray = [];
++        $scope.clusterEntity.clusterModel.cluster.tags.split(",").forEach(function (fieldToSplit) {
++          var splittedString = fieldToSplit.split("=");
++          $scope.tagsArray.push({key: splittedString[0], value: splittedString[1]});
++        });
++      };
++      $scope.addTag = function () {
++        $scope.tagsArray.push({key: null, value: null});
++      };
++      $scope.removeTag = function (index) {
++        if (!isNaN(index) && index !== undefined && index !== null) {
++          $scope.tagsArray.splice(index, 1);
++          $scope.convertTags();
++        }
++      };
++      //-------------------------------------//
++      //----------LOCATION-------------------//
++
++      $scope.addLocation = function () {
++        var lastOneIndex = $scope.clusterEntity.clusterModel.cluster.locations.location.length - 1;
++
++        if (!$scope.clusterEntity.clusterModel.cluster.locations.location[lastOneIndex]._name ||
++            !$scope.clusterEntity.clusterModel.cluster.locations.location[lastOneIndex]._path) {
++          //console.log('location empty');
++        } else {
++          $scope.clusterEntity.clusterModel.cluster.locations.location.push({_name: "", _path: ""});
++        }
++      };
++      $scope.removeLocation = function (index) {
++        if(!isNaN(index) && index !== undefined && index !== null) {
++          $scope.clusterEntity.clusterModel.cluster.locations.location.splice(index, 1);
++        }
++      };
++      //-----------PROPERTIES----------------//
++      $scope.addProperty = function () {
++        var lastOne = $scope.clusterEntity.clusterModel.cluster.properties.property.length - 1;
++        if($scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._name && $scope.clusterEntity.clusterModel.cluster.properties.property[lastOne]._value){
++          $scope.clusterEntity.clusterModel.cluster.properties.property.push({ _name: "", _value: ""});
++        // $scope.tempPropModel = { _name: "", _value: ""};
++        }
++      };
++      $scope.removeProperty = function(index) {
++        if(index !== null && $scope.clusterEntity.clusterModel.cluster.properties.property[index]) {
++          $scope.clusterEntity.clusterModel.cluster.properties.property.splice(index, 1);
++        }
++      };
++      //--------------------------------------//
++      $scope.goSummaryStep = function (formInvalid) {
++        if (!$scope.validations.nameAvailable || formInvalid) {
++          validationService.displayValidations.show = true;
++          validationService.displayValidations.nameShow = true;
++          return;
++        }
++        cleanModel();
++        $scope.secondStep = true;
++        $state.go("forms.cluster.summary");
++
++      };
++      $scope.goGeneralStep = function () {
++        $scope.secondStep = false;
++        validationService.displayValidations.show = false;
++        validationService.displayValidations.nameShow = false;
++        $scope.validations.nameAvailable = true;
++        if(!$scope.registry.check) {
++          //recovers previously deleted registry object
++          $scope.clusterEntity.clusterModel.cluster.interfaces.interface.push($scope.backupRegistryObject);
++        }
++        if(!$scope.clusterEntity.clusterModel.cluster.tags) {
++          $scope.clusterEntity.clusterModel.cluster.tags = "";
++        }
++        if(!$scope.clusterEntity.clusterModel.cluster.properties) {
++          $scope.clusterEntity.clusterModel.cluster.properties = {property : [{ _name: "", _value: ""}]};
++        }
++        var lastLocationIndex = $scope.clusterEntity.clusterModel.cluster.locations.location.length - 1;
++        if($scope.clusterEntity.clusterModel.cluster.locations.location[lastLocationIndex]._name !== "") {
++          $scope.addLocation();
++        }
++      };
++      $scope.saveCluster = function () {
++        $scope.saveModelBuffer();
++        Falcon.logRequest();
++        Falcon.postSubmitEntity($scope.jsonString, "cluster").success(function (response) {
++           Falcon.logResponse('success', response, false);
++           $state.go('main');
++         }).error(function (err) {
++           Falcon.logResponse('error', err, false);
++         });
++      };
++    
++      //--------------------------------------//
++      //----------XML preview-----------------//
++    
++      $scope.xmlPreview.editXML = function () {
++        $scope.xmlPreview.edit = !$scope.xmlPreview.edit;
++      };
++      $scope.showInPreview = function() {
++        var xmlStr = X2jsService.json2xml_str(angular.copy($scope.clusterEntity.clusterModel));
++        $scope.prettyXml = X2jsService.prettifyXml(xmlStr);
++        $scope.xml = xmlStr;
++      };
++      $scope.transformBack = function() {
++        try {
++          var xmlObj = X2jsService.xml_str2json($scope.prettyXml);
++          $scope.clusterEntity.clusterModel = xmlObj;
++
++          if($scope.clusterEntity.clusterModel.cluster.properties && $scope.clusterEntity.clusterModel.cluster.properties.property[0] === '') {
++            $scope.clusterEntity.clusterModel.cluster.properties.property=[];
++          }
++        }
++        catch(err) {
++          console.log('xml malformed');
++        }
++      };
++      $scope.saveModelBuffer = function () {
++        $scope.jsonString = angular.toJson($scope.clusterEntity.clusterModel);
++        //goes back to js to have x2js parse it correctly
++        $scope.jsonString = JSON.parse($scope.jsonString);
++        $scope.jsonString = X2jsService.json2xml_str($scope.jsonString);
++      };
++      function xmlPreviewCallback() {
++        if ($state.current.name !== 'forms.cluster.general' && $state.current.name !== 'forms.cluster.summary') {
++          $interval.cancel(refresher);
++        }
++        if(!$scope.xmlPreview.edit) {
++          if($scope.clusterEntity.clusterModel.cluster.tags !== undefined) { $scope.convertTags(); }
++          $scope.showInPreview();
++        }
++        else {
++          $scope.splitTags();
++          $scope.transformBack();
++        }
++      }
++      var refresher = $interval(xmlPreviewCallback, 1000);
++
++
++      //------------init------------//
++      normalizeModel();
++    }
++  ]);
++})();
++
++
++
++
+diff --git a/falcon-ui/app/js/controllers/controllers.js b/falcon-ui/app/js/controllers/controllers.js
+index a723143..e56297c 100644
+--- a/falcon-ui/app/js/controllers/controllers.js
++++ b/falcon-ui/app/js/controllers/controllers.js
+@@ -23,6 +23,7 @@
+                                       'app.controllers.rootCtrl',
+                                       'app.controllers.dashboardCtrl',
+                                       'app.controllers.view',
++                                      'app.controllers.cluster',
+                                       'app.controllers.entity'   
+                                     ]);
+ 
+diff --git a/falcon-ui/app/test/controllers/cluster/cluster-moduleSpec.js b/falcon-ui/app/test/controllers/cluster/cluster-moduleSpec.js
+new file mode 100644
+index 0000000..dfe4d39
+--- /dev/null
++++ b/falcon-ui/app/test/controllers/cluster/cluster-moduleSpec.js
+@@ -0,0 +1,336 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++  var q,
++      scope,
++      controller,
++      falconServiceMock = jasmine.createSpyObj('Falcon', ['getEntities', 'getEntityDefinition']),
++      x2jsServiceMock = jasmine.createSpyObj('X2jsService', ['xml_str2json', 'json2xml_str']),
++      stateMock = jasmine.createSpyObj('state', ['go']),
++      entityModelArrangeMock = jasmine.createSpyObj('EntityModel', ['arrangeFieldsOrder']),
++      entityModel = {clusterModel : 
++        {cluster:{tags: "",interfaces:{interface:[
++            {_type:"readonly",_endpoint:"hftp://sandbox.hortonworks.com:50070",_version:"2.2.0"},
++            {_type:"write",_endpoint:"hdfs://sandbox.hortonworks.com:8020",_version:"2.2.0"},
++            {_type:"execute",_endpoint:"sandbox.hortonworks.com:8050",_version:"2.2.0"},
++            {_type:"workflow",_endpoint:"http://sandbox.hortonworks.com:11000/oozie/",_version:"4.0.0"},
++            {_type:"messaging",_endpoint:"tcp://sandbox.hortonworks.com:61616?daemon=true",_version:"5.1.6"}
++          ]},locations:{location:[{_name: "staging", _path: ""},{_name: "temp", _path: ""},{_name: "working", _path: ""}]},
++          ACL: {_owner: "",_group: "",_permission: ""},properties: {property: [{ _name: "", _value: ""}]},
++          _xmlns:"uri:falcon:cluster:0.1",_name:"",_description:"",_colo:""},
++      }},
++      validationService,
++      backupRegistryObject;
++
++  describe('ClusterFormCtrl', function () {
++
++    beforeEach(function () {
++      module('app.controllers.cluster');
++      module('app.services.validation');
++    });
++
++    beforeEach(inject(function($q, $rootScope, $controller, ValidationService) {
++      q = $q;
++      validationService = ValidationService;
++      var promise = {};
++      promise.success = function() {return {error: function() {}}};
++
++      scope = $rootScope.$new();
++   
++      controller = $controller('ClusterFormCtrl', { 
++        $scope: scope,
++        Falcon: falconServiceMock,
++        EntityModel: entityModel,
++        $state: stateMock,
++        X2jsService: x2jsServiceMock,
++        validationService:ValidationService
++      });
++      //
++    }));
++
++    describe('initialize', function() {       
++      it('Should initialize $scope variables', function() {
++        scope.clusterEntity.cluster = scope.clusterEntity.clusterModel.cluster;      
++        expect(scope.clusterEntity.clusterModel).toBeDefined();       
++        expect(scope.clusterEntity.clusterModel.cluster.tags).toEqual("");        
++        expect(scope.clusterEntity.clusterModel.cluster).toEqual(scope.clusterEntity.clusterModel.cluster);        
++        expect(scope.secondStep).toEqual(false);
++        expect(scope.clusterEntity.clusterModel.cluster.properties.property).toEqual([{ _name: "", _value: ""}]);
++        
++        expect(scope.registry).toEqual({ check: false });
++        expect(scope.registry).toEqual({ check: false });
++      });      
++    });
++    describe('tags', function() {      
++      describe('$scope.addTag', function() {       
++        it('should init with one empty tag in tagsArray', function() {              
++          expect(scope.tagsArray.length).toEqual(1);         
++          expect(scope.tagsArray).toEqual([{key: null, value: null}]);             
++          scope.addTag();
++          expect(scope.tagsArray.length).toEqual(2);
++          expect(scope.tagsArray).toEqual([{key: null, value: null}, {key: null, value: null}]);             
++        });
++           
++      });
++      describe('$scope.convertTags', function() {       
++        it('should convert correctly each pair of tags on each add', function() { 
++          scope.tagsArray =[{key: 'something', value: 'here'}, {key: 'another', value: 'here'}];      
++          scope.convertTags();
++          expect(scope.clusterEntity.clusterModel.cluster.tags).toEqual("something=here,another=here");       
++          scope.tagsArray =[{key: 'something', value: 'here'}, {key: 'another', value: 'here'}, {key: 'third', value: 'tag'}]; 
++          scope.convertTags(); 
++          expect(scope.clusterEntity.clusterModel.cluster.tags).toEqual("something=here,another=here,third=tag");           
++        });        
++      });
++      describe('$scope.splitTags', function() {       
++        it('should split correctly the string in pair of tags', function() { 
++          scope.clusterEntity.clusterModel.cluster.tags = 'some=tag';         
++          scope.splitTags();
++          expect(scope.tagsArray).toEqual([{key: 'some', value: 'tag'}]); 
++          
++          scope.clusterEntity.clusterModel.cluster.tags = 'some=tag,another=tag,third=value';         
++          scope.splitTags();
++          expect(scope.tagsArray).toEqual([{key: 'some', value: 'tag'},{key: 'another', value: 'tag'},{key: 'third', value: 'value'}]);                        
++        });        
++      });
++      describe('scope.removeTags', function() {       
++        it('should ignore if empty or if undefined, string or null also if index doesnt exists in array', function() {            
++          scope.tagsArray = [{key: "first", value: "value"}, {key: "second", value: "value"}];                          
++          scope.removeTag();
++          scope.removeTag("string");
++          scope.removeTag(null);
++          scope.removeTag(undefined);
++          scope.removeTag(10);
++          scope.removeTag(4);
++          scope.removeTag(100);
++          expect(scope.tagsArray).toEqual([{key: "first", value: "value"}, {key: "second", value: "value"}]);                   
++        });
++        it('should remove correct tags by index', function() {              
++          scope.tagsArray = [{key: "first", value: "value"}, {key: "second", value: "value"}, {key: "third", value: "value"}, {key: "fourth", value: "value"}];                
++          scope.removeTag(1);
++          expect(scope.tagsArray).toEqual([{key: "first", value: "value"}, {key: "third", value: "value"}, {key: "fourth", value: "value"}]);          
++          scope.removeTag(2);
++          expect(scope.tagsArray).toEqual([{key: "first", value: "value"}, {key: "third", value: "value"}]);
++          scope.removeTag(0);
++          expect(scope.tagsArray).toEqual([{key: "third", value: "value"}]);       
++        });   
++      });      
++    });
++    describe('locations', function() { 
++      describe('initialization', function() {       
++        it('should init with default locations and correct values', function() {           
++
++          expect(scope.clusterEntity.clusterModel.cluster.locations.location).toEqual(
++            [{ _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, { _name : 'working', _path : '' }, { _name : '', _path : '' }]
++          );
++        });   
++      });    
++      describe('$scope.addLocation', function() {       
++        it('$scope.addLocation should add locations', function() {       
++          scope.clusterEntity.clusterModel.cluster.locations.location = [{ _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, { _name : 'working', _path : '' }, { _name : 'something', _path : 'here' }];
++          
++          scope.addLocation();
++          expect(scope.clusterEntity.clusterModel.cluster.locations.location).toEqual([ 
++            { _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, 
++            { _name : 'working', _path : '' }, {_name:"something", _path: "here"}, {_name:"", _path: ""}]);
++        });  
++        it('$scope.addLocation should ignore if _name or _location in newLocation are empty', function() {       
++          scope.clusterEntity.clusterModel.cluster.locations.location = [{ _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, { _name : 'working', _path : '' }, { _name : 'something', _path : 'here' }, {_name:"", _path: ""}];         
++          scope.addLocation();
++          expect(scope.clusterEntity.clusterModel.cluster.locations.location).toEqual([ 
++            { _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, 
++            { _name : 'working', _path : '' }, {_name:"something", _path: "here"}, {_name:"", _path: ""}]);
++          
++          scope.clusterEntity.clusterModel.cluster.locations.location = [{ _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, { _name : 'working', _path : '' }, { _name : 'something', _path : 'here' }, {_name:"noPath", _path: ""}];
++          scope.addLocation();
++          expect(scope.clusterEntity.clusterModel.cluster.locations.location).toEqual([ 
++            { _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, 
++            { _name : 'working', _path : '' }, {_name:"something", _path: "here"}, {_name:"noPath", _path: ""}]);     
++        });    
++      });      
++      describe('$scope.removeLocation', function() {       
++        it('$scope.removeLocation should remove locations', function() {   
++          scope.clusterEntity.clusterModel.cluster.locations.location = [
++            { _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, 
++            { _name : 'working', _path : '' }, { _name : 'something', _path : 'here' }, {_name:"noPath", _path: ""}
++          ];
++              
++          scope.removeLocation(3);                  
++          expect(scope.clusterEntity.clusterModel.cluster.locations.location).toEqual([ 
++            { _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, 
++            { _name : 'working', _path : '' }, {_name:"noPath", _path: ""}]);     
++        });   
++        it('$scope.removeLocation should not remove if empty or default values', function() {       
++          //default values cant be removed as the delete button doesnt appears if one of them due to ng-if in template, so no testing here
++          scope.removeLocation();
++          scope.removeLocation("string");
++          scope.removeLocation(null);
++          scope.removeLocation(undefined);
++          scope.removeLocation(10);
++          scope.removeLocation(4);          
++          expect(scope.clusterEntity.clusterModel.cluster.locations.location).toEqual([ 
++            { _name : 'staging', _path : '' }, { _name : 'temp', _path : '' }, 
++            { _name : 'working', _path : '' }, {_name:"noPath", _path: ""}]);      
++        });    
++      });     
++    });  
++    describe('properties', function() {  
++      describe('initialization', function() {       
++        it('should init with default properties and correct values', function() {    
++          expect(scope.clusterEntity.clusterModel.cluster.properties.property).toNotBe(undefined);       
++          expect(scope.clusterEntity.clusterModel.cluster.properties.property[0]).toEqual({ _name: "", _value: ""});         
++        });   
++      });   
++      describe('$scope.addProperty', function() {      
++        it('$scope.addProperty should not add if values are empty or are not valid', function() {
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name: "", _value: ""}];
++          scope.addProperty();         
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name: "something", _value: ""}];
++          scope.addProperty();        
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name: "", _value: "something"}];
++          scope.addProperty();      
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name: null, _value: "something"}];
++          scope.addProperty(); 
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name: "something", _value: undefined}];
++          scope.addProperty();       
++          expect(scope.clusterEntity.clusterModel.cluster.properties.property.length).toEqual(1);
++        });         
++        it('$scope.addProperty should add correct values', function() { 
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name: "name1", _value: "value1"}];      
++   
++          scope.addProperty();            
++                   
++          expect(scope.clusterEntity.clusterModel.cluster.properties.property).toEqual([{ _name: "name1", _value: "value1"}, { _name: "", _value: ""}]);
++        });   
++      });   
++      describe('$scope.removeProperty', function() {      
++        it('should not remove if called with invalid arguments', function() {
++          scope.removeProperty();
++          scope.removeProperty(-10);
++          scope.removeProperty(5);
++          scope.removeProperty(1543);
++          scope.removeProperty("string");
++          scope.removeProperty(null);
++          scope.removeProperty(undefined);
++          expect(scope.clusterEntity.clusterModel.cluster.properties.property).toEqual([{ _name: "name1", _value: "value1"}, { _name: "", _value: ""}]);     
++        });         
++        it('should remove correct values', function() {       
++           scope.removeProperty(1);
++           expect(scope.clusterEntity.clusterModel.cluster.properties.property).toEqual([{ _name: "name1", _value: "value1"}]);
++           
++        });   
++      });     
++    });     
++    describe('goSummaryStep', function() {
++
++      describe('$scope.goSummaryStep', function() {
++
++        it('should activate second step flag', function() {
++          scope.validations = validationService;
++          scope.goSummaryStep(); 
++          expect(scope.secondStep).toBe(true);
++        }); 
++        it('should not call x2jsService yet', function() {
++          scope.validations = validationService;
++          scope.goSummaryStep(); 
++          expect(x2jsServiceMock.json2xml_str).not.toHaveBeenCalled(); 
++        }); 
++      });
++      describe('private cleanModel()', function() {
++        it('should delete tags if empty and leave them if not', function() {
++          scope.validations = validationService;
++          scope.clusterEntity.clusterModel.cluster.tags = "";    
++          expect(scope.clusterEntity.clusterModel.cluster.tags).toEqual("");                 
++          scope.goSummaryStep(); 
++          expect(scope.clusterEntity.clusterModel.cluster.tags).toBe(undefined);   
++          
++        });  
++        it('should delete registry interface only if not checked', function() {
++          scope.validations = validationService;
++          scope.clusterEntity.clusterModel.cluster.tags = ""; 
++          expect(scope.registry.check).toBe(true);
++          expect(scope.clusterEntity.clusterModel.cluster.interfaces.interface.length).toEqual(6); 
++          expect(scope.clusterEntity.clusterModel.cluster.interfaces.interface[5]).toEqual({ _type : 'registry', _endpoint : '', _version : '' });         
++          scope.goSummaryStep();  
++          expect(scope.clusterEntity.clusterModel.cluster.interfaces.interface[5]).toEqual({ _type : 'registry', _endpoint : '', _version : '' }); 
++          scope.registry.check = false;
++          scope.clusterEntity.clusterModel.cluster.ACL = { _owner : '', _group : '', _permission : '' };
++          scope.clusterEntity.clusterModel.cluster.tags = ""; 
++          scope.goSummaryStep();  
++          expect(scope.clusterEntity.clusterModel.cluster.interfaces.interface[5]).toBeUndefined(); 
++          expect(scope.clusterEntity.clusterModel.cluster.interfaces.interface.length).toEqual(5);                       
++        }); 
++        
++        it('should delete properties if empty and leave them if not', function() {
++          scope.validations = validationService;
++          scope.clusterEntity.clusterModel.cluster.properties.property=[{ _name : '', _value : '' }];          
++          scope.goSummaryStep(); 
++          expect(scope.clusterEntity.clusterModel.cluster.properties).toBe(undefined);      
++        });  
++        it('should delete ACL if empty and leave them if not', function() {
++          scope.validations = validationService;
++          expect(scope.clusterEntity.clusterModel.cluster.ACL).toEqual({ _owner : '', _group : '', _permission : '' }); 
++          scope.goSummaryStep();      
++          expect(scope.clusterEntity.clusterModel.cluster.ACL).toEqual(undefined);                  
++        }); 
++        it('should move properties to be the last if coexists with ACL', function() {
++          scope.validations = validationService;
++          function testACLandPropertiesOrder() {
++            var i;
++            for (i in scope.clusterEntity.clusterModel.cluster) { //first one out
++              if(i === "ACL"){ return true; }
++              if(i === "properties"){return false;}  
++            };
++          }
++          delete scope.clusterEntity.clusterModel.cluster.properties;
++          delete scope.clusterEntity.clusterModel.cluster.ACL;
++          scope.clusterEntity.clusterModel.cluster.properties = {};
++          scope.clusterEntity.clusterModel.cluster.properties.property = [{ _name : '2nd', _value : '2nd' }];  
++          scope.clusterEntity.clusterModel.cluster.ACL = { _owner : 'this', _group : 'that', _permission : '0755' }; 
++          expect(testACLandPropertiesOrder()).toEqual(false); 
++          scope.goSummaryStep();             
++          expect(scope.clusterEntity.clusterModel.cluster).toEqual(jasmine.objectContaining({ACL:{ _owner : 'this', _group : 'that', _permission : '0755' }}));
++          expect(scope.clusterEntity.clusterModel.cluster.properties).toEqual(jasmine.objectContaining({property:[{ _name : '2nd', _value : '2nd' }]}));
++          expect(testACLandPropertiesOrder()).toBe(true);                  
++        });   
++      });
++      describe('$scope.jsonString', function() {
++        it('should transform the json string to show in the preview', function() {
++          scope.validations = validationService;
++          expect(scope.jsonString).toEqual(undefined);
++          scope.goSummaryStep(); 
++          expect(scope.jsonString).toEqual(undefined);
++        });   
++      });
++    });
++    
++    describe('$scope.xmlPreview.editXML', function() {
++      it('should toggle the attribute variable', function() {       
++        expect(scope.xmlPreview.edit).toBe(false);
++        scope.xmlPreview.editXML(); 
++        expect(scope.xmlPreview.edit).toBe(true);
++        scope.xmlPreview.editXML(); 
++        expect(scope.xmlPreview.edit).toBe(false);
++      });   
++      
++      
++    });
++  });
++
++})();
+\ No newline at end of file
+-- 
+1.9.3
+
