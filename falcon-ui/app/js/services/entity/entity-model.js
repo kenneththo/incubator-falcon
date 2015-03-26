@@ -38,6 +38,13 @@
       return EntityModel.identifyType(EntityModel.json);
     };
 
+    var userName;
+    if($cookieStore.get('userToken') !== null &&$cookieStore.get('userToken') !== undefined ){
+      userName = $cookieStore.get('userToken').user;
+    }else{
+      userName = "";
+    }
+
     EntityModel.clusterModel = {
       cluster:{
         tags: "",
@@ -222,7 +229,7 @@
           attempts: 3
         },
         acl: {
-          owner: $cookieStore.get('userToken').user,
+          owner: userName,
           group: "users",
           permissions: "0x755"
         }
