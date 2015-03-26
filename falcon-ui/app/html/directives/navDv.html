@@ -21,7 +21,7 @@
   <div class="col-sm-offset-1 col-sm-22">
     <button class="logoTitle" ui-sref="main">
       <h1 class="navbar-header">
-        <img src="css/img/falcon.png" /> Falcon
+        <span class="falconLogo"></span> <span>Falcon</span>
       </h1>
     </button>
 
@@ -75,14 +75,14 @@
 
     <div class="loginHeaderBox">
       <div ng-show="userLogged()">
-        <span class="entypo user"></span> <strong>{{userToken}}</strong>
+        <span class="user"></span> <div><strong>{{userToken}}</strong></div>
       </div>
       <button ng-show="userLogged() && !ambariView()" ng-click="logOut()">
-        <span class="entypo logout pointer"></span><strong class="pointer">Logout</strong>
+        <span class="entypo logout pointer"></span> <div><strong class="pointer">Logout</strong></div>
       </button>
-      <div>
-        <a href="http://hortonworks.com/hadoop/falcon/"><span class="entypo circled-help"></span>Help</a>
-      </div>
+      <a href="http://hortonworks.com/hadoop/falcon/">
+        <span class="entypo circled-help"></span> <div>Help</div>
+      </a>
     </div>
 
   </div>

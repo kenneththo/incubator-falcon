@@ -27,11 +27,24 @@
   border-width: 0;
   border-radius: 0;
   position: relative;
+  &:hover{
+    cursor: default;
+  }
 }
 .logoTitle {
-  background-color: transparent;
+  background: transparent;
   border: none;
-  float:left;
+  float: left;
+  h1 span{
+    vertical-align: middle;
+    display: inline-block;
+  }
+  .falconLogo{
+    background: url(img/falcon.png) no-repeat center center;
+    background-size: 100%;
+    width: 30px;
+    height: 44px;
+  }
 }
 .navbar-header {
   margin: 5px 15px 5px 5px;
@@ -83,25 +96,37 @@
   margin: 0;
   display: inline-block;
   //width: 100%;
-  text-align:right;
+  text-align: right;
+  margin-top: 10px;
+
   .pull-right;
-  > button {
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-    background-color: transparent;
-  }
-  div {
+  >*{
+    vertical-align: middle;
     display: inline-block;
     margin-right: 10px;
+    >*{
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+  span.entypo{
+    vertical-align: sub;
+  }
+  span.user{
+    background: url(img/user.svg) no-repeat center center;
+    background-size: 35px 35px;
+    height: 35px;
+    width: 35px;
+  }
+  button {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
   }
   a {
     color: white;
     cursor: pointer;
     overflow: hidden;
-    display: inline-block;
-    vertical-align: top               ;
-    padding: 1px 6px;
     background-color: transparent;
     &:hover {
       text-decoration: none;
@@ -109,23 +134,5 @@
     &:focus {
       text-decoration: none;
     }
-  }
-}
-
-@media screen and (min-width:976px) {
-  .loginHeaderBox {
-    margin-top: 32px;
-  }
-}
-@media screen and (max-width:976px) {
-  .loginHeaderBox {
-    //margin-top: 40px;
-    width: 100px;
-  }
-}
-@media screen and (max-width:815px) {
-  .loginHeaderBox {
-    margin-top: 3px;
-    width: 100%;
   }
 }
