@@ -96,7 +96,7 @@
 
         for(var i=0; i<tags.length; i++){
           var tag = tags[i].text;
-          if(tag.indexOf("type=") !== -1){
+          if(tag.indexOf("type=") === 0){
             tag = tag.substring(5);
             entityType = tag;
             tags[i].type = "type";

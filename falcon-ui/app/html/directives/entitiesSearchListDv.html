@@ -81,7 +81,7 @@
       </td>
       <td class="nameCell" ng-init="entityType = item.type | uppercase">
         <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
-          <span class="entypo" ng-class="{'FEED':'download','PROCESS':'cycle'}[(item.type | uppercase)]"></span> {{ item.name }}
+          <span ng-class="displayIcon((item.type | uppercase), item.list.tag)"></span> {{ item.name }}
         </button>
       </td>
       <td>

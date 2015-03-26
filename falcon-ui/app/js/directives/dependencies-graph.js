@@ -93,7 +93,7 @@
                         src = node; dst = d;
                       }
                     }
-                    console.log(src.name + '->' + dst.name);
+                    //console.log(src.name + '->' + dst.name);
                     src.dependency.push(dst.id);
                   }
 
@@ -257,7 +257,7 @@
           });
         };
 
-        console.log(scope.type + " " + scope.name);
+        //console.log(scope.type + " " + scope.name);
         visualizeDependencyGraph(scope.type, scope.name);
 
       }

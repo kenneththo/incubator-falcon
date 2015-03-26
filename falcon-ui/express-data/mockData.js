@@ -111,13 +111,9 @@
     },
     process:{"entity":[
       {"type":"process","name":"processOne","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","montevideo=mvd"]}},
-      {"type":"process","name":"processTwo","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","externalSystem=USWestEmailServers"]}}]
-    },
-    dataset:{"entity":[
-      {"type":"dataset","name":"datasetOne","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","montevideo=mvd"]}},
-      {"type":"dataset","name":"datasetTwo","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","externalSystem=USWestEmailServers"]}},
-      {"type":"dataset","name":"datasetTree","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","montevideo=mvd"]}},
-      {"type":"dataset","name":"datasetFour","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","externalSystem=USWestEmailServers"]}}]
+      {"type":"process","name":"processTwo","status":"SUBMITTED","list":{"tag":["pipeline=churnAnalysisDataPipeline","owner=ETLGroup","externalSystem=USWestEmailServers"]}},
+      {"type":"process","name":"Mirror1","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HDFS","owner=ETLGroup"]}},
+      {"type":"process","name":"Mirror2","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HIVE"]}}]
     }
   },
     definitions = {
@@ -269,7 +265,24 @@
             '</outputs>' +
             '<workflow name="emailIngestWorkflow" version="2.0.0" engine="oozie" path="/user/ambari-qa/falcon/demo/apps/ingest/fs"/>' +
             '<retry policy="periodic" delay="minutes(15)" attempts="3"/>' +
-          '</process>'
+          '</process>',
+        Mirror1: '<process xmlns="uri:falcon:process:0.1" name="Mirror1">' +
+          '<tags>_falcon_mirroring_type=HDFS,key1=value1,key2=value2</tags>' +
+          '<clusters><cluster name="completeCluster">' +
+          '<validity start="2015-03-26T09:04:00.000Z" end="2015-03-27T09:04:00.000Z"/>' +
+          '</cluster></clusters>' +
+          '<parallel>1</parallel><order>LAST_ONLY</order>' +
+          '<frequency>minutes(5)</frequency><timezone>UTC</timezone>' +
+          '<properties><property name="oozie.wf.subworkflow.classpath.inheritance" value="true">' +
+          '</property><property name="distcpMaxMaps" value="5">' +
+          '</property><property name="distcpMapBandwidth" value="100"></property>' +
+          '<property name="drSourceDir" value="Mirror1"></property>' +
+          '<property name="drTargetDir" value="Mirror1"></property>' +
+          '<property name="drTargetClusterFS" value="hdfs://sandbox.hortonworks.com:8020"></property>' +
+          '<property name="drSourceClusterFS" value="hdfs://sandbox.hortonworks.com:8020"></property>' +
+          '<property name="drNotifyEmail" value=""></property></properties>' +
+          '<workflow name="Mirror1-WF" engine="oozie" path="hdfs://node-1.example.com:8020/apps/falcon/recipe/hdfs-replication/resources/runtime/hdfs-replication-workflow.xml" lib=""/>' +
+          '<retry policy="PERIODIC" delay="minutes(30)" attempts="3"/><ACL owner="ambari-qa" group="users" permission="0x755"/></process>'
         }
     },
     instancesList = {
@@ -471,26 +484,6 @@
           "status": "SUCCEEDED",
           "instance": "2012-04-03T08:00Z"
         }
-      ],
-      DATASET: [
-        {
-          "details": "",
-          "endTime": "2013-10-21T14:40:26-07:00",
-          "startTime": "2013-10-21T14:39:56-07:00",
-          "cluster": "primary-cluster",
-          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933395-oozie-rgau-W",
-          "status": "SUCCEEDED",
-          "instance": "2012-04-03T07:00Z"
-        },
-        {
-          "details": "",
-          "endTime": "2013-10-21T14:42:26-07:00",
-          "startTime": "2013-10-21T14:41:56-07:00",
-          "cluster": "primary-cluster",
-          "logFile": "http:\/\/localhost:11000\/oozie?job=0000070-131021115933397-oozie-rgau-W",
-          "status": "SUCCEEDED",
-          "instance": "2012-04-03T08:00Z"
-        }
       ]
     },
     entityDependencies = {
@@ -512,6 +505,40 @@
           "type": "cluster"
         }
       ]
+    },
+    vertices = {
+      "results": [
+        {
+          "timestamp":"2014-04-21T20:55Z",
+          "name":"sampleIngestProcess",
+          "type":"process-instance",
+          "version":"2.0.0",
+          "_id":4,
+          "_type":"vertex"
+        }
+      ],
+      "totalSize": 1
+    },
+    verticesDirection = {
+      "results":[
+        {
+          "_id":"Q5V-4-5g",
+          "_type":"edge",
+          "_outV":4,
+          "_inV":8,
+          "_label":"output"
+        }
+      ],
+      "totalSize":1
+    },
+    verticesProps = {
+      "results":
+      {
+        "timestamp":"2014-04-25T22:20Z",
+        "name":"local",
+        "type":"cluster-entity"
+      },
+      "totalSize":3
     };
 
   exports.findByNameInList = findByNameInList;
@@ -520,5 +547,8 @@
   exports.definitions = definitions;
   exports.instancesList = instancesList;
   exports.entityDependencies = entityDependencies;
+  exports.vertices = vertices;
+  exports.verticesDirection = verticesDirection;
+  exports.verticesProps = verticesProps;
 
 })();

@@ -176,7 +176,16 @@
     Falcon.searchEntities = function (name, tags, entityType, offset) {
       var searchUrl = "../api/entities/list/";
       if(entityType !== undefined && entityType !== ""){
-        searchUrl += entityType;
+        if(entityType === "mirror"){
+          if(tags === undefined || tags === ""){
+            tags = "_falcon_mirroring_type";
+          }else{
+            tags += ",_falcon_mirroring_type";
+          }
+          searchUrl += "process";
+        }else{
+          searchUrl += entityType;
+        }
       }else{
         searchUrl += "all";
       }
@@ -234,6 +243,18 @@
     Falcon.getEntityDependencies = function (type, name) {
       //return $http.get(buildURI('../api/entities/dependencies/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
       return $http.get(buildURI('../api/entities/dependencies/' + type + '/' + name));
+    };
+
+    Falcon.getInstanceVertices = function (value) {
+      return $http.get(buildURI('../api/graphs/lineage/vertices?key=name&value=' + value));
+    };
+
+    Falcon.getInstanceVerticesDirection = function (id, direction) {
+      return $http.get(buildURI('../api/graphs/lineage/vertices/' + id + '/' + direction));
+    };
+
+    Falcon.getInstanceVerticesProps = function (id) {
+      return $http.get(buildURI('../api/graphs/lineage/vertices/properties/' + id + '?relationships=true'));
     };
 
     //----------------------------------------------//
