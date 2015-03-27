@@ -58,6 +58,8 @@
         stop: "=",
         type: "=",
         name: "=",
+        start: "=",
+        end: "=",
         instanceDetails:"=",
         refresh: "=",
         pages: "=",
@@ -78,7 +80,7 @@
         }, true);
 
         scope.selectedRows = [];
-        scope.$parent.refreshInstanceList(scope.type, scope.name);
+        scope.$parent.refreshInstanceList(scope.type, scope.name, scope.start, scope.end);
 
         scope.startSortOrder = "desc";
         scope.endSortOrder = "desc";

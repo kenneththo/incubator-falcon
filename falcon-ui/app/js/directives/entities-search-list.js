@@ -256,11 +256,13 @@
 
         scope.isMirror = function(tags){
           var flag = false;
-          tags.forEach(function(tag) {
-            if(tag.indexOf(scope.mirrorTag) !== -1){
-              flag = true;
-            }
-          });
+          if(tags !== undefined){
+            tags.forEach(function(tag) {
+              if(tag.indexOf(scope.mirrorTag) !== -1){
+                flag = true;
+              }
+            });
+          }
           return flag;
         };
 

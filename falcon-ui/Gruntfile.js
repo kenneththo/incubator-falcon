@@ -207,7 +207,8 @@
               src: '**',
               filter: 'isFile',
               // path on the server
-              dest: '/usr/hdp/2.2.0.0-913/falcon/webapp/falcon/public'
+              //dest: '/usr/hdp/current/falcon/webapp/falcon/public'
+              dest: '/usr/hdp/2.2.0.0-2041/falcon-0.6-incubating-SNAPSHOT/server/webapp/falcon/public'
             }
           ]
         }

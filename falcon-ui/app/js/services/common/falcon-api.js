@@ -203,6 +203,7 @@
     };
 
     Falcon.searchInstances = function (type, name, offset, start, end, status, orderBy, sortOrder) {
+      //var searchUrl = "../api/instance/running/" + type + "/" + name + "?colo=*";
       var searchUrl = "../api/instance/list/" + type + "/" + name + "?colo=*";
       if(start !== undefined && start !== ""){
         searchUrl += "&start="+start;
@@ -215,6 +216,8 @@
       }
       if(orderBy !== undefined && orderBy !== ""){
         searchUrl += "&orderBy="+orderBy;
+      }else{
+        searchUrl += "&orderBy=startTime";
       }
       if(sortOrder !== undefined && sortOrder !== ""){
         searchUrl += "&sortOrder="+sortOrder;
@@ -246,15 +249,15 @@
     };
 
     Falcon.getInstanceVertices = function (value) {
-      return $http.get(buildURI('../api/graphs/lineage/vertices?key=name&value=' + value));
+      return $http.get(buildURI('../api/metadata/lineage/vertices?key=name&value=' + value));
     };
 
     Falcon.getInstanceVerticesDirection = function (id, direction) {
-      return $http.get(buildURI('../api/graphs/lineage/vertices/' + id + '/' + direction));
+      return $http.get(buildURI('../api/metadata/lineage/vertices/' + id + '/' + direction));
     };
 
     Falcon.getInstanceVerticesProps = function (id) {
-      return $http.get(buildURI('../api/graphs/lineage/vertices/properties/' + id + '?relationships=true'));
+      return $http.get(buildURI('../api/metadata/lineage/vertices/properties/' + id + '?relationships=true'));
     };
 
     //----------------------------------------------//
