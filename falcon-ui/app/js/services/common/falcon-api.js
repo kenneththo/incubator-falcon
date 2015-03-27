@@ -223,7 +223,6 @@
         searchUrl += "&sortOrder="+sortOrder;
       }
       searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_INSTANCES;
-      console.log(searchUrl);
       return $http.get(buildURI(searchUrl));
     };
 
@@ -244,7 +243,6 @@
     };
 
     Falcon.getEntityDependencies = function (type, name) {
-      //return $http.get(buildURI('../api/entities/dependencies/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
       return $http.get(buildURI('../api/entities/dependencies/' + type + '/' + name));
     };
 
