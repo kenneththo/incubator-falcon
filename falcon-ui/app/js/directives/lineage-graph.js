@@ -22,9 +22,6 @@
 
   entitiesListModule.controller('LineageGraphCtrl', ['$scope', 'Falcon', 'X2jsService', '$window', 'EncodeService',
                                       function($scope, Falcon, X2jsService, $window, encodeService) {
-
-
-
   }]);
 
   entitiesListModule.directive('lineageGraph', ["$timeout", 'Falcon', '$filter', function($timeout, Falcon, $filter) {
@@ -41,7 +38,6 @@
       templateUrl: 'html/directives/lineageGraphDv.html',
       link: function (scope, element) {
 
-        //dust.loadSource(dust.compile($('#lineage-info-tmpl').html(), 'info'));
         var CIRCLE_RADIUS = 12, RANK_SEPARATION = 120, LABEL_WIDTH = 120, LABEL_HEIGHT = 80, LABEL_PADDING = 20;
         var PREFIX = '/api/graphs/lineage';
 
@@ -54,7 +50,6 @@
 
         function process_queue(done_cb) {
           var q = data.queue;
-          console.log("queue: " + q.length);
           if (q.length === 0) {
             done_cb();
             return;
@@ -70,7 +65,6 @@
 
           function visit_neighbor(p) {
             var vid = p.id, depth = p.depth;
-            console.log("depth: " + q.depth);
             if (depth === 0) {
               process_queue(done_cb);
               return;
@@ -80,7 +74,6 @@
             Falcon.getInstanceVerticesDirection(vid, 'both')
                 .success(function (resp) {
                   Falcon.logResponse('success', resp, false, true);
-                  console.log("getInstanceVerticesDirection: "+resp);
                   for (var i = 0; i < resp.results.length; ++i) {
                     var n = resp.results[i];
                     if (data.nodes[n._id] !== undefined || !filter_node(n)) {
@@ -91,7 +84,9 @@
                   }
                 })
                 .error(function (err) {
-                  //Falcon.logResponse('error', err, false, true);
+                  Falcon.logResponse('error', err, false, true);
+                })
+                .finally(function () {
                   process_queue(done_cb);
                 });
           }
@@ -102,7 +97,6 @@
           Falcon.getInstanceVerticesDirection(v.id, 'bothE')
               .success(function (resp) {
                 Falcon.logResponse('success', resp, false, true);
-                console.log("getInstanceVerticesDirection: "+resp);
                 var terminal_has_in_edge = false, terminal_has_out_edge = false;
                 var node = data.nodes[v.id];
                 for (var i = 0; i < resp.results.length; ++i) {
@@ -119,13 +113,14 @@
                 node.is_terminal = !(terminal_has_in_edge && terminal_has_out_edge);
               })
               .error(function (err) {
-                //Falcon.logResponse('error', err, false, true);
+                Falcon.logResponse('error', err, false, true);
+              })
+              .finally(function () {
                 visit_neighbor(v);
               });
         }
 
         function draw_graph() {
-          console.log($('#lineage-graph').html());
           var svg = d3.select('#lineage-graph').html('').append('svg:g');
 
           var LINE_FUNCTION = d3.svg.line()
@@ -150,10 +145,7 @@
                 Falcon.getInstanceVerticesProps(d._id)
                     .success(function (resp) {
                       Falcon.logResponse('success', resp, false, true);
-                      console.log("getInstanceVerticesProps: "+resp);
-                      //dust.render('info', resp, function(err, out) {
                         $('#lineage-info-panel').html(resp);
-                      //});
                     })
                     .error(function (err) {
                       Falcon.logResponse('error', err, false, true);
@@ -256,7 +248,7 @@
           var bb = layout.graph();
           $('#lineage-graph').attr('width', bb.width);
           $('#lineage-graph').attr('height', bb.height);
-
+          $('#lineage-graph').attr('height', bb.height);
           post_render();
         }
 
@@ -276,7 +268,6 @@
           Falcon.getInstanceVertices(node_name)
               .success(function (resp) {
                 Falcon.logResponse('success', resp, false, true);
-                console.log("getInstanceVertices: "+resp);
                 var n = resp.results[0];
                 data.queue = [{'id': n._id, 'depth': 1}];
                 data.nodes = {};
@@ -287,25 +278,6 @@
                 Falcon.logResponse('error', err, false, true);
               });
         };
-
-        //function loadInstance(start, end) {
-        //  falcon.getJson(url('instance/status') + '?orderBy=startTime&start=' + start + '&end=' + end, function (data) {
-        //    if (data.instances == null)
-        //      return;
-        //
-        //    if (!($.isArray(data.instances)))
-        //      data.instances = new Array(data.instances);
-        //
-        //    dust.render('instance', data, function(err, out) {
-        //      $('#panel-instance > .panel-body').html(out);
-        //      $('.lineage-href').click(function() {
-        //        falcon.load_lineage_graph(entityId, $(this).attr('data-instance-name'));
-        //      });
-        //      $('.instance-hdfs-log').tooltip();
-        //      $('#panel-instance').show();
-        //    });
-        //  }).fail(falcon.ajaxFailureHandler);
-        //}
 
         loadLineageGraph(scope.name, scope.instance);
 

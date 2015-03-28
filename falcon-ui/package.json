@@ -29,6 +29,7 @@
     "grunt-karma": "^0.9.0",
     "grunt-protractor-runner": "^1.1.4",
     "grunt-scp": "^0.1.7",
+    "grunt-include-source":"~0.5.1",
     "jasmine": "^2.0.1",
     "karma": "^0.12.23",
     "karma-jasmine": "^0.1.5",

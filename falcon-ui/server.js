@@ -245,14 +245,14 @@
     if(status !== ""){
       instances = searchInstancesByStatus(status, instances);
     }
-    if(start !== ""){
-      start = new Date(start);
-      instances = searchInstancesByDate("startTime", start, instances);
-    }
-    if(end !== ""){
-      end = new Date(end);
-      instances = searchInstancesByDate("endTime", end, instances);
-    }
+    //if(start !== ""){
+    //  start = new Date(start);
+    //  instances = searchInstancesByDate("startTime", start, instances);
+    //}
+    //if(end !== ""){
+    //  end = new Date(end);
+    //  instances = searchInstancesByDate("endTime", end, instances);
+    //}
 
     responseMessage.instances = instances;
 
@@ -327,17 +327,27 @@
     res.json(200, mockData.entityDependencies);
   });
 
-  server.get('/api/graphs/lineage/vertices', function (req, res) {
+  server.get('/api/metadata/lineage/vertices', function (req, res) {
     res.json(200, mockData.vertices);
   });
 
-  server.get('/api/graphs/lineage/vertices/:id/:direction', function (req, res) {
-    var type = req.params.id,
-        direction = req.params.direction;
-    res.json(200, mockData.verticesDirection);
+  server.get('/api/metadata/lineage/vertices/:id/:direction', function (req, res) {
+    var id = req.params.id,
+        direction = req.params.direction,
+        response = "";
+    if(id === "40108" && direction === "bothE"){
+      response = mockData.verticesDirection[0];
+    }else if(id === "40108" && direction === "both"){
+      response = mockData.verticesDirection[1];
+    }else if(id === "40012" && direction === "bothE"){
+      response = mockData.verticesDirection[2];
+    }else if(id === "40016" && direction === "bothE"){
+      response = mockData.verticesDirection[3];
+    }
+    res.json(200, response);
   });
 
-  server.get('/api/graphs/lineage/properties/:id', function (req, res) {
+  server.get('/api/metadata/lineage/properties/:id', function (req, res) {
     var type = req.params.id;
     res.json(200, mockData.verticesProps);
   });

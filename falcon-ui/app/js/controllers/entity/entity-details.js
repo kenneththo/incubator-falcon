@@ -45,10 +45,14 @@
         $scope.feed = serializer.preDeserialize($scope.entity.model, "feed");
         $scope.feed.name = $scope.entity.name;
         $scope.feed.type = $scope.entity.type;
+        $scope.entity.start = $scope.entity.model.feed.clusters.cluster[0].validity._start;
+        $scope.entity.end = $scope.entity.model.feed.clusters.cluster[0].validity._end;
       }else{
         $scope.process = serializer.preDeserialize($scope.entity.model, "process");
         $scope.process.name = $scope.entity.name;
         $scope.process.type = $scope.entity.type;
+        $scope.entity.start = $scope.entity.model.process.clusters.cluster[0].validity._start;
+        $scope.entity.end = $scope.entity.model.process.clusters.cluster[0].validity._end;
       }
 
       $scope.capitalize = function(input) {
@@ -122,7 +126,7 @@
         Falcon.postResumeInstance(type, name, start, end)
             .success(function (message) {
               Falcon.logResponse('success', message, type);
-              $scope.refreshInstanceList(type, name);
+              $scope.refreshInstanceList(type, name, start, end);
             })
             .error(function (err) {
               Falcon.logResponse('error', err, type);
@@ -135,7 +139,7 @@
         Falcon.postSuspendInstance(type, name, start, end)
             .success(function (message) {
               Falcon.logResponse('success', message, type);
-              $scope.refreshInstanceList(type, name);
+              $scope.refreshInstanceList(type, name, start, end);
             })
             .error(function (err) {
               Falcon.logResponse('error', err, type);
@@ -148,7 +152,7 @@
         Falcon.postReRunInstance(type, name, start, end)
             .success(function (message) {
               Falcon.logResponse('success', message, type);
-              $scope.refreshInstanceList(type, name);
+              $scope.refreshInstanceList(type, name, start, end);
             })
             .error(function (err) {
               Falcon.logResponse('error', err, type);
@@ -161,7 +165,7 @@
         Falcon.postKillInstance(type, name, start, end)
             .success(function (message) {
               Falcon.logResponse('success', message, type);
-              $scope.refreshInstanceList(type, name);
+              $scope.refreshInstanceList(type, name, start, end);
             })
             .error(function (err) {
               Falcon.logResponse('error', err, type);

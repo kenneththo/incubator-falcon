@@ -21,7 +21,7 @@
   <div class="col-sm-offset-1 col-sm-22">
     <button class="logoTitle" ui-sref="main">
       <h1 class="navbar-header">
-        <img src="css/img/falcon.png" /> Falcon
+        <span class="falconLogo"></span> <span>Falcon</span>
       </h1>
     </button>
 
@@ -32,28 +32,28 @@
                 ng-click="resetCluster()"
                 ng-disabled="isInForm('cluster')"
                 ng-class="{disabled:isInForm('cluster')}">
-          <span class="entypo archive"></span> Cluster
+          <span class="entypo archive"></span> <span>Cluster</span>
         </button>
         <button type="button"
                 id="feed.create"
                 ng-click="resetFeed()"
                 ng-disabled="isInForm('feed')"
                 ng-class="{disabled:isInForm('feed')}">
-          <span class="entypo download"></span> Feed
+          <span class="entypo download"></span> <span>Feed</span>
         </button>
         <button type="button"
                 id="process.create"
                 ng-click="resetProcess()"
                 ng-disabled="isInForm('process')"
                 ng-class="{disabled:isInForm('process')}">
-          <span class="entypo cycle"></span> Process
+          <span class="entypo cycle"></span> <span>Process</span>
         </button>
         <button type="button"
                 id="dataset.create"
                 ng-click="resetDataset()"
                 ng-disabled="isInForm('dataset')"
                 ng-class="{disabled:isInForm('dataset')}">
-          <span class="glyphicon glyphicon-duplicate"></span> Mirror
+          <span class="glyphicon glyphicon-duplicate"></span> <span>Mirror</span>
         </button>
       </div>
 
@@ -69,20 +69,20 @@
                multiple
                fileinput-change="handleFile"
                ng-model="fileJson">
-        Browse for the XML file
+        <span>Browse for the XML file</span>
       </div>
     </div>
 
     <div class="loginHeaderBox">
       <div ng-show="userLogged()">
-        <span class="entypo user"></span> <strong>{{userToken}}</strong>
+        <span class="user"></span> <div><strong>{{userToken}}</strong></div>
       </div>
       <button ng-show="userLogged() && !ambariView()" ng-click="logOut()">
-        <span class="entypo logout pointer"></span><strong class="pointer">Logout</strong>
+        <span class="entypo logout pointer"></span> <div><strong class="pointer">Logout</strong></div>
       </button>
-      <div>
-        <a href="http://hortonworks.com/hadoop/falcon/"><span class="entypo circled-help"></span>Help</a>
-      </div>
+      <a href="http://hortonworks.com/hadoop/falcon/">
+        <span class="entypo circled-help"></span> <div>Help</div>
+      </a>
     </div>
 
   </div>
