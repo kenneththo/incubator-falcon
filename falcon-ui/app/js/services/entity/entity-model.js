@@ -156,11 +156,12 @@
     };
 
     EntityModel.datasetModel = {
+      toImportModel: undefined,
       UIModel: {
         name: "",
         tags: {
           newTag: { value:"", key:"" },
-          tagsArray: [],
+          tagsArray: [{ value:"_falcon_mirroring_type", key:"HDFS" }],
           tagsString: ""
         },
         formType: "HDFS",
@@ -282,6 +283,14 @@
               },
               {
                 _name: "drNotifyEmail",
+                _value: ""
+              },
+              {
+                _name: "targetCluster",
+                _value: ""
+              },
+              {
+                _name: "sourceCluster",
                 _value: ""
               }
             ]

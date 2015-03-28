@@ -106,7 +106,7 @@
             model: ''
           };
           Falcon.responses.queue.push(message);
-          return;;
+          return;
         }
       }
       if(entityType !== false) {

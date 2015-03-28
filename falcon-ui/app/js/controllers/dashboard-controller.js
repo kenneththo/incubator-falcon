@@ -33,50 +33,68 @@
         type = type.toLowerCase(); //new sandbox returns uppercase type
         Falcon.logRequest();
         Falcon.deleteEntity(type, name)
-          .success(function (data) {          
-            Falcon.logResponse('success', data, type);           
+          .success(function (data) {
+            Falcon.logResponse('success', data, type);
             $scope.$parent.refreshList($scope.tags);
           })
           .error(function (err) {
-            
+
             Falcon.logResponse('error', err, type);
           });
       };
       $scope.cloneEntity = function (type, name) {
         type = type.toLowerCase(); //new sandbox returns uppercase type
-        
+
         Falcon.logRequest();
         Falcon.getEntityDefinition(type, name)
           .success(function (data) {
             Falcon.logResponse('success', data, false, true);
             var modelName = type + "Model",
                 entityModel = X2jsService.xml_str2json(data);
-                
-            EntityModel[modelName] = entityModel;
-            EntityModel[modelName][type]._name = "";
-            $scope.models[modelName] = angular.copy(entityModel);
-            $scope.cloningMode = true; // dont know utility of this
-            $scope.$parent.cloningMode = true;
-            $state.go('forms.' + type + ".general");
+
+            if (entityModel.process.tags.search('_falcon_mirroring_type') !== -1) {
+
+              entityModel.process.name = "";
+              EntityModel.datasetModel.toImportModel = entityModel;
+              $scope.$parent.cloningMode = true;
+              $state.go('forms.dataset.general');
+
+            } else {
+              EntityModel[modelName] = entityModel;
+              EntityModel[modelName][type]._name = "";
+              $scope.models[modelName] = angular.copy(entityModel);
+              $scope.cloningMode = true; // dont know utility of this
+              $scope.$parent.cloningMode = true;
+              $state.go('forms.' + type + ".general");
+            }
           })
           .error(function (err) {
             Falcon.logResponse('error', err, false, true);
           });
       };
-      $scope.editEntity = function (type, name) {        
+      $scope.editEntity = function (type, name) {
         type = type.toLowerCase(); //new sandbox returns uppercase type
-        
+
         Falcon.logRequest();
         Falcon.getEntityDefinition(type, name)
           .success(function (data) {
             Falcon.logResponse('success', data, false, true);
             var entityModel = X2jsService.xml_str2json(data);
             var modelName = type + "Model";
-            EntityModel[modelName] = entityModel;
-            $scope.models[modelName] = angular.copy(entityModel);
-            $scope.editingMode = true;// dont know utility of this
-            $scope.$parent.cloningMode = false;
-            $state.go('forms.' + type + ".general");
+
+            if (entityModel.process.tags.search('_falcon_mirroring_type') !== -1) {
+
+              EntityModel.datasetModel.toImportModel = entityModel;
+              $scope.$parent.cloningMode = false;
+              $state.go('forms.dataset.general');
+
+            } else {
+              EntityModel[modelName] = entityModel;
+              $scope.models[modelName] = angular.copy(entityModel);
+              $scope.editingMode = true;// dont know utility of this
+              $scope.$parent.cloningMode = false;
+              $state.go('forms.' + type + ".general");
+            }
           })
           .error(function (err) {
             Falcon.logResponse('error', err, false, true);
@@ -86,7 +104,7 @@
       $scope.entityDefinition = function (name, type) {
 
     	  type = type.toLowerCase(); //new sandbox returns uppercase type
-    	  
+
     	  Falcon.logRequest();
           Falcon.getEntityDefinition(type, name)
             .success(function (data) {
@@ -132,7 +150,7 @@
           })
           .error(function (err) {
             Falcon.logResponse('error', err, type);
-            
+
           });
       };
 
@@ -167,7 +185,7 @@
         $scope.tags = [];
         $scope.$parent.refreshList($scope.tags);
       };
-      
+
     }]);
 
 })();

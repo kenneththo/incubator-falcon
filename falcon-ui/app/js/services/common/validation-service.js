@@ -114,17 +114,23 @@
         tables: {
           empty: "You need to provide the tables",
           patternInvalid: "The tables have an invalid format. "
+        },
+        s3: {
+          empty: "You need to provide a S3 URL",
+          patternInvalid: "The URL has an invalid format. It needs to start with 's3' and end with '.amazonaws.com'"
+        },
+        azure: {
+          empty: "You need to provide an Azure URL",
+          patternInvalid: "The URL has an invalid format. It needs to end with '.blob.core.windows.net'"
         }
-
-
       },
       checkPatterns = {
-        name: new RegExp("^[a-zA-Z0-9]{1,39}$"),
+        name: new RegExp("^[a-zA-Z0-9-_]{1,39}$"),
         id: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         password: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$"),
         textarea: new RegExp("^([\\sa-zA-Z0-9,]){1,100}$"),
-        alpha: new RegExp("^([a-zA-Z0-9]){1,100}$"),
+        alpha: new RegExp("^([a-zA-Z0-9-_]){1,100}$"),
         commaSeparated: new RegExp("^[a-zA-Z0-9,]{1,80}$"),
         unixId: new RegExp("^([a-z_][a-z0-9-_\\.\\-]{0,30})$"),
         unixPermissions: new RegExp("^((([x0-7]){1,5})|(\\*))$"),
@@ -134,7 +140,9 @@
         versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"),
         url: new RegExp("^[^\\0 ]+\\.[a-zA-Z0-9]{1,3}$"),
         number: new RegExp("^([-0-9]){1,40}$"),
-        email: new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$")
+        email: new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"),
+        s3: new RegExp("^s3[a-zA-Z0-9._%+-:\\/]+.amazonaws.com$"),
+        azure: new RegExp("^[a-zA-Z0-9._%+-:\\/]+.blob.core.windows.net$")
       };
 
     function acceptOnlyNumber(evt) {
