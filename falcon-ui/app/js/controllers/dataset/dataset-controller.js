@@ -26,7 +26,6 @@
     function ($scope, $interval, Falcon, EntityModel, $state, X2jsService,
               validationService, SpinnersFlag, $timeout, $rootScope, clustersList) {
 
-
       $scope.skipUndo = false;
       $scope.$on('$destroy', function () {
         if (!$scope.skipUndo) {
@@ -45,12 +44,21 @@
         $scope.UIModel.formType = type;
         $scope.completeModel = EntityModel.datasetModel[type];
         switchTag(type);
+        checkClusters();
       };
       $scope.model = EntityModel.datasetModel.HDFS.process;
       $scope.UIModel = EntityModel.datasetModel.UIModel;
       $scope.completeModel = EntityModel.datasetModel.HDFS;
 
       //-------------------------//
+      function checkClusters() {
+        if ($scope.UIModel.source.cluster && $scope.UIModel.formType === 'HIVE') {
+          $scope.getSourceDefinition();
+        }
+        if ($scope.UIModel.target.cluster && $scope.UIModel.formType === 'HIVE') {
+          $scope.getTargetDefinition();
+        }
+      }
       $scope.checkFromSource = function () {
         if ($scope.UIModel.source.location !== "HDFS") {
           $scope.UIModel.target.location = "HDFS";
@@ -185,7 +193,7 @@
       $scope.sourceClusterModel = {};
       $scope.targetClusterModel = {};
 
-      $scope.getSourceDefinition = function () {
+      $scope.getSourceDefinition = function () { // only fills general step info, rest of operations performed in createXml
         Falcon.getEntityDefinition("cluster", $scope.UIModel.source.cluster)
           .success(function (data) {
             $scope.sourceClusterModel = X2jsService.xml_str2json(data);
