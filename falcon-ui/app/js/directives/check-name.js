@@ -57,7 +57,7 @@
           name = element[0].value;
 
           Falcon.logRequest();
-          Falcon.searchEntities(type, name).success(function (data) {
+          Falcon.searchEntities(name, "", type).success(function (data) {
             Falcon.logResponse('success', data, false, true);
             if (data !== null) {
               if (data.entity.length !== undefined) {

@@ -98,27 +98,27 @@
     }
 
     if(tags !== "" && name !== "" && name !== "*"){
-      console.log("Search by name " + name + " & tags " + tags);
+      //console.log("Search by name " + name + " & tags " + tags);
       paginated.entity = searchByName(name, paginated.entity);
       paginated.entity = searchByTags(tags, paginated.entity);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else if(tags !== ""){
-      console.log("Search by tags " + tags);
+      //console.log("Search by tags " + tags);
       paginated.entity = searchByTags(tags, paginated.entity);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else if(name !== ""){
-      console.log("Search by name " + name);
+      //console.log("Search by name " + name);
       paginated.entity = searchByName(name, paginated.entity);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }else{
-      console.log("Search all type:"+type);
+      //console.log("Search all type:"+type);
       paginated.totalResults = paginated.entity.length;
       paginated.entity = paginated.entity.slice(offset, offset+numResults);
     }
-    console.log("totalResults: " + paginated.totalResults);
+    //console.log("totalResults: " + paginated.totalResults);
     res.json(paginated);
   });
 

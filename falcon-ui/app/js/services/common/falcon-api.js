@@ -198,7 +198,9 @@
       if(tags !== undefined && tags !== ""){
         searchUrl += "&tagkey="+tags;
       }
-      searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES;
+      if(offset !== undefined && offset !== ""){
+        searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES;
+      }
       return $http.get(buildURI(searchUrl));
     };
 
