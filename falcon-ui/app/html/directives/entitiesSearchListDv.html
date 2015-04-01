@@ -23,11 +23,8 @@
       <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
       <th><div class="filtersSearchBox">Name</div></th>
       <th><div class="filtersSearchBox">Tags</div></th>
-      <th><div class="filtersSearchBox">Last run</div></th>
       <th><div class="filtersSearchBox">Cluster</div></th>
-      <th><div class="filtersSearchBox">User</div></th>
       <th><div class="filtersSearchBox">Type</div></th>
-      <th><div class="filtersSearchBox">Copied</div></th>
       <th><div class="filtersSearchBox">Status</div></th>
     </tr>
   </thead>
@@ -90,19 +87,14 @@
         </span>
       </td>
       <td>
-        -
+        <span ng-repeat="cluster in item.list.cluster">
+          {{ cluster }}{{cluster ? '' : ', '}}
+        </span>
       </td>
       <td>
-        -
-      </td>
-      <td>
-        -
-      </td>
-      <td>
-        -
-      </td>
-      <td>
-        -
+        <span ng-repeat="tag in item.list.tag" ng-init="type = displayType(tag)">
+          {{ type | uppercase}}
+        </span>
       </td>
       <td class="stateCell">
         <span ng-class="{'blink-success': item.status === 'RUNNING', 'text-success': item.status === 'SUCCEEDED',

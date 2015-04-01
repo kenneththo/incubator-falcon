@@ -187,7 +187,8 @@
           searchUrl += entityType;
         }
       }else{
-        searchUrl += "all";
+        //searchUrl += "all";
+        searchUrl += "schedulable";
       }
       searchUrl += "?fields=clusters,tags,status";
       if(name !== undefined && name !== ""){

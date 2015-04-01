@@ -276,6 +276,15 @@
           }
         };
 
+        scope.displayType = function (tag) {
+          var tagKeyVal = tag.split("=");
+          if(tagKeyVal[0] === "_falcon_mirroring_type"){
+            return tagKeyVal[1];
+          }else{
+            return "";
+          }
+        };
+
       }
     };
   }]);

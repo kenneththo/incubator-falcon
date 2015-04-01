@@ -116,7 +116,8 @@
       {"type":"process","name":"hdfs-azure-mirror-test","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HDFS","runsOn=target"]}},
       {"type":"process","name":"hdfs-s3-mirror-test","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HDFS","runsOn=target"]}},
       {"type":"process","name":"hive-databases-mirror-test","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HIVE","runsOn=target"]}},
-      {"type":"process","name":"hive-db-tables-mirror-test","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HIVE","runsOn=source"]}}
+      {"type":"process","name":"hive-db-tables-mirror-test","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HIVE","runsOn=source"]}},
+      {"type":"process","name":"mirror4","status":"SUBMITTED","list":{"tag":["_falcon_mirroring_type=HDFS","runsOn=source"]}}
     ]}
   },
     definitions = {
