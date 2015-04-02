@@ -78,21 +78,21 @@
       </td>
       <td class="nameCell" ng-init="entityType = item.type | uppercase">
         <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
-          <span ng-class="displayIcon((item.type | uppercase), item.list.tag)"></span> {{ item.name }}
+          <span ng-class="displayIcon((item.type | uppercase), item.tags.tag)"></span> {{ item.name }}
         </button>
       </td>
       <td>
-        <span ng-repeat="tag in item.list.tag" ng-click="addTag(tag)" class="tag">
+        <span ng-repeat="tag in item.tags.tag" ng-click="addTag(tag)" class="tag">
           {{ tag }}{{$last ? '' : ', '}}
         </span>
       </td>
       <td>
-        <span ng-repeat="cluster in item.list.cluster">
-          {{ cluster }}{{cluster ? '' : ', '}}
+        <span ng-repeat="cluster in item.clusters.cluster">
+          {{ cluster }}{{$last ? '' : ', '}}
         </span>
       </td>
       <td>
-        <span ng-repeat="tag in item.list.tag" ng-init="type = displayType(tag)">
+        <span ng-repeat="tag in item.tags.tag" ng-init="type = displayType(tag)">
           {{ type | uppercase}}
         </span>
       </td>
