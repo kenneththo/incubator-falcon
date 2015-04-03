@@ -52,7 +52,7 @@
             var modelName = type + "Model",
                 entityModel = X2jsService.xml_str2json(data);
 
-            if (entityModel.process.tags.search('_falcon_mirroring_type') !== -1) {
+            if (entityModel.process && entityModel.process.tags && entityModel.process.tags.search('_falcon_mirroring_type') !== -1) {
 
               entityModel.process.name = "";
               EntityModel.datasetModel.toImportModel = entityModel;
@@ -82,7 +82,7 @@
             var entityModel = X2jsService.xml_str2json(data);
             var modelName = type + "Model";
 
-            if (entityModel.process.tags.search('_falcon_mirroring_type') !== -1) {
+            if (entityModel.process && entityModel.process.tags.search('_falcon_mirroring_type') !== -1) {
 
               EntityModel.datasetModel.toImportModel = entityModel;
               $scope.$parent.cloningMode = false;

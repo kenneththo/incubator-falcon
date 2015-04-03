@@ -21,9 +21,9 @@
   var datasetModule = angular.module('app.controllers.dataset', [ 'app.services' ]);
 
   datasetModule.controller('DatasetCtrl', [
-    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService",
+    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "DateHelper",
     "ValidationService", "SpinnersFlag", "$timeout", "$rootScope", "clustersList",
-    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService,
+    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, DateHelper,
               validationService, SpinnersFlag, $timeout, $rootScope, clustersList) {
 
       $scope.skipUndo = false;
@@ -133,27 +133,8 @@
       $scope.constructDate = function () {
 
         if ($scope.UIModel.validity.start && $scope.UIModel.validity.end) {
-          var startUTC = new Date(Date.UTC(
-                  $scope.UIModel.validity.start.getUTCFullYear(),
-                  $scope.UIModel.validity.start.getUTCMonth(),
-                  $scope.UIModel.validity.start.getUTCDate(),
-                  $scope.UIModel.validity.startTime.getHours(),
-                  $scope.UIModel.validity.startTime.getMinutes(),
-                  0, 0)
-              ).toUTCString() + $scope.UIModel.validity.tz.slice(3),
-
-            endUTC = new Date(Date.UTC(
-                $scope.UIModel.validity.end.getUTCFullYear(),
-                $scope.UIModel.validity.end.getUTCMonth(),
-                $scope.UIModel.validity.end.getUTCDate(),
-                $scope.UIModel.validity.endTime.getHours(),
-                $scope.UIModel.validity.endTime.getMinutes(),
-                0, 0)).toUTCString() + $scope.UIModel.validity.tz.slice(3),
-            startDateUTCRaw = Date.parse(startUTC),
-            endDateUTCRaw = Date.parse(endUTC);
-
-          $scope.UIModel.validity.startISO = new Date(startDateUTCRaw).toISOString();
-          $scope.UIModel.validity.endISO = new Date(endDateUTCRaw).toISOString();
+          $scope.UIModel.validity.startISO = DateHelper.createISO($scope.UIModel.validity.start, $scope.UIModel.validity.startTime, $scope.UIModel.validity.tz);
+          $scope.UIModel.validity.endISO = DateHelper.createISO($scope.UIModel.validity.end, $scope.UIModel.validity.endTime, $scope.UIModel.validity.tz);
         }
 
       };
@@ -265,7 +246,7 @@
         $scope.model.frequency = $scope.UIModel.frequency.unit + '(' + $scope.UIModel.frequency.number + ')';
         $scope.model.clusters.cluster[0].validity._start = $scope.UIModel.validity.startISO;
         $scope.model.clusters.cluster[0].validity._end = $scope.UIModel.validity.endISO;
-
+        $scope.model.timezone = $scope.UIModel.validity.tz;
         if ($scope.UIModel.formType === 'HDFS') {
 
           if ($scope.UIModel.runOn === "source") {
@@ -276,7 +257,7 @@
 
           $scope.model.workflow._name = $scope.UIModel.name + '-WF';
 
-          $scope.model.properties.property.forEach(function (item, index) {
+          $scope.model.properties.property.forEach(function (item) {
             if (item._name === 'distcpMaxMaps') {
               item._value = $scope.UIModel.allocation.hdfs.maxMaps;
             }
@@ -319,7 +300,7 @@
         } else if ($scope.UIModel.formType === 'HIVE') {
 
           $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
-          $scope.model.properties.property.forEach(function (item, index) {
+          $scope.model.properties.property.forEach(function (item) {
             if (item._name === 'distcpMaxMaps') {
               item._value = $scope.UIModel.allocation.hive.maxMapsDistcp;
             }
@@ -453,17 +434,6 @@
         }
       }
 
-      function importDate (date) {
-        var rawDate = new Date(date);
-        return new Date(
-          rawDate.getUTCFullYear(),
-          rawDate.getUTCMonth(),
-          rawDate.getUTCDate(),
-          rawDate.getUTCHours(),
-          rawDate.getUTCMinutes(),
-          0, 0);
-      }
-
       function importModel(model) {
 
         var mirrorType;
@@ -496,11 +466,11 @@
 
         EntityModel.datasetModel.UIModel.validity.startISO = model.process.clusters.cluster[0].validity._start;
         EntityModel.datasetModel.UIModel.validity.endISO = model.process.clusters.cluster[0].validity._end;
-        EntityModel.datasetModel.UIModel.validity.start = importDate (model.process.clusters.cluster[0].validity._start);
-        EntityModel.datasetModel.UIModel.validity.startTime = importDate (model.process.clusters.cluster[0].validity._start);
-        EntityModel.datasetModel.UIModel.validity.end = importDate (model.process.clusters.cluster[0].validity._end);
-        EntityModel.datasetModel.UIModel.validity.endTime = importDate (model.process.clusters.cluster[0].validity._end);
-        EntityModel.datasetModel.UIModel.validity.tz = "GMT+00:00";
+        EntityModel.datasetModel.UIModel.validity.tz = model.process.timezone;
+        EntityModel.datasetModel.UIModel.validity.start = DateHelper.importDate (model.process.clusters.cluster[0].validity._start, model.process.timezone);
+        EntityModel.datasetModel.UIModel.validity.startTime = DateHelper.importDate (model.process.clusters.cluster[0].validity._start, model.process.timezone);
+        EntityModel.datasetModel.UIModel.validity.end = DateHelper.importDate (model.process.clusters.cluster[0].validity._end, model.process.timezone);
+        EntityModel.datasetModel.UIModel.validity.endTime = DateHelper.importDate (model.process.clusters.cluster[0].validity._end, model.process.timezone);
 
         EntityModel.datasetModel.UIModel.tags.tagsString = model.process.tags;
         EntityModel.datasetModel.UIModel.tags.tagsArray = (function () {
@@ -513,7 +483,7 @@
         }());
 
         if (mirrorType === 'HDFS') {
-          model.process.properties.property.forEach(function (item, index) {
+          model.process.properties.property.forEach(function (item) {
             if (item._name === 'distcpMaxMaps') {
               EntityModel.datasetModel.UIModel.allocation.hdfs.maxMaps = item._value;
             }
@@ -555,7 +525,7 @@
 
         } else if (mirrorType === 'HIVE') {
 
-          model.process.properties.property.forEach(function (item, index) {
+          model.process.properties.property.forEach(function (item) {
             if (item._name === 'distcpMaxMaps') {
               EntityModel.datasetModel.UIModel.allocation.hive.maxMapsDistcp = item._value;
             }

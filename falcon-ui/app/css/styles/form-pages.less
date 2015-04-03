@@ -34,6 +34,7 @@
 }
 .formViewContainer {
   .mt10;
+
 }
 //-----------------next and previous buttons----------//
 @nextBtnBackground: #666666;
@@ -75,7 +76,29 @@
   }
 }
 //-----------------------------------------------------//
+.formBoxContainer {
+  width: 500px;
+  display: inline-block;
+}
+.dt {
+  //display: table;
+}
+.xmlPreviewContainer {
+  position: absolute;
+  left: 530px;
+  top: 55px;
+  right: 0;
+}
+@media screen and (max-width: @grid-float-breakpoint) {
+  .xmlPreviewContainer {
+    position: relative;
+    left:0;
+    top:0;
+    width: 500px;
+  }
+}
 .formPage {
+
   h3 {
     font-weight: bold;
   }
@@ -302,7 +325,7 @@ select {
     }
 
   }
-  .validityDateBox {
+  /*.validityDateBox {
     .light {
       display: block;
     }
@@ -310,7 +333,7 @@ select {
       display: inline-block;
 
     }
-  }
+  }*/
   .input-group {
     input {
       font-size: 12px;
@@ -415,4 +438,78 @@ select {
   display: inline-block;
   cursor: auto;
   background-color: #5fa33e;
+}
+
+
+///////////////////////////////////////////////
+///////VALIDITY BOXES//////////////////////////
+///////////////////////////////////////////////
+.validityBox {
+  label, input, button {
+    font-weight: normal;
+  }
+
+  > div {
+    display: inline-block;
+    margin: 0 2px;
+  }
+
+  h4 {
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
+  .startDateBox, .endDateBox {
+    width: 20%;
+    vertical-align: top;
+  }
+  .startTimeBox, .endTimeBox {
+    width: 15%;
+    vertical-align: top;
+    padding-left:0;
+    input {
+      width: 20px;
+      margin:0;
+    }
+    button {
+      border-radius: 0;
+      width: 25px;
+      height: 25px;
+      padding:0;
+      margin-left: 1px;
+    }
+    table {
+      width: auto;
+      border-spacing: 0;
+      tr {
+        &:first-child {
+          display: none;
+        }
+        &:last-child {
+          display: none;
+        }
+      }
+    }
+
+    a {
+      display: none!important;
+    }
+  }
+  .endDateBox {
+
+  }
+  .endTimeBox {
+
+  }
+  .tzBox {
+    width: 22%;
+    //padding-top: 20px;
+  }
+}
+
+.feedForm, .entityForm {
+  .validityBox {
+    .startDateBox, .endDateBox { width: 27%;}
+    .startTimeBox, .endTimeBox {width: 17%;}
+    .endDateBox { margin-left: 20px;}
+  }
 }
