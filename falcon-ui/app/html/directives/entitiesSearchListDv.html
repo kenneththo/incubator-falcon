@@ -23,11 +23,8 @@
       <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
       <th><div class="filtersSearchBox">Name</div></th>
       <th><div class="filtersSearchBox">Tags</div></th>
-      <th><div class="filtersSearchBox">Last run</div></th>
       <th><div class="filtersSearchBox">Cluster</div></th>
-      <th><div class="filtersSearchBox">User</div></th>
       <th><div class="filtersSearchBox">Type</div></th>
-      <th><div class="filtersSearchBox">Copied</div></th>
       <th><div class="filtersSearchBox">Status</div></th>
     </tr>
   </thead>
@@ -81,28 +78,23 @@
       </td>
       <td class="nameCell" ng-init="entityType = item.type | uppercase">
         <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
-          <span ng-class="displayIcon((item.type | uppercase), item.list.tag)"></span> {{ item.name }}
+          <span ng-class="displayIcon((item.type | uppercase), item.tags.tag)"></span> {{ item.name }}
         </button>
       </td>
       <td>
-        <span ng-repeat="tag in item.list.tag" ng-click="addTag(tag)" class="tag">
+        <span ng-repeat="tag in item.tags.tag" ng-click="addTag(tag)" class="tag">
           {{ tag }}{{$last ? '' : ', '}}
         </span>
       </td>
       <td>
-        -
+        <span ng-repeat="cluster in item.clusters.cluster">
+          {{ cluster }}{{$last ? '' : ', '}}
+        </span>
       </td>
       <td>
-        -
-      </td>
-      <td>
-        -
-      </td>
-      <td>
-        -
-      </td>
-      <td>
-        -
+        <span ng-repeat="tag in item.tags.tag" ng-init="type = displayType(tag)">
+          {{ type | uppercase}}
+        </span>
       </td>
       <td class="stateCell">
         <span ng-class="{'blink-success': item.status === 'RUNNING', 'text-success': item.status === 'SUCCEEDED',

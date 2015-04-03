@@ -35,6 +35,14 @@
           if(data.entity === undefined){
             data.entity = [];
           }
+          data.entity.forEach(function(entity) {
+            if(entity.tags !== undefined && typeof entity.tags.tag === 'string'){
+              entity.tags.tag = [entity.tags.tag];
+            }
+            if(entity.clusters !== undefined && typeof entity.clusters.cluster === 'string'){
+              entity.clusters.cluster = [entity.clusters.cluster];
+            }
+          });
           EntityFalcon.data = data;
           deffered.resolve();
         }).error(function (err) {

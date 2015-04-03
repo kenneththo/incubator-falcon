@@ -37,8 +37,8 @@
     var result = [];
     var index = 0;
     for(var j=0; j<list.length; j++){
-      for(var k=0; k<list[j].list.tag.length; k++){
-        if(list[j].list.tag[k].indexOf(tag) !== -1){
+      for(var k=0; k<list[j].tags.tag.length; k++){
+        if(list[j].tags.tag[k].indexOf(tag) !== -1){
             result[index++] = list[j];
           break;
         }
@@ -90,7 +90,8 @@
     var paginated = {};
     paginated.entity = [];
 
-    if(type === "all"){
+    //if(type === "all"){
+    if(type === "schedulable"){
       paginated.entity = paginated.entity.concat(mockData.entitiesList.feed.entity,
           mockData.entitiesList.process.entity);
     }else{
@@ -164,7 +165,7 @@
     if (!mockData.definitions[type][name]) {
       mockData.definitions[type][name] = text;
       mockData.entitiesList[type.toLowerCase()].entity.push(
-        {"type": type, "name": name, "status": "SUBMITTED", "list":{"tag":tags}}
+        {"type": type, "name": name, "status": "SUBMITTED", "tags":{"tag":tags}}
       );
       res.send(200, responseSuccessMessage);
     } else {
