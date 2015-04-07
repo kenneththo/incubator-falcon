@@ -1,0 +1,1590 @@
+From 89feb15e0deb9f578ccc75af2d0ca5ee21c95fb3 Mon Sep 17 00:00:00 2001
+From: Armando Reyna <armando.reyna@globant.com>
+Date: Tue, 7 Apr 2015 14:27:30 -0500
+Subject: [PATCH] FALCON-1028
+
+---
+ .../html/dataset/datasetFormGeneralStepTpl.html    | 716 +++++++++++++++++++++
+ .../html/dataset/datasetFormSummaryStepTpl.html    | 148 +++++
+ falcon-ui/app/html/dataset/datasetFormTpl.html     |  57 ++
+ falcon-ui/app/html/directives/navDv.html           |   7 +
+ .../js/controllers/dataset/dataset-controller.js   | 606 +++++++++++++++++
+ 5 files changed, 1534 insertions(+)
+ create mode 100644 falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html
+ create mode 100644 falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html
+ create mode 100644 falcon-ui/app/html/dataset/datasetFormTpl.html
+ create mode 100644 falcon-ui/app/js/controllers/dataset/dataset-controller.js
+
+diff --git a/falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html b/falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html
+new file mode 100644
+index 0000000..9ac0059
+--- /dev/null
++++ b/falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html
+@@ -0,0 +1,716 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<form id="formGeneralBox"
++      name="datasetForm"
++      class="col-xs-24"
++      novalidate>
++
++  <div class="row">
++    <div class="col-xs-24">
++      <label class="db"> Mirror Name
++        <input type="text"
++               name="nameInput"
++               class="form-control"
++               ng-model="UIModel.name"
++               placeholder=""
++               ng-disabled="!cloningMode"
++               ng-pattern="validations.patterns.name"
++               ng-required="true"
++               check-name="{type:'process', check:true}"/>
++      </label>
++    </div>
++
++    <div class="col-xs-24 tagsBox mt10">
++      <label class="db">Tags
++
++        <div class="row mb10">
++          <div class="col-xs-10">
++            <input type="text"
++                   name="newTagKeyInput"
++                   class="form-control"
++                   ng-model="UIModel.tags.newTag.key"
++                   placeholder="key"
++                   ng-pattern="validations.patterns.alpha"
++                   ng-required="UIModel.tags.newTag.value"
++                   validation-optional-message="{{validations.messages.key}}"/>
++          </div>
++          <div class="col-xs-10">
++            <input type="text"
++                   name="newTagValueInput"
++                   class="form-control"
++                   ng-model="UIModel.tags.newTag.value"
++                   placeholder="value"
++                   ng-pattern="validations.patterns.alpha"
++                   ng-required="UIModel.tags.newTag.key"
++                   validation-optional-message="{{validations.messages.value}}"/>
++          </div>
++          <div class="col-xs-4">
++            <button type="button"
++                    class="btn btn-default btn-xs"
++                    ng-click="addTag()"
++                    ng-disabled="!UIModel.tags.newTag.key || !UIModel.tags.newTag.value"
++                    ng-disabled="false">
++              <span class="glyphicon glyphicon-plus"></span> add tag
++            </button>
++          </div>
++        </div>
++
++        <div ng-repeat="tag in UIModel.tags.tagsArray" class="row">
++          <div class="col-xs-10">
++            <h6>{{tag.key}}</h6>
++          </div>
++          <div class="col-xs-10">
++            <h6>{{tag.value}}</h6>
++          </div>
++          <div class="col-xs-4" ng-if="tag.key !== '_falcon_mirroring_type'">
++            <button type="button"
++                    class="btn btn-default btn-xs"
++                    ng-click="removeTag($index)"
++                    ng-disabled="false">
++              <span class="glyphicon glyphicon-minus"></span> delete
++            </button>
++          </div>
++        </div>
++
++      </label>
++    </div>
++  </div>
++  <div class="row">
++    <div class="col-xs-24 mt10">
++      <label class="db">Mirror type
++        <div class="typeButtonsBox">
++          <button type="button"
++                  ng-class="{active:UIModel.formType === 'HDFS'}"
++                  class="btn btn-default btn-xs"
++                  ng-click="switchModel('HDFS')">
++            File System
++          </button>
++          <button type="button"
++                  ng-class="{active:UIModel.formType === 'HIVE'}"
++                  class="btn btn-default btn-xs"
++                  ng-click="switchModel('HIVE')">
++            HIVE(catalog Storage)
++          </button>
++        </div>
++      </label>
++    </div>
++  </div>
++
++  <div class="row">
++    <div class="col-xs-24 clusterBox">
++      <h3>Source</h3>
++      <div class="runJobOnBox">
++        <input type="radio"
++               id="runJobOnSourceRadio"
++               ng-model="UIModel.runOn",
++               value="source"
++               ng-required="true"
++               ng-disabled="UIModel.source.location !== 'HDFS'"/>
++        Run job here
++      </div>
++
++      <div class="locationBox" ng-if="UIModel.formType === 'HDFS'">
++        <label class="db">Location:
++          <span>
++            <input type="radio"
++                   ng-change="checkFromSource()"
++                   id="sourceHDFSRadio"
++                   ng-model="UIModel.source.location"
++                   value="HDFS"
++                   ng-required="!UIModel.source.location"/> HDFS
++          </span>
++          <span ng-if="UIModel.target.location === 'HDFS'">
++            <input type="radio"
++                   ng-change="checkFromSource()"
++                   id="sourceAzureRadio"
++                   ng-model="UIModel.source.location"
++                   value="azure"
++                   ng-required="!UIModel.source.location"/> Azure
++          </span>
++          <span ng-if="UIModel.target.location === 'HDFS'">
++            <input type="radio"
++                   ng-change="checkFromSource()"
++                   id="sourceS3Radio"
++                   ng-model="UIModel.source.location"
++                   value="s3"
++                   ng-required="!UIModel.source.location"/> S3
++          </span>
++
++        </label>
++      </div>
++
++      <div>
++        <select ng-if="UIModel.source.location === 'HDFS' || UIModel.formType === 'HIVE'"
++                ng-model="UIModel.source.cluster"
++                name="sourceClusterSelect"
++                ng-change="getSourceDefinition()"
++                ng-required="UIModel.source.location === 'HDFS' || UIModel.formType === 'HIVE'"
++                class="col-xs-24 form-control"
++                id="sourceClusterSelect">
++
++          <option value="" disabled style='display:none;'>-Select cluster-</option>
++          <option ng-selected="UIModel.source.cluster === cluster.name"
++                  ng-repeat="cluster in clustersList"
++                  value="{{cluster.name}}">
++            {{cluster.name}}
++          </option>
++        </select>
++      </div>
++
++      <div ng-if="UIModel.source.location === 'azure' && UIModel.formType === 'HDFS'">
++        <label class="db">Base URL
++          <input type="text"
++                 name="sourceClusterUrlInput"
++                 class="form-control"
++                 ng-model="UIModel.source.url"
++                 placeholder="URL"
++                 ng-pattern="validations.patterns.azure"
++                 ng-required="UIModel.source.location === 'azure'"
++                 validation-message="{{validations.messages.azure}}" />
++        </label>
++      </div>
++      <div ng-if="UIModel.source.location === 's3' && UIModel.formType === 'HDFS'">
++        <label class="db">Base URL
++          <input type="text"
++                 name="sourceClusterUrlInput"
++                 class="form-control"
++                 ng-model="UIModel.source.url"
++                 placeholder="URL"
++                 ng-pattern="validations.patterns.s3"
++                 ng-required="UIModel.source.location === 's3'"
++                 validation-message="{{validations.messages.s3}}" />
++        </label>
++      </div>
++
++      <div ng-if="UIModel.formType === 'HDFS'">
++        <label class="db">Path
++          <input type="text"
++                 name="sourceClusterPathInput"
++                 class="form-control"
++                 ng-model="UIModel.source.path"
++                 placeholder="Path"
++                 ng-pattern="validations.patterns.osPath"
++                 ng-required="UIModel.source.location === 'HDFS' || UIModel.formType === 'HIVE'"
++                 validation-message="{{validations.messages.path}}"/>
++        </label>
++      </div>
++
++      <div ng-if="UIModel.formType === 'HIVE'">
++        <h5 class="hiveDatabasesTitol">I want to copy</h5>
++        <div class="databaseRadioBox">
++          <input type="radio"
++                 id="targetHIVEDatabaseRadio"
++                 ng-model="UIModel.source.hiveDatabaseType"
++                 value="databases"
++                 ng-required="!UIModel.source.location"/> Entire databases
++          <input type="radio"
++                 id="targetHIVETablesRadio"
++                 ng-model="UIModel.source.hiveDatabaseType"
++                 value="tables"
++                 ng-required="!UIModel.source.hiveDatabaseType"/> Tables in a single database
++        </div>
++
++        <div ng-if="UIModel.source.hiveDatabaseType === 'databases'">
++          <label class="db">Databases (comma separated)
++            <textarea name="sourceDatabasesInput"
++                      class="form-control databasesTextArea"
++                      ng-model="UIModel.source.hiveDatabases"
++                      ng-pattern="validations.patterns.textarea"
++                      ng-required="UIModel.target.location === 'HDFS'"
++                      validation-message="{{validations.messages.databases}}"
++                      ng-keydown="validations.acceptNoSpaces($event)">
++            </textarea>
++          </label>
++        </div>
++        <div ng-if="UIModel.source.hiveDatabaseType === 'tables'">
++          <label class="db">Database
++            <input type="text"
++                   name="sourceDatabaseInput"
++                   class="form-control"
++                   ng-model="UIModel.source.hiveDatabase"
++                   ng-pattern="validations.patterns.textarea"
++                   ng-required="UIModel.target.location === 'HDFS'"
++                   validation-message="{{validations.messages.database}}"
++                   ng-keydown="validations.acceptNoSpaces($event)"/>
++          </label>
++          <label class="db">Tables (comma separated)
++            <textarea name="sourceTablesInput"
++                      class="form-control tablesTextArea"
++                      ng-model="UIModel.source.hiveTables"
++                      ng-pattern="validations.patterns.textarea"
++                      ng-required="UIModel.target.location === 'HDFS'"
++                      validation-message="{{validations.messages.tables}}"
++                      ng-keydown="validations.acceptNoSpaces($event)">
++            </textarea>
++          </label>
++        </div>
++      </div>
++
++    </div>
++
++    <div class="col-xs-24 clusterBox">
++      <h3>Target</h3>
++      <div class="runJobOnBox">
++        <input type="radio"
++               id="runJobOnTargetRadio"
++               ng-model="UIModel.runOn"
++               value="target"
++               ng-required="true"
++               ng-disabled="UIModel.target.location !== 'HDFS'"/>
++        Run job here
++      </div>
++
++      <div class="locationBox" ng-if="UIModel.formType === 'HDFS'">
++        <label class="db">Location:
++
++          <input type="radio"
++                 ng-change="checkFromTarget()"
++                 id="targetHDFSRadio"
++                 ng-model="UIModel.target.location"
++                 value="HDFS"
++                 ng-required="!UIModel.target.location"/> HDFS
++          <span ng-if="UIModel.source.location === 'HDFS'">
++            <input type="radio"
++                   ng-change="checkFromTarget()"
++                   id="targetAzureRadio"
++                   ng-model="UIModel.target.location"
++                   value="azure"
++                   ng-required="!UIModel.target.location"/> Azure
++          </span>
++          <span ng-if="UIModel.source.location === 'HDFS'">
++            <input type="radio"
++                   ng-change="checkFromTarget()"
++                   id="targetS3Radio"
++                   ng-model="UIModel.target.location"
++                   value="S3"
++                   ng-required="!UIModel.target.location"/> S3
++          </span>
++        </label>
++      </div>
++
++      <div>
++        <select ng-if="UIModel.target.location === 'HDFS' || UIModel.formType === 'HIVE'"
++                ng-model="UIModel.target.cluster"
++                ng-change="getTargetDefinition()"
++                name="targetClusterSelect"
++                ng-required="UIModel.target.location === 'HDFS' || UIModel.formType === 'HIVE'"
++                class="col-xs-24 form-control"
++                id="targetClusterSelect">
++          <option value="" disabled selected style='display:none;'>-Select cluster-</option>
++          <option ng-selected="UIModel.target.cluster === clusterItem.name"
++                  ng-repeat="clusterItem in clustersList"
++                  value="{{clusterItem.name}}">
++            {{clusterItem.name}}
++          </option>
++        </select>
++      </div>
++
++      <div ng-if="UIModel.target.location === 'azure' && UIModel.formType === 'HDFS'">
++        <label class="db">Base URL
++          <input type="text"
++                 name="targetClusterUrlInput"
++                 class="form-control"
++                 ng-model="UIModel.target.url"
++                 placeholder="URL"
++                 ng-pattern="validations.patterns.azure"
++                 ng-required="UIModel.target.location === 'azure'"
++                 validation-message="{{validations.messages.azure}}"/>
++        </label>
++      </div>
++      <div ng-if="UIModel.target.location === 'S3' && UIModel.formType === 'HDFS'">
++        <label class="db">Base URL
++          <input type="text"
++                 name="targetClusterUrlInput"
++                 class="form-control"
++                 ng-model="UIModel.target.url"
++                 placeholder="URL"
++                 ng-pattern="validations.patterns.s3"
++                 ng-required="UIModel.target.location === 'S3'"
++                 validation-message="{{validations.messages.s3}}"/>
++        </label>
++      </div>
++
++      <div ng-if="UIModel.formType === 'HDFS'">
++        <label class="db">Path
++          <input type="text"
++                 name="targetClusterPathInput"
++                 class="form-control"
++                 ng-model="UIModel.target.path"
++                 placeholder="Path"
++                 ng-pattern="validations.patterns.osPath"
++                 ng-required="UIModel.target.location === 'HDFS'"
++                 validation-message="{{validations.messages.path}}"/>
++        </label>
++      </div>
++
++    </div>
++  </div>
++
++  <div class="row">
++    <div class="col-xs-24 validityBox">
++      <h4>Validity </h4>
++      <div class="startDateBox">
++        <label>Start
++          <input type="text"
++                 name="startDateInput"
++                 class="form-control dateInput"
++                 placeholder="mm/dd/yyyy"
++                 datepicker-popup="{{dateFormat}}"
++                 ng-model="UIModel.validity.start"
++                 is-open="$parent.startOpened"
++                 ng-click="openStartDatePicker($event)"
++                 ng-change="constructDate()"
++                 ng-required="true"
++                 simple-date>
++        </label>
++      </div>
++      <div class="startTimeBox">
++        <label>Time
++          <timepicker ng-change="constructDate()"
++                      ng-model="UIModel.validity.startTime"
++                      hour-step="1"
++                      minute-step="1"
++                      show-meridian="true">
++          </timepicker>
++        </label>
++      </div>
++      <div class="endDateBox">
++        <label>End
++          <input type="text"
++                 name="startDateInput"
++                 class="form-control dateInput"
++                 placeholder="mm/dd/yyyy"
++                 datepicker-popup="{{dateFormat}}"
++                 ng-model="UIModel.validity.end"
++                 is-open="$parent.endOpened"
++                 ng-click="openEndDatePicker($event)"
++                 ng-change="constructDate()"
++                 ng-required="true"
++                 simple-date>
++        </label>
++      </div>
++      <div class="endTimeBox">
++        <label>Time
++          <timepicker ng-change="constructDate()"
++                      ng-model="UIModel.validity.endTime"
++                      hour-step="1"
++                      minute-step="1"
++                      show-meridian="true">
++          </timepicker>
++        </label>
++      </div>
++      <div class="tzBox">
++        <label> &nbsp;
++          <time-zone-select
++                  ng-model="UIModel.validity.tz"
++                  class="">
++          </time-zone-select>
++          </label>
++      </div>
++    </div>
++  </div>
++
++  <div class="row">
++    <div class="col-xs-24 alertsBox">
++      <div class="emailBox">
++        <label>
++          <h4>Send alerts to </h4>
++          <input class="form-control"
++                 name="emailAlertInput"
++                 ng-model="UIModel.alerts.alert.email"
++                 type="text"
++                 placeholder="Email"
++                 ng-pattern="validations.patterns.email"
++                 validation-optional-message="{{validations.messages.email}}">
++        </label>
++      </div>
++      <div class="addAlertBox">
++        <button class="btn btn-default btn-xs"
++                ng-disabled="!UIModel.alerts.alert.email"
++                type="button"
++                ng-click="addAlert()">
++          <span class="glyphicon glyphicon-plus"></span>add alert
++        </button>
++      </div>
++
++      <div class="emailArrayRow" ng-repeat="email in UIModel.alerts.alertsArray">
++        <span>{{email}}</span>
++        <button class="btn btn-default btn-xs"
++                type="button"
++                ng-click="removeAlert()">
++          <span class="glyphicon glyphicon-minus"></span> delete
++        </button>
++      </div>
++
++    </div>
++  </div>
++
++  <div class="row advancedOptionsButton" ng-click="expandOptions = !expandOptions">
++    <h4>Advanced options
++      <span class="entypo chevron-down" ng-if="!expandOptions"></span>
++      <span class="entypo chevron-up" ng-if="expandOptions"></span>
++      <hr />
++    </h4>
++  </div>
++
++  <div id="advancedOptionsBox" ng-class="{expanded:expandOptions}">
++    <div class="frequencyBox">
++      <h4>Frequency</h4>
++      <label>Every</label>
++      <input type="text"
++             name="frequencyEveryInput"
++             ng-model="UIModel.frequency.number"
++             ng-pattern="validations.patterns.twoDigits"
++             ng-keydown="validations.acceptOnlyNumber($event)"
++             class="form-control"
++             validation-optional-message="{{validations.messages.number}}" />
++
++      <select ng-model="UIModel.frequency.unit" class="form-control">
++        <option selected value="minutes">minutes</option>
++        <option value="hours">hours</option>
++        <option value="days">days</option>
++        <option value="months">months</option>
++      </select>
++    </div>
++
++    <div class="allocationBox">
++      <h4>Allocation</h4>
++
++      <div ng-if="UIModel.formType === 'HDFS'">
++        <div>
++          <label>Max Maps for Distcp
++            <input type="text"
++                   name="maxMapsInput"
++                   ng-model="UIModel.allocation.hdfs.maxMaps"
++                   ng-pattern="validations.patterns.number"
++                   ng-keydown="validations.acceptOnlyNumber($event)"
++                   class="form-control"
++                   validation-optional-message="{{validations.messages.allocationNumber}}"/>
++          </label>
++        </div>
++        <div>
++          <label>Max bandwidth (MB)
++            <input type="text"
++                   name="maxBandwidthInput"
++                   ng-model="UIModel.allocation.hdfs.maxBandwidth"
++                   ng-pattern="validations.patterns.number"
++                   ng-keydown="validations.acceptOnlyNumber($event)"
++                   class="form-control"
++                   validation-optional-message="{{validations.messages.allocationNumber}}" />
++          </label>
++        </div>
++      </div>
++
++      <div ng-if="UIModel.formType === 'HIVE'">
++        <div>
++          <label>Max Maps for Distcp
++            <input type="text"
++                   name="hiveMaxMapsInput"
++                   ng-model="UIModel.allocation.hive.maxMapsDistcp"
++                   ng-pattern="validations.patterns.number"
++                   ng-keydown="validations.acceptOnlyNumber($event)"
++                   class="form-control"
++                   validation-optional-message="{{validations.messages.allocationNumber}}"/>
++          </label>
++        </div>
++        <div>
++          <label>Max Maps for Mirror
++            <input type="text"
++                   name="maxBandwidthInput"
++                   ng-model="UIModel.allocation.hive.maxMapsMirror"
++                   ng-pattern="validations.patterns.number"
++                   ng-keydown="validations.acceptOnlyNumber($event)"
++                   class="form-control"
++                   validation-optional-message="{{validations.messages.allocationNumber}}" />
++          </label>
++        </div>
++        <div>
++          <label>Max Events
++            <input type="text"
++                   name="maxMapsEventsInput"
++                   ng-model="UIModel.allocation.hive.maxMapsEvents"
++                   ng-pattern="validations.patterns.number"
++                   ng-keydown="validations.acceptOnlyNumber($event)"
++                   class="form-control"
++                   validation-optional-message="{{validations.messages.allocationNumber}}" />
++          </label>
++        </div>
++        <div>
++          <label>Max bandwidth (MB)
++            <input type="text"
++                   name="maxBandwidthInput"
++                   ng-model="UIModel.allocation.hive.maxBandwidth"
++                   ng-pattern="validations.patterns.number"
++                   ng-keydown="validations.acceptOnlyNumber($event)"
++                   class="form-control"
++                   validation-optional-message="{{validations.messages.allocationNumber}}" />
++          </label>
++        </div>
++      </div>
++
++    </div>
++
++    <div class="hiveOptBox" ng-if="UIModel.formType === 'HIVE'">
++      <h4>Source</h4>
++
++      <label>Staging path
++        <input type="text"
++               name="sourceStagingPathInput"
++               ng-model="UIModel.hiveOptions.source.stagingPath"
++               ng-pattern="validations.patterns.path"
++               class="form-control"
++               validation-optional-message="{{validations.messages.path}}" />
++      </label>
++      <label>Hive server to endpoint
++        <input type="text"
++               name="sourceHiveServerInput"
++               ng-model="UIModel.hiveOptions.source.hiveServerToEndpoint"
++               ng-pattern="validations.patterns.path"
++               class="form-control"
++               validation-optional-message="{{validations.messages.path}}" />
++      </label>
++
++      <h4>Target</h4>
++      <label>Staging path
++        <input type="text"
++               name="targetStagingPathInput"
++               ng-model="UIModel.hiveOptions.target.stagingPath"
++               ng-pattern="validations.patterns.path"
++               class="form-control"
++               validation-optional-message="{{validations.messages.path}}" />
++      </label>
++      <label>Hive server to endpoint
++        <input type="text"
++               name="targetHiveServerInput"
++               ng-model="UIModel.hiveOptions.target.hiveServerToEndpoint"
++               ng-pattern="validations.patterns.path"
++               class="form-control"
++               validation-optional-message="{{validations.messages.path}}" />
++      </label>
++    </div>
++
++    <div class="retryBox">
++      <h4>Retry</h4>
++
++      <div>
++        <label>Policy</label>
++        <select ng-model="UIModel.retry.policy"
++                class="form-control">
++          <option selected value="PERIODIC">PERIODIC</option>
++          <option value="EXPONENTIAL_BACKOFF">EXPONENTIAL_BACKOFF</option>
++          <option value="FINAL">FINAL</option>
++        </select>
++      </div>
++
++      <div>
++        <label>Delay</label>
++        <input type="text"
++               name="frequencyEveryInput"
++               ng-model="UIModel.retry.delay.number"
++               ng-pattern="validations.patterns.twoDigits"
++               ng-keydown="validations.acceptOnlyNumber($event)"
++               class="form-control"
++               validation-optional-message="{{validations.messages.number}}" />
++
++        <select ng-model="UIModel.retry.delay.unit"
++                class="form-control">
++          <option selected value="minutes">minutes</option>
++          <option value="hours">hours</option>
++          <option value="days">days</option>
++          <option value="months">months</option>
++        </select>
++      </div>
++
++      <div>
++        <label>Attempts</label>
++        <input type="text"
++               name="frequencyEveryInput"
++               ng-model="UIModel.retry.attempts"
++               ng-pattern="validations.patterns.twoDigits"
++               ng-keydown="validations.acceptOnlyNumber($event)"
++               class="form-control"
++               validation-optional-message="{{validations.messages.number}}" />
++      </div>
++    </div>
++
++    <div class="aclBox">
++      <h4>Access Control List</h4>
++      <div>
++        <label>Owner
++          <input type="text"
++                 name="aclOwnerInput"
++                 ng-model="UIModel.acl.owner"
++                 ng-pattern="validations.patterns.unixId"
++                 class="form-control"
++                 validation-optional-message="{{validations.messages.acl.owner}}"/>
++        </label>
++      </div>
++      <div>
++        <label>Group
++          <input type="text"
++                 name="aclGroupInput"
++                 ng-model="UIModel.acl.group"
++                 ng-pattern="validations.patterns.unixId"
++                 class="form-control"
++                 validation-optional-message="{{validations.messages.acl.group}}" />
++        </label>
++      </div>
++      <div>
++        <label>Permissions
++          <input type="text"
++                 name="aclPermissionsInput"
++                 ng-model="UIModel.acl.permissions"
++                 ng-pattern="validations.patterns.unixPermissions"
++                 class="form-control"
++                 validation-optional-message="{{validations.messages.acl.permission}}" />
++        </label>
++      </div>
++    </div>
++
++
++
++
++
++  </div>
++
++
++  <div class="row">
++    <div class="col-xs-24 mt20">
++
++      <button class="btn nextBtn pull-right"
++              ng-disabled="buttonSpinners.show"
++              ng-click="goNext(datasetForm.$invalid, 'forms.dataset.summary')" >
++        Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
++      </button>
++      <a class="pull-right" ui-sref="main">
++        Cancel
++      </a>
++
++    </div>
++  </div>
++
++
++
++
++
++
++</form>
++
++
+diff --git a/falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html b/falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html
+new file mode 100644
+index 0000000..ee2bd1b
+--- /dev/null
++++ b/falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html
+@@ -0,0 +1,148 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div id="formSummaryBox" class="col-xs-24">
++  <div>
++    <h4 class="lightSubtitle">Name</h4>
++    {{UIModel.name}}
++  </div>
++  <div>
++    <h4 class="lightSubtitle">Type</h4>
++    {{UIModel.formType}}
++  </div>
++  <div>
++    <h4 class="lightSubtitle">Tags</h4>
++    <div ng-repeat="tag in UIModel.tags.tagsArray"><span>{{tag.key}}</span> - {{tag.value}}</div>
++  </div>
++
++  <div>
++    <h4 class="lightSubtitle">Source</h4>
++  </div>
++  <div class="box">
++    <h3 ng-if="UIModel.formType === 'HIVE' || UIModel.source.location === 'HDFS'">{{UIModel.source.cluster}}</h3>
++
++    <h4 ng-if="UIModel.formType === 'HDFS'">Location</h4>
++    <div ng-if="UIModel.formType === 'HDFS'">{{UIModel.source.location}}</div>
++    <div ng-if="UIModel.formType === 'HDFS'"><span>Path:</span> {{UIModel.source.path}}</div>
++    <div ng-if="UIModel.formType === 'HDFS' && UIModel.source.location !== 'HDFS'"><span>URL:</span>{{UIModel.source.url}}</div>
++
++
++
++
++
++    <div ng-if="UIModel.formType === 'HIVE'">I want to copy <span>{{UIModel.source.hiveDatabaseType}}</span></div>
++    <div ng-if="UIModel.formType === 'HIVE' && UIModel.source.hiveDatabaseType === 'databases'"><span>Databases:</span> {{UIModel.source.hiveDatabases}}</div>
++    <div ng-if="UIModel.formType === 'HIVE' && UIModel.source.hiveDatabaseType === 'tables'"><span>From Database </span>{{UIModel.source.hiveDatabase}}</div>
++    <div ng-if="UIModel.formType === 'HIVE' && UIModel.source.hiveDatabaseType === 'tables'"><span>Tables:</span> {{UIModel.source.hiveTables}}</div>
++
++
++
++
++  </div>
++  <div>
++    <h4 class="lightSubtitle">Target</h4>
++  </div>
++  <div class="box">
++    <h3 ng-if="(UIModel.formType === 'HDFS' && UIModel.target.location === 'HDFS') || UIModel.formType === 'HIVE'">{{UIModel.target.cluster}}</h3>
++
++    <h4 ng-if="UIModel.formType === 'HDFS'">Location</h4>
++    <div ng-if="UIModel.formType === 'HDFS'">{{UIModel.target.location}}</div>
++    <div ng-if="UIModel.formType === 'HDFS'"><span>Path:</span> {{UIModel.target.path}}</div>
++    <div ng-if="UIModel.formType === 'HDFS' && UIModel.target.location !== 'HDFS'"><span>URL:</span> {{UIModel.target.url}}</div>
++
++  </div>
++
++  <div>
++    <h4 class="lightSubtitle">Run On</h4>
++    <div ng-if="UIModel.runOn === 'source'">{{UIModel.source.cluster}}</div>
++    <div ng-if="UIModel.runOn === 'target'">{{UIModel.target.cluster}}</div>
++  </div>
++
++  <hr />
++
++  <div>
++    <h4 class="lightSubtitle">Schedule</h4>
++    <span>Start on: </span>{{UIModel.validity.startISO}} <br />
++    <span>End on: </span>{{UIModel.validity.endISO}}
++  </div>
++
++  <div ng-if="UIModel.formType === 'HDFS'">
++    <h4 class="lightSubtitle">Max Maps</h4>
++    {{UIModel.allocation.hdfs.maxMaps}}
++
++    <h4 class="lightSubtitle">Max Bandwidth</h4>
++    {{UIModel.allocation.hdfs.maxBandwidth}}
++  </div>
++  <div ng-if="UIModel.formType === 'HIVE'">
++
++    <h4 class="lightSubtitle">Max Maps for Distcp</h4>
++    {{UIModel.allocation.hive.maxMapsDistcp}}
++
++    <h4 class="lightSubtitle">Max Bandwidth</h4>
++    {{UIModel.allocation.hive.maxBandwidth}}
++
++    <h4 class="lightSubtitle">Max Events</h4>
++    {{UIModel.allocation.hive.maxMapsEvents}}
++
++    <h4 class="lightSubtitle">Max Maps for mirror</h4>
++    {{UIModel.allocation.hive.maxMapsMirror}}
++  </div>
++
++  <div>
++    <h4 ng-if="UIModel.alerts.alertsArray.length > 0" class="lightSubtitle">Alerts</h4>
++    {{ UIModel.alerts.alertsArray.join() }}
++  </div>
++
++  <hr />
++  <h4 class="lightSubtitle">ACL</h4>
++  <div><span>Owner:</span> {{UIModel.acl.owner}}</div>
++  <div><span>Group:</span> {{UIModel.acl.group}}</div>
++  <div><span>Permissions:</span> {{UIModel.acl.permissions}}</div>
++
++  <h4 class="lightSubtitle">Retry</h4>
++  <div><span>Policy: </span> {{UIModel.retry.policy}}</div>
++  <div><span>delay: </span> {{UIModel.retry.delay.number}} {{UIModel.retry.delay.unit}}</div>
++  <div><span>Attempts: </span> {{UIModel.retry.attempts}}</div>
++
++  <h4 class="lightSubtitle">Frequency</h4>
++  <div>{{UIModel.frequency.number}} {{UIModel.frequency.unit}}</div>
++
++  <hr />
++
++  <div class="row">
++    <div class="col-xs-24 mt20">
++      <button type="button" class="btn prevBtn"
++              ng-click="goBack('forms.dataset.general')"
++              ng-disabled="buttonSpinners.backShow">
++        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
++      </button>
++      <button class="btn nextBtn pull-right"
++              ng-disabled="buttonSpinners.show"
++              ng-click="save()">
++        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
++      </button>
++      <a class="pull-right" ui-sref="main">
++        Cancel
++      </a>
++    </div>
++  </div>
++
++</div>
++
++
+diff --git a/falcon-ui/app/html/dataset/datasetFormTpl.html b/falcon-ui/app/html/dataset/datasetFormTpl.html
+new file mode 100644
+index 0000000..d471d40
+--- /dev/null
++++ b/falcon-ui/app/html/dataset/datasetFormTpl.html
+@@ -0,0 +1,57 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<div id="formBox">
++  <div class="formTitol">
++    <a>Falcon Mirrors</a>
++    <h1>New Mirror</h1>
++  </div>
++
++  <div class="col-sm-24">
++    <div class="formBoxWrapper">
++
++      <div class="progressBox col-xs-24" ng-class="{ general:isActive('forms.dataset.general'),
++                                                 summary:isActive('forms.dataset.summary')}">
++        <div class="progressBar">
++          <div class="bar1"></div>
++          <span>
++            <div class="fir">
++              <b>1</b>
++              <span class="glyphicon glyphicon-ok"></span>
++              <h6>General</h6>
++            </div>
++          </span>
++          <span>
++            <div class="sec">
++              <b>2</b>
++              <span class="glyphicon glyphicon-ok"></span>
++              <h6>Summary</h6>
++            </div>
++          </span>
++        </div>
++      </div>
++
++      <div class="row" ui-view></div>
++    </div>
++  </div>
++
++  <div class="col-sm-24">
++
++  </div>
++</div>
+\ No newline at end of file
+diff --git a/falcon-ui/app/html/directives/navDv.html b/falcon-ui/app/html/directives/navDv.html
+index d5ba782..658e342 100644
+--- a/falcon-ui/app/html/directives/navDv.html
++++ b/falcon-ui/app/html/directives/navDv.html
+@@ -48,6 +48,13 @@
+                 ng-class="{disabled:isInForm('process')}">
+           <span class="entypo cycle"></span> <span>Process</span>
+         </button>
++        <button type="button"
++                id="dataset.create"
++                ng-click="resetDataset()"
++                ng-disabled="isInForm('dataset')"
++                ng-class="{disabled:isInForm('dataset')}">
++          <span class="glyphicon glyphicon-duplicate"></span> <span>Mirror</span>
++        </button>
+       </div>
+ 
+     <div class="uploadNavWrapper" ng-show="userLogged()">
+diff --git a/falcon-ui/app/js/controllers/dataset/dataset-controller.js b/falcon-ui/app/js/controllers/dataset/dataset-controller.js
+new file mode 100644
+index 0000000..6c40d45
+--- /dev/null
++++ b/falcon-ui/app/js/controllers/dataset/dataset-controller.js
+@@ -0,0 +1,606 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++(function () {
++  'use strict';
++
++  var datasetModule = angular.module('app.controllers.dataset', [ 'app.services' ]);
++
++  datasetModule.controller('DatasetCtrl', [
++    "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "DateHelper",
++    "ValidationService", "SpinnersFlag", "$timeout", "$rootScope", "clustersList",
++    function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, DateHelper,
++              validationService, SpinnersFlag, $timeout, $rootScope, clustersList) {
++
++      $scope.skipUndo = false;
++      $scope.$on('$destroy', function () {
++        if (!$scope.skipUndo) {
++          $scope.$parent.cancel('dataset', $rootScope.previousState);
++        }
++      });
++
++      $scope.isActive = function (route) {
++        return $state.current.name === route;
++      };
++
++      $scope.clustersList = clustersList;
++
++      $scope.switchModel = function (type) {
++        $scope.model = EntityModel.datasetModel[type].process;
++        $scope.UIModel.formType = type;
++        $scope.completeModel = EntityModel.datasetModel[type];
++        switchTag(type);
++        checkClusters();
++      };
++      $scope.model = EntityModel.datasetModel.HDFS.process;
++      $scope.UIModel = EntityModel.datasetModel.UIModel;
++      $scope.completeModel = EntityModel.datasetModel.HDFS;
++
++      //-------------------------//
++      function checkClusters() {
++        if ($scope.UIModel.source.cluster && $scope.UIModel.formType === 'HIVE') {
++          $scope.getSourceDefinition();
++        }
++        if ($scope.UIModel.target.cluster && $scope.UIModel.formType === 'HIVE') {
++          $scope.getTargetDefinition();
++        }
++      }
++      $scope.checkFromSource = function () {
++        if ($scope.UIModel.source.location !== "HDFS") {
++          $scope.UIModel.target.location = "HDFS";
++          $scope.UIModel.runOn = 'target';
++        }
++      };
++      $scope.checkFromTarget = function () {
++        if ($scope.UIModel.target.location !== "HDFS") {
++          $scope.UIModel.source.location = "HDFS";
++          $scope.UIModel.runOn = 'source';
++        }
++      };
++      //----------------TAGS---------------------//
++      $scope.addTag = function () {
++        if ($scope.UIModel.tags.newTag.value === "_falcon_mirroring_type") {
++          return;
++        }
++        $scope.UIModel.tags.tagsArray.push($scope.UIModel.tags.newTag);
++        $scope.UIModel.tags.newTag = {value: "", key: ""};
++        $scope.convertTags();
++      };
++      $scope.removeTag = function (index) {
++        $scope.UIModel.tags.tagsArray.splice(index, 1);
++        $scope.convertTags();
++      };
++      function switchTag (type) {
++        $scope.UIModel.tags.tagsArray.forEach(function (item) {
++          if (item.key === "_falcon_mirroring_type") {
++            item.value = type;
++          }
++        });
++      }
++      $scope.convertTags = function () {
++        var result = [];
++        $scope.UIModel.tags.tagsArray.forEach(function (element) {
++          if (element.key && element.value) {
++            result.push(element.key + "=" + element.value);
++          }
++        });
++        result = result.join(",");
++        $scope.UIModel.tags.tagsString = result;
++      };
++      $scope.splitTags = function () {
++        $scope.UIModel.tags.tagsArray = [];
++        $scope.UIModel.tags.tagsString.split(",").forEach(function (fieldToSplit) {
++          var splittedString = fieldToSplit.split("=");
++          $scope.UIModel.tags.tagsArray.push({key: splittedString[0], value: splittedString[1]});
++        });
++      };
++      //----------- Alerts -----------//
++      $scope.addAlert = function () {
++        $scope.UIModel.alerts.alertsArray.push($scope.UIModel.alerts.alert.email);
++        $scope.UIModel.alerts.alert = {email: ""};
++      };
++      $scope.removeAlert = function (index) {
++        $scope.UIModel.alerts.alertsArray.splice(index, 1);
++      };
++      //----------------- DATE INPUTS -------------------//
++      $scope.dateFormat = 'MM/dd/yyyy';
++
++      $scope.openStartDatePicker = function ($event) {
++        $event.preventDefault();
++        $event.stopPropagation();
++        $scope.startOpened = true;
++      };
++      $scope.openEndDatePicker = function ($event) {
++        $event.preventDefault();
++        $event.stopPropagation();
++        $scope.endOpened = true;
++      };
++
++      $scope.constructDate = function () {
++
++        if ($scope.UIModel.validity.start && $scope.UIModel.validity.end) {
++          $scope.UIModel.validity.startISO = DateHelper.createISO($scope.UIModel.validity.start, $scope.UIModel.validity.startTime, $scope.UIModel.validity.tz);
++          $scope.UIModel.validity.endISO = DateHelper.createISO($scope.UIModel.validity.end, $scope.UIModel.validity.endTime, $scope.UIModel.validity.tz);
++        }
++
++      };
++      $scope.$watch(function () {
++        return $scope.UIModel.validity.tz;
++      }, function () {
++        return $scope.constructDate();
++      });
++
++      //-------------------------------------//
++
++      $scope.goNext = function (formInvalid, stateName) {
++        SpinnersFlag.show = true;
++        if (!validationService.nameAvailable || formInvalid) {
++          validationService.displayValidations.show = true;
++          validationService.displayValidations.nameShow = true;
++          SpinnersFlag.show = false;
++          angular.element('body, html').animate({scrollTop: 0}, 500);
++          return;
++        }
++        validationService.displayValidations.show = false;
++        validationService.displayValidations.nameShow = false;
++        $scope.convertTags();
++        createXML();
++        $state.go(stateName);
++        angular.element('body, html').animate({scrollTop: 0}, 500);
++      };
++
++      $scope.goBack = function (stateName) {
++        SpinnersFlag.backShow = true;
++        validationService.displayValidations.show = false;
++        validationService.displayValidations.nameShow = false;
++        $state.go(stateName);
++        angular.element('body, html').animate({scrollTop: 0}, 500);
++      };
++
++      $scope.sourceClusterModel = {};
++      $scope.targetClusterModel = {};
++
++      $scope.getSourceDefinition = function () { // only fills general step info, rest of operations performed in createXml
++        Falcon.getEntityDefinition("cluster", $scope.UIModel.source.cluster)
++          .success(function (data) {
++            $scope.sourceClusterModel = X2jsService.xml_str2json(data);
++            if (!EntityModel.datasetModel.UIModel.hiveOptions.source.stagingPath && EntityModel.datasetModel.UIModel.formType === 'HIVE') {
++              EntityModel.datasetModel.UIModel.hiveOptions.source.stagingPath = findLocation($scope.sourceClusterModel.cluster.locations.location, 'staging');
++            }
++            if (!EntityModel.datasetModel.UIModel.hiveOptions.source.hiveServerToEndpoint && EntityModel.datasetModel.UIModel.formType === 'HIVE') {
++              EntityModel.datasetModel.UIModel.hiveOptions.source.hiveServerToEndpoint = replacePortInInterface(findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'registry'));
++            }
++
++          })
++          .error(function (err) {
++            $scope.UIModel.source.cluster = "";
++            Falcon.logResponse('error', err, false, true);
++          });
++      };
++      $scope.getTargetDefinition = function () {
++        Falcon.getEntityDefinition("cluster", $scope.UIModel.target.cluster)
++          .success(function (data) {
++            $scope.targetClusterModel = X2jsService.xml_str2json(data);
++            if (!EntityModel.datasetModel.UIModel.hiveOptions.target.stagingPath && EntityModel.datasetModel.UIModel.formType === 'HIVE') {
++              EntityModel.datasetModel.UIModel.hiveOptions.target.stagingPath = findLocation($scope.targetClusterModel.cluster.locations.location, 'staging');
++            }
++            if (!EntityModel.datasetModel.UIModel.hiveOptions.source.hiveServerToEndpoint && EntityModel.datasetModel.UIModel.formType === 'HIVE') {
++              EntityModel.datasetModel.UIModel.hiveOptions.target.hiveServerToEndpoint = replacePortInInterface(findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'registry'));
++            }
++          })
++          .error(function (err) {
++            $scope.UIModel.target.cluster = "";
++            Falcon.logResponse('error', err, false, true);
++          });
++      };
++
++      function findLocation (array, locationString) {
++        var loc = "";
++        array.forEach(function (item) {
++          if (item._name === locationString) {
++            loc = item._path;
++          }
++        });
++        return loc;
++      }
++      function findInterface(array, interfaceString) {
++        var inter = "";
++        array.forEach(function (item) {
++          if (item._type === interfaceString) {
++            inter = item._endpoint;
++          }
++        });
++        return inter;
++      }
++
++      function replacePortInInterface(string) {
++        if (string) {
++          var splitted = string.split(':');
++          return splitted[0] + ':' + splitted[1] + ':10000';
++        }
++      }
++
++      function createXML() {
++        $scope.model._name = $scope.UIModel.name;
++        $scope.model.tags = $scope.UIModel.tags.tagsString;
++        $scope.model.retry._policy = $scope.UIModel.retry.policy;
++        $scope.model.retry._delay = $scope.UIModel.retry.delay.unit + '(' + $scope.UIModel.retry.delay.number + ')';
++        $scope.model.retry._attempts = $scope.UIModel.retry.attempts;
++        $scope.model.ACL._owner = $scope.UIModel.acl.owner;
++        $scope.model.ACL._group = $scope.UIModel.acl.group;
++        $scope.model.ACL._permission = $scope.UIModel.acl.permissions;
++        $scope.model.frequency = $scope.UIModel.frequency.unit + '(' + $scope.UIModel.frequency.number + ')';
++        $scope.model.clusters.cluster[0].validity._start = $scope.UIModel.validity.startISO;
++        $scope.model.clusters.cluster[0].validity._end = $scope.UIModel.validity.endISO;
++        $scope.model.timezone = $scope.UIModel.validity.tz;
++        if ($scope.UIModel.formType === 'HDFS') {
++
++          if ($scope.UIModel.runOn === "source") {
++            $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
++          } else {
++            $scope.model.clusters.cluster[0]._name = $scope.UIModel.target.cluster;
++          }
++
++          $scope.model.workflow._name = $scope.UIModel.name + '-WF';
++
++          $scope.model.properties.property.forEach(function (item) {
++            if (item._name === 'distcpMaxMaps') {
++              item._value = $scope.UIModel.allocation.hdfs.maxMaps;
++            }
++            if (item._name === 'distcpMapBandwidth') {
++              item._value = $scope.UIModel.allocation.hdfs.maxBandwidth;
++            }
++            if (item._name === 'drSourceDir') {
++              item._value = $scope.UIModel.source.path;
++            }
++            if (item._name === 'drTargetDir') {
++              item._value = $scope.UIModel.target.path;
++            }
++            if (item._name === 'drSourceClusterFS') {
++              if ($scope.UIModel.source.location === 'HDFS') {
++                item._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
++              } else {
++                item._value = $scope.UIModel.source.url;
++              }
++            }
++            if (item._name === 'drTargetClusterFS') {
++              if ($scope.UIModel.target.location === 'HDFS') {
++                item._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
++              } else {
++                item._value = $scope.UIModel.target.url;
++              }
++            }
++            if (item._name === 'drNotifyEmail') {
++              item._value = $scope.UIModel.alerts.alertsArray.join();
++            }
++            if (item._name === 'sourceCluster') {
++              if ($scope.UIModel.source.location === 'HDFS') { item._value = $scope.UIModel.source.cluster; }
++              else { item._value = ""; }
++            }
++            if (item._name === 'targetCluster') {
++              if ($scope.UIModel.target.location === 'HDFS') { item._value = $scope.UIModel.target.cluster; }
++              else { item._value = ""; }
++            }
++          });
++
++        } else if ($scope.UIModel.formType === 'HIVE') {
++
++          $scope.model.clusters.cluster[0]._name = $scope.UIModel.source.cluster;
++          $scope.model.properties.property.forEach(function (item) {
++            if (item._name === 'distcpMaxMaps') {
++              item._value = $scope.UIModel.allocation.hive.maxMapsDistcp;
++            }
++            if (item._name === 'distcpMapBandwidth') {
++              item._value = $scope.UIModel.allocation.hive.maxBandwidth;
++            }
++            if (item._name === 'sourceCluster') {
++              item._value = $scope.UIModel.source.cluster;
++            }
++            if (item._name === 'targetCluster') {
++              item._value = $scope.UIModel.target.cluster;
++            }
++            if (item._name === 'sourceHiveServer2Uri') {
++              item._value = $scope.UIModel.hiveOptions.source.hiveServerToEndpoint;
++            }
++            if (item._name === 'targetHiveServer2Uri') {
++              item._value = $scope.UIModel.hiveOptions.target.hiveServerToEndpoint;
++            }
++            if (item._name === 'sourceStagingPath') {
++              item._value = $scope.UIModel.hiveOptions.source.stagingPath;
++            }
++            if (item._name === 'targetStagingPath') {
++              if ($scope.UIModel.source.hiveDatabaseType === "databases") {
++                item._value = "*";
++              } else {
++                item._value = $scope.UIModel.hiveOptions.target.stagingPath;
++              }
++            }
++            if (item._name === 'sourceNN') {
++              item._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
++            }
++            if (item._name === 'targetNN') {
++              item._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
++            }
++            if (item._name === 'sourceMetastoreUri') {
++              item._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'registry');
++            }
++            if (item._name === 'targetMetastoreUri') {
++              item._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'registry');
++            }
++            if (item._name === 'sourceTable') {
++              if ($scope.UIModel.source.hiveDatabaseType === "databases") {
++                item._value = "*";
++              } else {
++                item._value = $scope.UIModel.source.hiveTables;
++              }
++            }
++            if (item._name === 'sourceDatabase') {
++              if ($scope.UIModel.source.hiveDatabaseType === "databases") {
++                item._value = $scope.UIModel.source.hiveDatabases;
++              } else {
++                item._value = $scope.UIModel.source.hiveDatabase;
++              }
++            }
++            if (item._name === 'maxEvents') {
++              item._value = $scope.UIModel.allocation.hive.maxMapsEvents;
++            }
++            if (item._name === 'replicationMaxMaps') {
++              item._value = $scope.UIModel.allocation.hive.maxMapsMirror;
++            }
++            if (item._name === 'clusterForJobRun') {
++              if ($scope.UIModel.runOn === "source") {
++                item._value = $scope.UIModel.source.cluster;
++              } else {
++                item._value = $scope.UIModel.target.cluster;
++              }
++            }
++            if (item._name === 'clusterForJobRunWriteEP') {
++              if ($scope.UIModel.runOn === "source") {
++                item._value = findInterface($scope.sourceClusterModel.cluster.interfaces.interface, 'write');
++              } else {
++                item._value = findInterface($scope.targetClusterModel.cluster.interfaces.interface, 'write');
++              }
++            }
++            if (item._name === 'drJobName') {
++              item._value = $scope.UIModel.name;
++            }
++            if (item._name === 'drNotifyEmail') {
++              item._value = $scope.UIModel.alerts.alertsArray.join();
++            }
++
++          });
++
++        } else {
++          console.log('error in form type');
++        }
++
++        $scope.xmlString = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + X2jsService.json2xml_str($scope.completeModel);
++
++      }
++
++      $scope.save = function () {
++        SpinnersFlag.show = true;
++
++        if(!$scope.$parent.cloningMode) {
++          Falcon.postUpdateEntity($scope.xmlString, 'process', $scope.model._name)
++            .success(function (response) {
++              $scope.skipUndo = true;
++              Falcon.logResponse('success', response, false);
++              $state.go('main');
++
++            })
++            .error(function (err) {
++              SpinnersFlag.show = false;
++              Falcon.logResponse('error', err, false);
++              angular.element('body, html').animate({scrollTop: 0}, 300);
++            });
++        } else {
++          Falcon.postSubmitEntity($scope.xmlString, 'process')
++            .success(function (response) {
++              $scope.skipUndo = true;
++              Falcon.logResponse('success', response, false);
++              $state.go('main');
++            })
++            .error(function (err) {
++              Falcon.logResponse('error', err, false);
++              SpinnersFlag.show = false;
++              angular.element('body, html').animate({scrollTop: 0}, 300);
++            });
++        }
++
++      };
++
++      function identifyLocationType (val) {
++        if (validationService.patterns.s3.test(val)) {
++          return "s3";
++        } else if (validationService.patterns.azure.test(val)) {
++          return "azure";
++        } else {
++          return "HDFS";
++        }
++      }
++
++      function importModel(model) {
++
++        var mirrorType;
++
++        if (model.process.tags.search('_falcon_mirroring_type=HDFS') !== -1) {
++          mirrorType = 'HDFS';
++        } else {
++          mirrorType = 'HIVE';
++        }
++        $scope.switchModel(mirrorType);
++        EntityModel.datasetModel.UIModel.formType = mirrorType;
++        EntityModel.datasetModel.UIModel.name = model.process._name;
++        EntityModel.datasetModel.UIModel.retry.policy = model.process.retry._policy;
++        EntityModel.datasetModel.UIModel.retry.attempts = model.process.retry._attempts;
++        EntityModel.datasetModel.UIModel.retry.delay.number = (function () {
++          return parseInt(model.process.retry._delay.split('(')[1]);
++        }());
++        EntityModel.datasetModel.UIModel.retry.delay.unit = (function () {
++          return model.process.retry._delay.split('(')[0];
++        }());
++        EntityModel.datasetModel.UIModel.frequency.number = (function () {
++          return parseInt(model.process.frequency.split('(')[1]);
++        }());
++        EntityModel.datasetModel.UIModel.frequency.unit = (function () {
++          return model.process.frequency.split('(')[0];
++        }());
++        EntityModel.datasetModel.UIModel.acl.owner = model.process.ACL._owner;
++        EntityModel.datasetModel.UIModel.acl.group = model.process.ACL._group;
++        EntityModel.datasetModel.UIModel.acl.permissions = model.process.ACL._permission;
++
++        EntityModel.datasetModel.UIModel.validity.startISO = model.process.clusters.cluster[0].validity._start;
++        EntityModel.datasetModel.UIModel.validity.endISO = model.process.clusters.cluster[0].validity._end;
++        EntityModel.datasetModel.UIModel.validity.tz = model.process.timezone;
++        EntityModel.datasetModel.UIModel.validity.start = DateHelper.importDate (model.process.clusters.cluster[0].validity._start, model.process.timezone);
++        EntityModel.datasetModel.UIModel.validity.startTime = DateHelper.importDate (model.process.clusters.cluster[0].validity._start, model.process.timezone);
++        EntityModel.datasetModel.UIModel.validity.end = DateHelper.importDate (model.process.clusters.cluster[0].validity._end, model.process.timezone);
++        EntityModel.datasetModel.UIModel.validity.endTime = DateHelper.importDate (model.process.clusters.cluster[0].validity._end, model.process.timezone);
++
++        EntityModel.datasetModel.UIModel.tags.tagsString = model.process.tags;
++        EntityModel.datasetModel.UIModel.tags.tagsArray = (function () {
++          var array = [];
++          model.process.tags.split(',').forEach(function (fieldToSplit) {
++            var splittedString = fieldToSplit.split("=");
++            array.push({key: splittedString[0], value: splittedString[1]});
++          });
++          return array;
++        }());
++
++        if (mirrorType === 'HDFS') {
++          model.process.properties.property.forEach(function (item) {
++            if (item._name === 'distcpMaxMaps') {
++              EntityModel.datasetModel.UIModel.allocation.hdfs.maxMaps = item._value;
++            }
++            if (item._name === 'distcpMapBandwidth') {
++              EntityModel.datasetModel.UIModel.allocation.hdfs.maxBandwidth = item._value;
++            }
++            if (item._name === 'drSourceDir') {
++              EntityModel.datasetModel.UIModel.source.path = item._value;
++            }
++            if (item._name === 'drTargetDir') {
++              EntityModel.datasetModel.UIModel.target.path = item._value;
++            }
++            if (item._name === 'drNotifyEmail') {
++              EntityModel.datasetModel.UIModel.alerts.alertsArray = item._value.split(',');
++            }
++            if (item._name === 'targetCluster') {
++              EntityModel.datasetModel.UIModel.target.cluster = item._value;
++            }
++            if (item._name === 'sourceCluster') {
++              EntityModel.datasetModel.UIModel.source.cluster = item._value;
++            }
++            if (item._name === 'drSourceClusterFS') {
++              EntityModel.datasetModel.UIModel.source.url = item._value;
++            }
++            if (item._name === 'drTargetClusterFS') {
++              EntityModel.datasetModel.UIModel.target.url = item._value;
++            }
++          });
++
++          if (EntityModel.datasetModel.UIModel.source.cluster === model.process.clusters.cluster[0]._name) {
++            EntityModel.datasetModel.UIModel.runOn = "source";
++          }
++          if (EntityModel.datasetModel.UIModel.target.cluster === model.process.clusters.cluster[0]._name) {
++            EntityModel.datasetModel.UIModel.runOn = "target";
++          }
++
++          EntityModel.datasetModel.UIModel.source.location = identifyLocationType(EntityModel.datasetModel.UIModel.source.url);
++          EntityModel.datasetModel.UIModel.target.location = identifyLocationType(EntityModel.datasetModel.UIModel.target.url);
++
++        } else if (mirrorType === 'HIVE') {
++
++          model.process.properties.property.forEach(function (item) {
++            if (item._name === 'distcpMaxMaps') {
++              EntityModel.datasetModel.UIModel.allocation.hive.maxMapsDistcp = item._value;
++            }
++            if (item._name === 'distcpMapBandwidth') {
++              EntityModel.datasetModel.UIModel.allocation.hive.maxBandwidth = item._value;
++            }
++            if (item._name === 'sourceCluster') {
++              EntityModel.datasetModel.UIModel.source.cluster = item._value;
++            }
++            if (item._name === 'targetCluster') {
++              EntityModel.datasetModel.UIModel.target.cluster = item._value;
++            }
++            if (item._name === 'sourceStagingPath') {
++              EntityModel.datasetModel.UIModel.hiveOptions.source.stagingPath = item._value;
++            }
++            if (item._name === 'targetStagingPath') {
++              EntityModel.datasetModel.UIModel.hiveOptions.target.stagingPath = item._value;
++              if (item._value === "*") {
++                EntityModel.datasetModel.UIModel.source.hiveDatabaseType = "databases";
++              } else {
++                EntityModel.datasetModel.UIModel.source.hiveDatabaseType = "tables";
++              }
++            }
++            if (item._name === 'sourceHiveServer2Uri') {
++              EntityModel.datasetModel.UIModel.hiveOptions.source.hiveServerToEndpoint = item._value;
++            }
++            if (item._name === 'targetHiveServer2Uri') {
++              EntityModel.datasetModel.UIModel.hiveOptions.target.hiveServerToEndpoint = item._value;
++            }
++            if (item._name === 'sourceTable') {
++              EntityModel.datasetModel.UIModel.source.hiveTables = item._value;
++              if (EntityModel.datasetModel.UIModel.source.hiveDatabaseType === "databases") {
++                EntityModel.datasetModel.UIModel.source.hiveTables = "*";
++              }
++              else {
++                EntityModel.datasetModel.UIModel.source.hiveTables = item._value;
++              }
++            }
++            if (item._name === 'sourceDatabase') {
++              if (EntityModel.datasetModel.UIModel.source.hiveDatabaseType === "databases") {
++                EntityModel.datasetModel.UIModel.source.hiveDatabases = item._value;
++              } else {
++                EntityModel.datasetModel.UIModel.source.hiveDatabase = item._value;
++              }
++            }
++            if (item._name === 'maxEvents') {
++              EntityModel.datasetModel.UIModel.allocation.hive.maxMapsEvents = item._value;
++            }
++            if (item._name === 'replicationMaxMaps') {
++              EntityModel.datasetModel.UIModel.allocation.hive.maxMapsMirror = item._value;
++            }
++            if (item._name === 'clusterForJobRun') {
++              if (EntityModel.datasetModel.UIModel.source.cluster === item._value) {
++                EntityModel.datasetModel.UIModel.runOn = "source";
++              } else {
++                EntityModel.datasetModel.UIModel.runOn = "target";
++              }
++            }
++            if (item._name === 'drNotifyEmail') {
++              EntityModel.datasetModel.UIModel.alerts.alertsArray = item._value.split(',');
++            }
++
++          });
++        }
++
++        if(EntityModel.datasetModel.UIModel.source.cluster) { $scope.getSourceDefinition(); }
++        if(EntityModel.datasetModel.UIModel.target.cluster) { $scope.getTargetDefinition(); }
++
++      }
++      if (EntityModel.datasetModel.toImportModel) {
++        importModel(EntityModel.datasetModel.toImportModel);
++      }
++    }]);
++}());
++
++
++
++
+-- 
+2.1.0
+
