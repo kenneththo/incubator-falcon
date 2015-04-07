@@ -1,11 +1,10 @@
-From b6c02a9d1e374a7bba05c22e7fda293d8c9c8a12 Mon Sep 17 00:00:00 2001
+From ed19ca271fc52fda971ae82176b618ab039a5ea0 Mon Sep 17 00:00:00 2001
 From: Armando Reyna <armando.reyna@globant.com>
-Date: Mon, 6 Apr 2015 21:14:07 -0500
+Date: Mon, 6 Apr 2015 21:53:16 -0500
 Subject: [PATCH] Stage08
 
 ---
  falcon-ui/app/config/loginData.js                  |    5 -
- falcon-ui/app/config/loginData.json                |    5 +
  falcon-ui/app/css/img/ajax-loader.gif              |  Bin 1849 -> 18533 bytes
  falcon-ui/app/css/img/falcon.png                   |  Bin 12349 -> 4742 bytes
  falcon-ui/app/css/img/user.svg                     |   15 +
@@ -17,16 +16,16 @@ Subject: [PATCH] Stage08
  falcon-ui/app/css/styles/entity-summary.less       |   17 +
  falcon-ui/app/css/styles/form-pages.less           |  237 +-
  falcon-ui/app/css/styles/nav-header.less           |   95 +-
- falcon-ui/app/css/styles/popover.less              |  213 ++
+ falcon-ui/app/css/styles/popover.less              |  230 ++
  falcon-ui/app/css/styles/progress-bar.less         |  106 +-
  falcon-ui/app/css/styles/server-messages.less      |   47 +-
  falcon-ui/app/css/variables.less                   |    4 +-
  .../html/cluster/clusterFormGeneralStepTpl.html    |  148 +-
  .../html/cluster/clusterFormSummaryStepTpl.html    |   26 +-
  falcon-ui/app/html/cluster/clusterFormTpl.html     |   38 +-
- .../html/dataset/datasetFormGeneralStepTpl.html    |  697 +++++
- .../html/dataset/datasetFormSummaryStepTpl.html    |  129 +
- falcon-ui/app/html/dataset/datasetFormTpl.html     |   38 +
+ .../html/dataset/datasetFormGeneralStepTpl.html    |  716 +++++
+ .../html/dataset/datasetFormSummaryStepTpl.html    |  148 +
+ falcon-ui/app/html/dataset/datasetFormTpl.html     |   57 +
  .../app/html/directives/dependenciesGraphDv.html   |   19 +
  falcon-ui/app/html/directives/entitiesListDv.html  |   59 +-
  .../app/html/directives/entitiesSearchListDv.html  |  124 +
@@ -35,7 +34,7 @@ Subject: [PATCH] Stage08
  falcon-ui/app/html/directives/lineageGraphDv.html  |   36 +
  falcon-ui/app/html/directives/navDv.html           |   83 +-
  .../app/html/directives/serverMessagesDv.html      |   71 +-
- falcon-ui/app/html/directives/tags-input.html      |    9 +
+ falcon-ui/app/html/directives/tags-input.html      |   28 +
  falcon-ui/app/html/entityDefinitionTpl.html        |   35 +
  falcon-ui/app/html/entityDetailsTpl.html           |   69 +-
  falcon-ui/app/html/entitySummary.html              |  147 +
@@ -79,7 +78,7 @@ Subject: [PATCH] Stage08
  .../js/controllers/process/process-root-ctrl.js    |   14 +-
  .../js/controllers/process/process-summary-ctrl.js |   38 +-
  falcon-ui/app/js/controllers/root-controller.js    |  127 +-
- falcon-ui/app/js/directives/chart.js               |  516 ++++
+ falcon-ui/app/js/directives/chart.js               |  533 ++++
  falcon-ui/app/js/directives/check-name.js          |   59 +-
  falcon-ui/app/js/directives/dependencies-graph.js  |  267 ++
  falcon-ui/app/js/directives/directives.js          |   41 +-
@@ -120,10 +119,10 @@ Subject: [PATCH] Stage08
  falcon-ui/express-data/datsetData.js               |   69 +
  falcon-ui/express-data/mockData.js                 |  445 ++-
  falcon-ui/package.json                             |    2 +
+ falcon-ui/pom.xml                                  |    1 +
  falcon-ui/server.js                                |  369 ++-
- 117 files changed, 15536 insertions(+), 1583 deletions(-)
+ 117 files changed, 15642 insertions(+), 1583 deletions(-)
  delete mode 100644 falcon-ui/app/config/loginData.js
- create mode 100644 falcon-ui/app/config/loginData.json
  create mode 100644 falcon-ui/app/css/img/user.svg
  create mode 100644 falcon-ui/app/css/styles/chart.less
  create mode 100644 falcon-ui/app/css/styles/dataset-form.less
@@ -180,18 +179,6 @@ index ecd6701..0000000
 -  "user": "ambari-qa",
 -  "password": "admin"
 -}
-diff --git a/falcon-ui/app/config/loginData.json b/falcon-ui/app/config/loginData.json
-new file mode 100644
-index 0000000..e638276
---- /dev/null
-+++ b/falcon-ui/app/config/loginData.json
-@@ -0,0 +1,5 @@
-+{
-+	"timeOut": 900000,
-+  "user": "ambari-qa",
-+  "password": "admin"
-+}
-\ No newline at end of file
 diff --git a/falcon-ui/app/css/img/ajax-loader.gif b/falcon-ui/app/css/img/ajax-loader.gif
 index c528e381382f466c0bb095a45f2864fd00eb529e..2f06bd5a2a8087d1c4a017a8199d73771269ea46 100644
 GIT binary patch
@@ -2694,10 +2681,27 @@ index 7bc160e..920c0bb 100644
 \ No newline at end of file
 diff --git a/falcon-ui/app/css/styles/popover.less b/falcon-ui/app/css/styles/popover.less
 new file mode 100644
-index 0000000..ba2129a
+index 0000000..4218bc2
 --- /dev/null
 +++ b/falcon-ui/app/css/styles/popover.less
-@@ -0,0 +1,213 @@
+@@ -0,0 +1,230 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
 +@popover-bg-color: #fff;
 +@popover-border-color: #d2d2d2;
 +
@@ -3619,10 +3623,29 @@ index 4da4cf6..a1ca1b5 100644
 \ No newline at end of file
 diff --git a/falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html b/falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html
 new file mode 100644
-index 0000000..5ae21b4
+index 0000000..9ac0059
 --- /dev/null
 +++ b/falcon-ui/app/html/dataset/datasetFormGeneralStepTpl.html
-@@ -0,0 +1,697 @@
+@@ -0,0 +1,716 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
 +<form id="formGeneralBox"
 +      name="datasetForm"
 +      class="col-xs-24"
@@ -4322,10 +4345,29 @@ index 0000000..5ae21b4
 +
 diff --git a/falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html b/falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html
 new file mode 100644
-index 0000000..297e778
+index 0000000..ee2bd1b
 --- /dev/null
 +++ b/falcon-ui/app/html/dataset/datasetFormSummaryStepTpl.html
-@@ -0,0 +1,129 @@
+@@ -0,0 +1,148 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
 +<div id="formSummaryBox" class="col-xs-24">
 +  <div>
 +    <h4 class="lightSubtitle">Name</h4>
@@ -4457,10 +4499,29 @@ index 0000000..297e778
 +
 diff --git a/falcon-ui/app/html/dataset/datasetFormTpl.html b/falcon-ui/app/html/dataset/datasetFormTpl.html
 new file mode 100644
-index 0000000..2bdfbf4
+index 0000000..d471d40
 --- /dev/null
 +++ b/falcon-ui/app/html/dataset/datasetFormTpl.html
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,57 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
 +<div id="formBox">
 +  <div class="formTitol">
 +    <a>Falcon Mirrors</a>
@@ -5191,10 +5252,29 @@ index df4e20c..dd0392b 100644
  
 diff --git a/falcon-ui/app/html/directives/tags-input.html b/falcon-ui/app/html/directives/tags-input.html
 new file mode 100644
-index 0000000..81b8eb5
+index 0000000..a00a1be
 --- /dev/null
 +++ b/falcon-ui/app/html/directives/tags-input.html
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,28 @@
++<!--
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
 +<div class="host" tabindex="-1" ti-transclude-append="">
 +<div class="tags" ng-class="{focused: hasFocus}">
 +<ul class="tag-list">
@@ -10295,10 +10375,27 @@ index 9a71d30..e3676a1 100644
 \ No newline at end of file
 diff --git a/falcon-ui/app/js/directives/chart.js b/falcon-ui/app/js/directives/chart.js
 new file mode 100644
-index 0000000..a008aed
+index 0000000..28b9398
 --- /dev/null
 +++ b/falcon-ui/app/js/directives/chart.js
-@@ -0,0 +1,516 @@
+@@ -0,0 +1,533 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
 +(function () {
 +  "use strict";
 +
@@ -20211,6 +20308,18 @@ index dda4855..bee5174 100644
      "grunt-scp": "^0.1.7",
      "jasmine": "^2.0.1",
      "karma": "^0.12.23",
+diff --git a/falcon-ui/pom.xml b/falcon-ui/pom.xml
+index 8853937..3d6e4b4 100644
+--- a/falcon-ui/pom.xml
++++ b/falcon-ui/pom.xml
+@@ -98,6 +98,7 @@
+             <exclude>karma.conf.js</exclude>
+             <exclude>bower.json</exclude>
+             <exclude>app/css/main.css</exclude>
++	    <exclude>app/css/img/**</exclude>
+             <exclude>app/test/e2e/protractor.js</exclude>
+           </excludes>
+         </configuration>
 diff --git a/falcon-ui/server.js b/falcon-ui/server.js
 index 422bcf9..5445b6a 100644
 --- a/falcon-ui/server.js
