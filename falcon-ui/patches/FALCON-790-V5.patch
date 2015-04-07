@@ -1,0 +1,84 @@
+From a229257e08a830759377ed200983ec8585bc2d6d Mon Sep 17 00:00:00 2001
+From: Armando Reyna <armando.reyna@globant.com>
+Date: Mon, 6 Apr 2015 20:47:02 -0500
+Subject: [PATCH] Stage06
+
+---
+ falcon-ui/Gruntfile.js |  7 -------
+ falcon-ui/pom.xml      | 35 -----------------------------------
+ 2 files changed, 42 deletions(-)
+
+diff --git a/falcon-ui/Gruntfile.js b/falcon-ui/Gruntfile.js
+index 63f5239..1fa44bb 100644
+--- a/falcon-ui/Gruntfile.js
++++ b/falcon-ui/Gruntfile.js
+@@ -36,13 +36,6 @@
+           expand: true
+         },
+ 
+-        webapp : {
+-          cwd: 'dist',
+-          src: ['**/*.*'],
+-          dest: '../webapp/src/main/webapp/public/',
+-          expand: true
+-        },
+-
+         ambariview : {
+           cwd: 'dist',
+           src: ['**/*.*'],
+diff --git a/falcon-ui/pom.xml b/falcon-ui/pom.xml
+index 337ab35..8853937 100644
+--- a/falcon-ui/pom.xml
++++ b/falcon-ui/pom.xml
+@@ -31,31 +31,6 @@
+     <plugins>
+ 
+       <plugin>
+-        <groupId>org.apache.maven.plugins</groupId>
+-        <artifactId>maven-antrun-plugin</artifactId>
+-        <version>1.7</version>
+-        <executions>
+-          <execution>
+-            <id>clean</id>
+-            <phase>clean</phase>
+-            <goals>
+-              <goal>run</goal>
+-            </goals>
+-            <configuration>
+-              <target name="falcon-ui clean">
+-                <exec dir="${basedir}" executable="rm">
+-                  <arg value="-rf"/>
+-                  <arg value="dist"/>
+-                  <arg value="node_modules"/>
+-                  <arg value="../webapp/src/main/webapp/public"/>
+-                </exec>
+-              </target>
+-            </configuration>
+-          </execution>
+-        </executions>
+-      </plugin>
+-
+-      <plugin>
+         <groupId>com.github.eirslett</groupId>
+         <artifactId>frontend-maven-plugin</artifactId>
+         <version>0.0.14</version>
+@@ -102,16 +77,6 @@
+             </configuration>
+           </execution>
+ 
+-          <execution>
+-            <id>grunt copy</id>
+-            <goals>
+-              <goal>grunt</goal>
+-            </goals>
+-            <configuration>
+-              <arguments>copy:webapp</arguments>
+-            </configuration>
+-          </execution>
+-
+         </executions>
+       </plugin>
+ 
+-- 
+2.1.0
+
