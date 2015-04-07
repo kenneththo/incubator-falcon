@@ -36,7 +36,8 @@
             <h4 class="instance-title">
               Status: <span ng-class="{'blink-success': instance.status === 'RUNNING', 'text-success': instance.status === 'SUCCEEDED',
               'blink-warning': instance.status === 'SUSPENDED', 'text-danger': instance.status === 'KILLED',
-              'blink-danger': instance.status === 'UNKNOWN'}">{{ instance.status }}</span>
+              'blink-danger': instance.status === 'UNKNOWN', 'blink-warning': item.status === 'WAITING',
+              'text-danger': item.status === 'FAILED'}">{{ instance.status }}</span>
             </h4>
           </div>
           <div class="col-sm-6 buttonCell">

@@ -226,6 +226,7 @@
         searchUrl += "&sortOrder="+sortOrder;
       }
       searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_INSTANCES;
+      console.log(searchUrl);
       return $http.get(buildURI(searchUrl));
     };
 

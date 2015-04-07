@@ -127,7 +127,7 @@
     var type = req.params.type.toUpperCase(),
       name = req.params.name;
     if (mockData.definitions[type][name]) {
-      console.log(mockData.definitions[type][name]);
+      //console.log(mockData.definitions[type][name]);
       res.send(200, mockData.definitions[type][name]);
     } else {
       res.send(404, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><result><status>FAILED</status><message>(' + type + ') '+ name +' not found.</message><requestId>586fffcd-10c1-4975-8dda-4b34a712f2f4</requestId></result>');

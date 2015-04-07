@@ -79,6 +79,8 @@
 
         }, true);
 
+        var resultsPerPage = 10;
+        var visiblePages = 3;
         scope.selectedRows = [];
         scope.$parent.refreshInstanceList(scope.type, scope.name, scope.start, scope.end);
 
@@ -111,7 +113,9 @@
             "RUNNING":0,
             "SUSPENDED":0,
             "UNKNOWN":0,
-            "KILLED":0
+            "KILLED":0,
+            "WAITING":0,
+            "FAILED":0
           };
 
           $timeout(function() {
@@ -127,7 +131,7 @@
             });
 
             if(statusCount.SUBMITTED > 0) {
-              if(statusCount.RUNNING > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0) {
+              if(statusCount.RUNNING > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0 || statusCount.WAITING > 0 || statusCount.FAILED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
               }
               else {
@@ -135,7 +139,7 @@
               }
             }
             if(statusCount.RUNNING > 0) {
-              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0 || statusCount.WAITING > 0 || statusCount.FAILED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:false };
               }
               else {
@@ -143,7 +147,7 @@
               }
             }
             if (statusCount.SUSPENDED > 0) {
-              if(statusCount.SUBMITTED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0 || statusCount.WAITING > 0 || statusCount.FAILED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:false };
               }
               else {
@@ -151,11 +155,27 @@
               }
             }
             if (statusCount.KILLED > 0) {
-              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0 || statusCount.WAITING > 0 || statusCount.FAILED > 0) {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
               }
               else {
                 scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:false, stop:true };
+              }
+            }
+            if(statusCount.WAITING > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.RUNNING > 0 || statusCount.SUSPENDED > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0 || statusCount.FAILED > 0) {
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
+              }
+              else {
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true  };
+              }
+            }
+            if (statusCount.FAILED > 0) {
+              if(statusCount.SUBMITTED > 0 || statusCount.SUSPENDED > 0 || statusCount.RUNNING > 0 || statusCount.UNKNOWN > 0 || statusCount.KILLED > 0 || statusCount.WAITING > 0) {
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
+              }
+              else {
+                scope.selectedDisabledButtons = { schedule:true, suspend:true, resume:true, stop:true };
               }
             }
             if (statusCount.UNKNOWN > 0) {
@@ -243,12 +263,12 @@
 
         scope.scopeNextOffset = function (page) {
           var offset = (parseInt(scope.pages[0].label)+(visiblePages-1))*resultsPerPage;
-          scope.changePagesSet(offset, page, 0);
+          scope.changePagesSet(offset, page, 0, scope.start, scope.end);
         };
 
         scope.scopePrevOffset = function (page) {
           var offset = (parseInt(scope.pages[0].label)-(visiblePages+1))*resultsPerPage;
-          scope.changePagesSet(offset, page, visiblePages-1);
+          scope.changePagesSet(offset, page, visiblePages-1, scope.start, scope.end);
         };
 
         scope.filterInstances = function(orderBy){
