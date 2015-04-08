@@ -1,0 +1,51 @@
+From cee45a2d67f3616e041fbcdbcfd079408cd45ae3 Mon Sep 17 00:00:00 2001
+From: Armando Reyna <armando.reyna@globant.com>
+Date: Wed, 8 Apr 2015 16:05:56 -0500
+Subject: [PATCH] BUG-34287
+
+---
+ falcon-ui/Gruntfile.js |  4 ++--
+ falcon-ui/pom.xml      | 10 ++++++++++
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/falcon-ui/Gruntfile.js b/falcon-ui/Gruntfile.js
+index 1fa44bb..3755725 100644
+--- a/falcon-ui/Gruntfile.js
++++ b/falcon-ui/Gruntfile.js
+@@ -36,10 +36,10 @@
+           expand: true
+         },
+ 
+-        ambariview : {
++        webapp : {
+           cwd: 'dist',
+           src: ['**/*.*'],
+-          dest: '../falcon-ambari-view/src/main/resources/ui/',
++          dest: '../webapp/src/main/webapp/public/',
+           expand: true
+         }
+       },
+diff --git a/falcon-ui/pom.xml b/falcon-ui/pom.xml
+index 3d6e4b4..66cc56d 100644
+--- a/falcon-ui/pom.xml
++++ b/falcon-ui/pom.xml
+@@ -76,6 +76,16 @@
+               <arguments>test</arguments>
+             </configuration>
+           </execution>
++	  
++	  <execution>
++            <id>grunt copy webapp</id>
++            <goals>
++              <goal>grunt</goal>
++            </goals>
++            <configuration>
++              <arguments>copy:webapp</arguments>
++            </configuration>
++          </execution>
+ 
+         </executions>
+       </plugin>
+-- 
+2.1.0
+
