@@ -110,7 +110,7 @@
         tags: "",
         groups: "",
         frequency: "",
-        timezone: "GMT+00:00",
+        /*timezone: "GMT+00:00",*/
         "late-arrival": {
           "_cut-off": ""
         },

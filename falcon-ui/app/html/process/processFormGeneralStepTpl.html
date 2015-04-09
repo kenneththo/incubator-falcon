@@ -62,10 +62,9 @@
 
   <div class="col-xs-24">
     <div class="light">Name</div>
-    <input type="text" class="form-control" validation-message="{{validations.messages.name}}"
+    <input type="text" class="form-control" validation-optional-message="{{validations.messages.name}}"
            id="workflowNameField"
            ng-model="process.workflow.name"
-           ng-required="true"
            ng-maxlength="39"
            ng-pattern="validations.patterns.name"/>
   </div>

@@ -80,6 +80,7 @@
             'dist/js/main.min.js': [
               'app/js/controllers/**/*-module.js',
               'app/js/controllers/**/*.js',
+              'app/js/directives/check-name.js',
               'app/js/directives/*.js',
               'app/js/services/**/*.js',
               'app/js/services/services.js',
@@ -195,7 +196,8 @@
 
       scp: {
         options: {
-          host: 'sandbox.hortonworks.com',
+          host: '127.0.0.1',
+          port: 2222,
           username: 'root',
           password: 'hadoop'
         },
@@ -208,7 +210,7 @@
               filter: 'isFile',
               // path on the server
               //dest: '/usr/hdp/current/falcon/webapp/falcon/public'
-              dest: '/usr/hdp/2.2.0.0-2041/falcon-0.7-SNAPSHOT/server/webapp/falcon/public'
+              dest: '/usr/hdp/2.2.0.0-913/falcon/server/webapp/falcon/public'
             }
           ]
         }

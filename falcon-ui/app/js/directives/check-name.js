@@ -18,7 +18,7 @@
 (function () {
   'use strict';
 
-  var checkNameModule = angular.module('app.directives.check-name', ['app.services']);
+  var checkNameModule = angular.module('app.directives.check-name', ['app.services.falcon', 'app.services.validation']);
 
   checkNameModule.directive('checkName', [ "ValidationService", "$timeout", "Falcon", function (validationService, $timeout, Falcon) {
     return {
@@ -45,6 +45,26 @@
             element.addClass('empty');
           }
         });
+
+        scope.$watch(function () {
+          return element[0].value;
+        }, function () {
+          $timeout(function () {
+            getNameAvailability(function() {
+              console.log('hello');
+            });
+            getMessage();
+            if (element[0].value.length > 0 && !element.hasClass('ng-invalid-pattern')) {
+              angular.element('.nameValidationMessage').addClass('hidden');
+            } else if (element.hasClass('ng-invalid-pattern')) {
+              angular.element('.nameValidationMessage').removeClass('hidden');
+            } else {
+
+            }
+          }, 300);
+
+        });
+
 
         function getLabels() {
           element.parent()
@@ -93,6 +113,7 @@
             } else if (element.hasClass('ng-invalid-pattern') && name.length > 0) {
               angular.element('.nameInputDisplay').addClass('hidden');
             }
+            //callback();
 
           }).error(function (err) {
             $scope.loading= false;
