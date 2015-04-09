@@ -38,30 +38,39 @@
           return;
         }
 
-        scope.$watch(function () {
+        /*scope.$watch(function () {
           return element[0].value.length;
         }, function () {
           if (element[0].value.length === 0) {
             element.addClass('empty');
           }
-        });
+        });*/
 
         scope.$watch(function () {
           return element[0].value;
         }, function () {
-          $timeout(function () {
-            getNameAvailability(function() {
-              console.log('hello');
-            });
-            getMessage();
-            if (element[0].value.length > 0 && !element.hasClass('ng-invalid-pattern')) {
-              angular.element('.nameValidationMessage').addClass('hidden');
-            } else if (element.hasClass('ng-invalid-pattern')) {
-              angular.element('.nameValidationMessage').removeClass('hidden');
-            } else {
 
+          if (!scope.$parent.editXmlDisabled) {
+            if (element[0].value.length === 0) {
+              element.addClass('empty');
             }
-          }, 300);
+
+              getNameAvailability(function() {
+                getMessage();
+
+                if (element.hasClass('ng-valid') && validationService.nameAvailable) {
+                  angular.element('.nameValidationMessage').addClass('hidden');
+
+                } else {
+                  element.parent().addClass("showValidationStyle");
+                  angular.element('.nameValidationMessage').removeClass('hidden');
+                  element.removeClass('empty');
+                }
+              });
+
+
+          }
+
 
         });
 
@@ -72,7 +81,7 @@
                 "</div><label class='custom-danger nameValidationMessage'></label>");
         }
 
-        function getNameAvailability() {
+        function getNameAvailability(fn) {
           var isAvailable = true;
           name = element[0].value;
 
@@ -113,7 +122,8 @@
             } else if (element.hasClass('ng-invalid-pattern') && name.length > 0) {
               angular.element('.nameInputDisplay').addClass('hidden');
             }
-            //callback();
+
+            if (fn) { fn(); } //>callback
 
           }).error(function (err) {
             $scope.loading= false;

@@ -80,10 +80,11 @@
             'dist/js/main.min.js': [
               'app/js/controllers/**/*-module.js',
               'app/js/controllers/**/*.js',
-              'app/js/directives/check-name.js',
-              'app/js/directives/*.js',
+
               'app/js/services/**/*.js',
               'app/js/services/services.js',
+              //'app/js/directives/check-name.js',
+              'app/js/directives/*.js',
               'app/js/app.js'
             ]
           }

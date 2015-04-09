@@ -74,23 +74,27 @@
     <div class="row">
       <div class="col-xs-4">
         <input
-                type="radio" id="oozieEngineRadio" ng-change="selectWorkflow()"
-                ng-model="process.workflow.engine" value="oozie"
-                ng-required="!process.workflow.engine"/> Oozie
+                type="radio" id="oozieEngineRadio"
+                ng-change="selectWorkflow()"
+                ng-model="process.workflow.engine"
+                value="oozie" /> Oozie
       </div>
       <div class="col-xs-4">
-        <input type="radio" id="pigEngineRadio" ng-change="selectWorkflow()"
-               ng-model="process.workflow.engine" value="pig"
-               ng-required="!process.workflow.engine"/> Pig
+        <input type="radio" id="pigEngineRadio"
+               ng-change="selectWorkflow()"
+               ng-model="process.workflow.engine"
+               value="pig" /> Pig
       </div>
       <div class="col-xs-4">
-        <input type="radio" id="hiveEngineRadio" ng-change="selectWorkflow()"
-               ng-model="process.workflow.engine" value="hive"
-               ng-required="!process.workflow.engine"/> Hive
+        <input type="radio" id="hiveEngineRadio"
+               ng-change="selectWorkflow()"
+               ng-model="process.workflow.engine"
+               value="hive" /> Hive
       </div>
 
-      <select id="engineVersionField" ng-model="process.workflow.version"
-        ng-required="true" ng-show="process.workflow.engine">
+      <select id="engineVersionField"
+              ng-model="process.workflow.version"
+              ng-show="process.workflow.engine">
 
         <option value="" disabled selected style='display:none;'>-Select {{process.workflow.engine}} version-</option>
 
