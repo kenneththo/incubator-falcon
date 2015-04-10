@@ -65,7 +65,7 @@
       };
 
       var consultPage = function(offset, page, defaultPage, start, end, status, orderBy, sortOrder){
-        $scope.loading = true;
+        Falcon.responses.listLoaded = false;
         InstanceFalcon.searchInstances($scope.entityType, $scope.entityName, offset, start, end, status, orderBy, sortOrder).then(function() {
           if (InstanceFalcon.data !== null) {
             $scope.pages[page] = {};
@@ -96,7 +96,6 @@
       };
 
       $scope.goPage = function (page) {
-        $scope.loading = true;
         $scope.pages.forEach(function(pag) {
           pag.enabled = true;
         });
@@ -107,7 +106,6 @@
         }
         $scope.prevPages = parseInt($scope.pages[page].label) >  visiblePages ? true : false;
         Falcon.responses.listLoaded = true;
-        $scope.loading = false;
       };
 
       $scope.changePagesSet = function(offset, page, defaultPage, start, end, status, orderBy, sortOrder){

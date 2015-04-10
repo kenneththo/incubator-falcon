@@ -247,7 +247,7 @@
 
           var bb = layout.graph();
           $('#lineage-graph').attr('width', bb.width);
-          $('#lineage-graph').attr('height', bb.height);
+          //$('#lineage-graph').attr('width', '100%');
           $('#lineage-graph').attr('height', bb.height);
           post_render();
         }

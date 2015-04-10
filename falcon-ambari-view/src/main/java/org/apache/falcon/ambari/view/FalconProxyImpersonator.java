@@ -21,12 +21,10 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
-import org.apache.ambari.view.HttpImpersonator;
-import org.apache.ambari.view.ImpersonatorResponse;
-import org.apache.ambari.view.ImpersonatorSetting;
-import org.apache.ambari.view.ViewContext;
+import org.apache.ambari.view.*;
 
 public class FalconProxyImpersonator {
 
@@ -166,6 +164,47 @@ public class FalconProxyImpersonator {
 
 		return response;
 	}
+
+//	public Response consumeServiceStream(String urlToRead, String method, String xml) throws Exception {
+//
+//		Response response;
+//		ImpersonatorResponse impResponse;
+//
+//
+//		URLStreamProvider streamProvider = viewContext.getURLStreamProvider();
+//
+//		String url = ...;
+//		String body = ...;
+//		String name = viewContext.getUsername();
+//
+//		Map<String, String> headers = Collections.singletonMap("user.name", name);
+//
+//		InputStream stream = streamProvider.readFrom(url, "GET", body, headers);
+//
+//
+//
+//
+//		if (method.equals(POST_METHOD)) {
+//			headers.put("Accept", MediaType.APPLICATION_JSON);
+//			headers.put("Content-type", "text/xml");
+//			impResponse = this.impersonator.requestURL(urlToRead, POST_METHOD, headers, xml, this.impersonatorSetting);
+//		} else if (method.equals(DELETE_METHOD)) {
+//			headers.put("Accept",MediaType.APPLICATION_JSON);
+//			impResponse = this.impersonator.requestURL(urlToRead, DELETE_METHOD, headers, null, this.impersonatorSetting);
+//		} else {
+//			headers = checkIfDefinition(urlToRead, headers);
+//			impResponse = this.impersonator.requestURL(urlToRead, GET_METHOD, headers, null, this.impersonatorSetting);
+//		}
+//
+//		if(Response.Status.OK.getStatusCode() == impResponse.getResponseCode() && impResponse.getResponse().contains(FALCON_ERROR)){
+//			response = Response.status(Response.Status.BAD_REQUEST).entity(impResponse.getResponse()).type(MediaType.TEXT_PLAIN).build();
+//		}else{
+//			Response.Status status = Response.Status.fromStatusCode(impResponse.getResponseCode());
+//			return Response.status(status).entity(impResponse.getResponse()).type(defineType(impResponse.getResponse())).build();
+//		}
+//
+//		return response;
+//	}
 
 	private String defineType(String response){
 		if(response.startsWith("{")){

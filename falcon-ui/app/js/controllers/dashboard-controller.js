@@ -21,9 +21,13 @@
   var dashboardCtrlModule = angular.module('app.controllers.dashboardCtrl', ['app.services']);
 
   dashboardCtrlModule.controller('DashboardCtrl', [ "$scope", "Falcon", "EntityModel", "FileApi", "$state", "X2jsService",
-    function ($scope, Falcon, EntityModel, FileApi, $state, X2jsService) {
+      "$timeout", function ($scope, Falcon, EntityModel, FileApi, $state, X2jsService, $timeout) {
 
       $scope.$parent.refreshList();
+
+      $timeout(function() {
+        angular.element('#nsPopover').trigger('click');
+      }, 1000);
 
       $scope.focusSearch = function () {
         $scope.$parent.refreshList($scope.tags);

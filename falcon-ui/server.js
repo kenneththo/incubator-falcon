@@ -1,3 +1,20 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 (function () {
   "use strict";
 
@@ -127,7 +144,7 @@
     var type = req.params.type.toUpperCase(),
       name = req.params.name;
     if (mockData.definitions[type][name]) {
-      console.log(mockData.definitions[type][name]);
+      //console.log(mockData.definitions[type][name]);
       res.send(200, mockData.definitions[type][name]);
     } else {
       res.send(404, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><result><status>FAILED</status><message>(' + type + ') '+ name +' not found.</message><requestId>586fffcd-10c1-4975-8dda-4b34a712f2f4</requestId></result>');

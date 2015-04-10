@@ -21,18 +21,11 @@
 
   <div class="row">
     <div class="col-sm-24">
-      <a href="javascript:void(0);" ng-click="backToEntity()">< Back to Entity</a>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-24">
       <div class="detailsBox">
         <div class="row">
-          <div class="col-sm-1"></div>
-          <div class="col-sm-8">
+          <div class="col-sm-10">
             <h3 class="instance-title">
-              {{ instance.instance }}
+              <a href="javascript:void(0);" ng-click="backToEntity()">{{ instance.name }}</a> | {{ instance.instance }}
             </h3>
           </div>
           <div class="col-sm-3 instance-status">
@@ -43,7 +36,8 @@
             <h4 class="instance-title">
               Status: <span ng-class="{'blink-success': instance.status === 'RUNNING', 'text-success': instance.status === 'SUCCEEDED',
               'blink-warning': instance.status === 'SUSPENDED', 'text-danger': instance.status === 'KILLED',
-              'blink-danger': instance.status === 'UNKNOWN'}">{{ instance.status }}</span>
+              'blink-danger': instance.status === 'UNKNOWN', 'blink-warning': item.status === 'WAITING',
+              'text-danger': item.status === 'FAILED'}">{{ instance.status }}</span>
             </h4>
           </div>
           <div class="col-sm-6 buttonCell">
@@ -58,7 +52,6 @@
               <span class="entypo stop"></span> <div>Stop</div>
             </div>
           </div>
-          <div class="col-sm-1"></div>
         </div>
       </div>
     </div>
