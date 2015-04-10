@@ -54,8 +54,10 @@
             ).toUTCString() + tz.slice(3),
             UTCRaw = Date.parse(UTC);
 
-        return new Date(UTCRaw).toISOString();
+        var dateWithSecs = new Date(UTCRaw).toISOString();
 
+        return dateWithSecs.slice(0, -8) + "Z";
+   
       };
 
       return dateHelper;
