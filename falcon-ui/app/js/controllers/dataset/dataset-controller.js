@@ -37,7 +37,12 @@
         return $state.current.name === route;
       };
 
-      $scope.clustersList = clustersList;
+      if (clustersList.type) { // is an object
+        $scope.clustersList = [clustersList];
+      } else {
+        $scope.clustersList = clustersList;
+      }
+
 
       $scope.switchModel = function (type) {
         $scope.model = EntityModel.datasetModel[type].process;
