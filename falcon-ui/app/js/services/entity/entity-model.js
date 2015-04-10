@@ -222,7 +222,7 @@
           }
         },
         retry: {
-          policy:"PERIODIC",
+          policy:"periodic",
           delay: {
             unit: "minutes",
             number: 30
