@@ -57,7 +57,7 @@
         var dateWithSecs = new Date(UTCRaw).toISOString();
 
         return dateWithSecs.slice(0, -8) + "Z";
-   
+
       };
 
       return dateHelper;
