@@ -298,7 +298,7 @@
           workflow: {
             _name: "hdfs-dr-workflow",
             _engine: "oozie",
-            _path: "hdfs://node-1.example.com:8020/apps/falcon/recipe/hdfs-replication/resources/runtime/hdfs-replication-workflow.xml",
+            _path: "/apps/falcon/workflows/hdfs-replication-workflow.xml",
             _lib: ""
           },
           retry: {
@@ -430,7 +430,7 @@
           workflow: {
             _name: "falcon-dr-hive-workflow",
             _engine: "oozie",
-            _path: "hdfs://node-1.example.com:8020/apps/falcon/recipe/hive-disaster-recovery/resources/runtime/hive-disaster-recovery-workflow.xml",
+            _path: "/apps/falcon/workflows/hive-disaster-recovery-workflow.xml",
             _lib: ""
           },
           retry: {
