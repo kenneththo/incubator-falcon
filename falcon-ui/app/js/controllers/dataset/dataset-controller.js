@@ -242,7 +242,7 @@
       function createXML() {
         $scope.model._name = $scope.UIModel.name;
         $scope.model.tags = $scope.UIModel.tags.tagsString;
-        $scope.model.retry._policy = $scope.UIModel.retry.policy.toLowerCase();
+        $scope.model.retry._policy = $scope.UIModel.retry.policy;
         $scope.model.retry._delay = $scope.UIModel.retry.delay.unit + '(' + $scope.UIModel.retry.delay.number + ')';
         $scope.model.retry._attempts = $scope.UIModel.retry.attempts;
         $scope.model.ACL._owner = $scope.UIModel.acl.owner;
