@@ -282,8 +282,8 @@
                 _value: "hdfs://240.0.0.10:8020"
               },
               {
-                _name: "drNotifyEmail",
-                _value: ""
+                _name: "drNotificationReceivers",
+                _value: "NA"
               },
               {
                 _name: "targetCluster",
@@ -422,8 +422,8 @@
                 _value: "hive-disaster-recovery-sowmya-1"
               },
               {
-                _name: "drNotifyEmail",
-                _value: ""
+                _name: "drNotificationReceivers",
+                _value: "NA"
               }
             ]
           },
