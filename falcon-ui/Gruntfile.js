@@ -54,12 +54,10 @@
             'app/js/lib/checklist-model.js',
             'app/js/lib/angular-animate.min.js',
             'app/js/lib/angular-messages.min.js',
-            //'app/js/lib/bootstrap3-typeahead.min.js',
             'app/js/lib/ng-tags-input.js',
             'app/js/lib/popover.js',
             'app/js/lib/ng-mask.min.js',
             'app/js/lib/dagre.min.js'
-            //'app/js/lib/dust-full-2.0.0.min.js'
           ],
           dest: 'dist/js/vendor.min.js'
         }
@@ -197,8 +195,7 @@
 
       scp: {
         options: {
-          host: '127.0.0.1',
-          port: 2222,
+          host: 'sandbox.hortonworks.com',
           username: 'root',
           password: 'hadoop'
         },
@@ -209,9 +206,7 @@
               cwd: 'dist',
               src: '**',
               filter: 'isFile',
-              // path on the server
-              //dest: '/usr/hdp/current/falcon/webapp/falcon/public'
-              dest: '/usr/hdp/2.2.0.0-913/falcon/server/webapp/falcon/public'
+              dest: '/usr/hdp/2.2.0.0-2041/falcon-0.7-SNAPSHOT/server/webapp/falcon'
             }
           ]
         }
