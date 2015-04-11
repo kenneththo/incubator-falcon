@@ -142,11 +142,6 @@
           $scope.UIModel.validity.endISO = DateHelper.createISO($scope.UIModel.validity.end, $scope.UIModel.validity.endTime, $scope.UIModel.validity.tz);
         }
 
-        console.log($scope.UIModel.validity.start);
-        console.log($scope.UIModel.validity.end);
-        console.log($scope.UIModel.validity.startISO);
-        console.log($scope.UIModel.validity.endISO);
-
       };
       $scope.$watch(function () {
         return $scope.UIModel.validity.tz;
