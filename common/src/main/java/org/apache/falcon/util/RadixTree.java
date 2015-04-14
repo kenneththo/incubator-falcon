@@ -18,7 +18,7 @@
 
 package org.apache.falcon.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.falcon.entity.store.FeedPathStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,21 +189,35 @@ public class RadixTree<T> implements FeedPathStore<T>, Formattable {
      */
     @Override
     @Nullable
-    public synchronized Collection<T> find(@Nonnull String key) {
-        if (key != null && !key.trim().isEmpty()){
-            return recursiveFind(key.trim(), root);
+    public synchronized Collection<T> find(@Nonnull String key, FalconRadixUtils.INodeAlgorithm algorithm) {
+        if (key != null && !key.trim().isEmpty()) {
+            if (algorithm == null) {
+                algorithm = new FalconRadixUtils.StringAlgorithm();
+            }
+            return recursiveFind(key.trim(), root, algorithm);
         }
         return null;
     }
 
-    private Collection<T> recursiveFind(String key, RadixNode<T> currentNode){
+    @Nullable
+    @Override
+    public Collection<T> find(@Nonnull String key) {
+        if (key != null && !key.trim().isEmpty()) {
+            FalconRadixUtils.INodeAlgorithm algorithm = new FalconRadixUtils.StringAlgorithm();
+            return recursiveFind(key.trim(), root, algorithm);
+        }
+        return null;
+    }
 
-        if (!key.startsWith(currentNode.getKey())){
+    private Collection<T> recursiveFind(String key, RadixNode<T> currentNode,
+        FalconRadixUtils.INodeAlgorithm algorithm){
+
+        if (!algorithm.startsWith(currentNode.getKey(), key)){
             LOG.debug("Current Node key: {} is not a prefix in the input key: {}", currentNode.getKey(), key);
             return null;
         }
 
-        if (StringUtils.equals(key, currentNode.getKey())){
+        if (algorithm.match(currentNode.getKey(), key)){
             if (currentNode.isTerminal()){
                 LOG.debug("Found the terminal node with key: {} for the given input.", currentNode.getKey());
                 return currentNode.getValues();
@@ -214,21 +228,15 @@ public class RadixTree<T> implements FeedPathStore<T>, Formattable {
         }
 
         //find child to follow, using remaining Text
-        RadixNode<T> newRoot = null;
-        String remainingText = key.substring(currentNode.getKey().length());
-        for(RadixNode<T> child : currentNode.getChildren()){
-            if (child.getKey().charAt(0) == remainingText.charAt(0)){
-                newRoot = child;
-                break;
-            }
-        }
+        RadixNode<T> newRoot = algorithm.getNextCandidate(currentNode, key);
+        String remainingText = algorithm.getRemainingText(currentNode, key);
 
         if (newRoot == null){
             LOG.debug("No child found to follow for further processing. Current node key {}");
             return null;
         }else {
             LOG.debug("Recursing with new key: {} and new remainingText: {}", newRoot.getKey(), remainingText);
-            return recursiveFind(remainingText, newRoot);
+            return recursiveFind(remainingText, newRoot, algorithm);
         }
     }
 
@@ -256,6 +264,7 @@ public class RadixTree<T> implements FeedPathStore<T>, Formattable {
         }
 
         if (StringUtils.equals(key, currentNode.getKey())){
+            LOG.trace("Current node's key:{} and the input key:{} matched", currentNode.getKey(), key);
             if (currentNode.getValues().contains(value)){
                 LOG.debug("Given value is found in the collection of values against the given key");
                 currentNode.removeValue(value);
@@ -307,6 +316,7 @@ public class RadixTree<T> implements FeedPathStore<T>, Formattable {
                         return false;
                     }
                 }
+                return true;
             }else {
                 LOG.debug("Current value is not found in the collection of values against the given key, no-op");
                 return false;
@@ -318,6 +328,7 @@ public class RadixTree<T> implements FeedPathStore<T>, Formattable {
         RadixNode<T> newRoot = null;
         String remainingKey = key.substring(currentNode.getMatchLength(key));
         for(RadixNode<T> el : currentNode.getChildren()){
+            LOG.trace("Finding next child to follow. Current child's key:{}", el.getKey());
             if (el.getKey().charAt(0) == remainingKey.charAt(0)){
                 newRoot = el;
                 break;

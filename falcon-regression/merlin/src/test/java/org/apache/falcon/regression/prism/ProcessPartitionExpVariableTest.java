@@ -35,15 +35,12 @@ import org.apache.oozie.client.OozieClient;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +54,7 @@ public class ProcessPartitionExpVariableTest extends BaseTestClass {
     private ColoHelper cluster = servers.get(0);
     private FileSystem clusterFS = serverFS.get(0);
     private OozieClient clusterOC = serverOC.get(0);
-    private String baseTestDir = baseHDFSDir + "/ProcessPartitionExpVariableTest";
+    private String baseTestDir = cleanAndGetTestDir();
     private String aggregateWorkflowDir = baseTestDir + "/aggregator";
 
     @BeforeClass(alwaysRun = true)
@@ -66,17 +63,16 @@ public class ProcessPartitionExpVariableTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws Exception {
         bundles[0] = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws Exception {
-        removeBundles();
+        removeTestClassEntities();
         HadoopUtil.deleteDirIfExists(baseTestDir, clusterFS);
     }
 
@@ -115,8 +111,7 @@ public class ProcessPartitionExpVariableTest extends BaseTestClass {
         HadoopUtil.flattenAndPutDataInFolder(clusterFS, OSUtil.NORMAL_INPUT, baseTestDir
             + "/input1/", dataDates);
 
-        InstanceUtil.waitTillInstanceReachState(clusterOC,
-            Util.getProcessName(bundles[0].getProcessData()), 2,
+        InstanceUtil.waitTillInstanceReachState(clusterOC, bundles[0].getProcessName(), 2,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
     }
 
@@ -147,11 +142,5 @@ public class ProcessPartitionExpVariableTest extends BaseTestClass {
             startDate = nextDate;
         }
         return dates;
-    }
-
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

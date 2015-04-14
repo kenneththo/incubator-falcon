@@ -30,32 +30,29 @@ import org.apache.falcon.regression.core.util.HadoopUtil;
 import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
 import org.apache.falcon.regression.core.util.TimeUtil;
-import org.apache.falcon.regression.core.util.Util;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
 import org.apache.falcon.resource.InstancesResult;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.CoordinatorAction;
 import org.apache.oozie.client.OozieClient;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 
 /**
  * Test process with different frequency combinations.
  */
+@Test(groups = "embedded")
 public class ProcessFrequencyTest extends BaseTestClass {
     private static final Logger LOGGER = Logger.getLogger(ProcessFrequencyTest.class);
     private ColoHelper cluster = servers.get(0);
     private FileSystem clusterFS = serverFS.get(0);
     private OozieClient clusterOC = serverOC.get(0);
-    private String baseTestHDFSDir = baseHDFSDir + "/ProcessFrequencyTest";
+    private String baseTestHDFSDir = cleanAndGetTestDir();
     private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
 
     @BeforeClass(alwaysRun = true)
@@ -63,27 +60,21 @@ public class ProcessFrequencyTest extends BaseTestClass {
         LOGGER.info("in @BeforeClass");
         HadoopUtil.uploadDir(clusterFS, aggregateWorkflowDir, OSUtil.RESOURCES_OOZIE);
         Bundle bundle = BundleUtil.readELBundle();
-        bundle.generateUniqueBundle();
+        bundle.generateUniqueBundle(this);
         bundles[0] = new Bundle(bundle, cluster);
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setup(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setup() throws Exception {
         bundles[0] = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
+        removeTestClassEntities();
     }
 
     /**
@@ -103,15 +94,15 @@ public class ProcessFrequencyTest extends BaseTestClass {
         bundles[0].setProcessPeriodicity(freqAmount, freqType.getFalconTimeUnit());
         bundles[0].setProcessInputStartEnd("now(0,0)", "now(0,0)");
         bundles[0].setProcessValidity(startDate, endDate);
+        HadoopUtil.deleteDirIfExists(inputPath, clusterFS);
         bundles[0].submitFeedsScheduleProcess(prism);
 
         //upload data
-        HadoopUtil.deleteDirIfExists(inputPath, clusterFS);
         final String startPath = inputPath + freqType.getFormatter().print(
             TimeUtil.oozieDateToDate(startDate));
         HadoopUtil.copyDataToFolder(clusterFS, startPath, OSUtil.NORMAL_INPUT);
 
-        final String processName = Util.readEntityName(bundles[0].getProcessData());
+        final String processName = bundles[0].getProcessName();
         //InstanceUtil.waitTillInstancesAreCreated(cluster, bundles[0].getProcessData(), 0);
         InstanceUtil.waitTillInstanceReachState(clusterOC, processName, 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS, 5);

@@ -19,6 +19,7 @@
 package org.apache.falcon.regression;
 
 
+import org.apache.falcon.regression.Entities.FeedMerlin;
 import org.apache.falcon.regression.core.bundle.Bundle;
 import org.apache.falcon.entity.v0.EntityType;
 import org.apache.falcon.entity.v0.Frequency;
@@ -29,7 +30,6 @@ import org.apache.falcon.regression.core.response.ServiceResponse;
 import org.apache.falcon.regression.core.util.AssertUtil;
 import org.apache.falcon.regression.core.util.BundleUtil;
 import org.apache.falcon.regression.core.util.HadoopUtil;
-import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.core.util.MatrixUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
 import org.apache.falcon.regression.core.util.OozieUtil;
@@ -49,15 +49,12 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,7 +73,7 @@ public class NewRetryTest extends BaseTestClass {
     private OozieClient clusterOC = serverOC.get(0);
 
     private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy/MM/dd/HH/mm");
-    private final String baseTestDir = baseHDFSDir + "/NewRetryTest";
+    private final String baseTestDir = cleanAndGetTestDir();
     private final String aggregateWorkflowDir = baseTestDir + "/aggregator";
     private final String lateDir = baseTestDir + "/lateDataTest/testFolders";
     private final String latePath = lateDir + MINUTE_DATE_PATTERN;
@@ -89,27 +86,26 @@ public class NewRetryTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
+    public void setUp() throws Exception {
         bundles[0] = new Bundle(BundleUtil.readRetryBundle(), cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
         startDate = new DateTime(DateTimeZone.UTC).plusMinutes(1);
         endDate = new DateTime(DateTimeZone.UTC).plusMinutes(2);
-        bundles[0].setProcessValidity(startDate, endDate);
+        bundles[0].setProcessValidity(TimeUtil.dateToOozieDate(startDate.toDate()),
+            TimeUtil.dateToOozieDate(endDate.toDate()));
 
-        String feed =
-            Util.setFeedPathValue(bundles[0].getInputFeedFromBundle(), latePath);
-        feed = Util.insertLateFeedValue(feed, new Frequency("minutes(8)"));
+        FeedMerlin feed = new FeedMerlin(bundles[0].getInputFeedFromBundle());
+        feed.setFeedPathValue(latePath).insertLateFeedValue(new Frequency("minutes(8)"));
         bundles[0].getDataSets().remove(bundles[0].getInputFeedFromBundle());
-        bundles[0].getDataSets().add(feed);
+        bundles[0].getDataSets().add(feed.toString());
         bundles[0].setOutputFeedLocationData(baseTestDir + "/output" + MINUTE_DATE_PATTERN);
         bundles[0].submitClusters(prism);
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-
-        removeBundles();
+        removeTestClassEntities();
     }
 
     @Test(dataProvider = "DP", groups = {"0.2.2", "retry"}, enabled = true)
@@ -139,7 +135,7 @@ public class NewRetryTest extends BaseTestClass {
 
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             waitTillCertainPercentageOfProcessHasStarted(clusterOC, bundleId, 25);
 
@@ -153,8 +149,8 @@ public class NewRetryTest extends BaseTestClass {
             LOGGER.info("going to update process at:" + DateTime.now(DateTimeZone.UTC));
             prism.getProcessHelper()
                 .update((bundles[0].getProcessData()), bundles[0].getProcessData());
-            String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+            String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                bundles[0].getProcessName(), EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -187,7 +183,7 @@ public class NewRetryTest extends BaseTestClass {
             AssertUtil.assertSucceeded(
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             for (int attempt = 0;
                  attempt < 20 && !validateFailureRetries(clusterOC, bundleId, 1); ++attempt) {
@@ -208,8 +204,8 @@ public class NewRetryTest extends BaseTestClass {
                     .update((bundles[0].getProcessData()), bundles[0].getProcessData())
                     .getMessage().contains("updated successfully"),
                     "process was not updated successfully");
-                String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                    Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+                String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                    bundles[0].getProcessName(), EntityType.PROCESS);
 
                 Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -246,7 +242,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             for (int i = 0; i < 10 && !validateFailureRetries(clusterOC, bundleId, 1); ++i) {
                 TimeUtil.sleepSeconds(10);
@@ -263,8 +259,8 @@ public class NewRetryTest extends BaseTestClass {
                     .update((bundles[0].getProcessData()), bundles[0].getProcessData())
                     .getMessage().contains("updated successfully"),
                 "process was not updated successfully");
-            String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+            String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                bundles[0].getProcessName(), EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -299,7 +295,7 @@ public class NewRetryTest extends BaseTestClass {
 
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             for (int attempt = 0;
                  attempt < 10 && !validateFailureRetries(clusterOC, bundleId, 2); ++attempt) {
@@ -319,8 +315,8 @@ public class NewRetryTest extends BaseTestClass {
                     .update((bundles[0].getProcessData()), bundles[0].getProcessData())
                     .getMessage().contains("updated successfully"),
                 "process was not updated successfully");
-            String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+            String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                bundles[0].getProcessName(), EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -354,7 +350,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             waitTillCertainPercentageOfProcessHasStarted(clusterOC, bundleId, 25);
 
@@ -364,11 +360,11 @@ public class NewRetryTest extends BaseTestClass {
 
             LOGGER.info("going to update process at:" + DateTime.now(DateTimeZone.UTC));
             Assert.assertTrue(prism.getProcessHelper()
-                .update(Util.readEntityName(bundles[0].getProcessData()),
+                .update(bundles[0].getProcessName(),
                     null).getMessage()
                 .contains("updated successfully"), "process was not updated successfully");
-            String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+            String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                bundles[0].getProcessName(), EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -402,7 +398,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             waitTillCertainPercentageOfProcessHasStarted(clusterOC, bundleId, 25);
 
@@ -412,11 +408,11 @@ public class NewRetryTest extends BaseTestClass {
 
             LOGGER.info("going to update process at:" + DateTime.now(DateTimeZone.UTC));
             Assert.assertTrue(
-                prism.getProcessHelper().update(Util.readEntityName(bundles[0].getProcessData()),
+                prism.getProcessHelper().update(bundles[0].getProcessName(),
                     bundles[0].getProcessData()).getMessage()
                     .contains("updated successfully"), "process was not updated successfully");
-            String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+            String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                bundles[0].getProcessName(), EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -453,7 +449,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             waitTillCertainPercentageOfProcessHasStarted(clusterOC, bundleId, 25);
 
@@ -464,12 +460,12 @@ public class NewRetryTest extends BaseTestClass {
 
             LOGGER.info("going to update process at:" + DateTime.now(DateTimeZone.UTC));
             Assert.assertTrue(prism.getProcessHelper()
-                    .update(Util.readEntityName(bundles[0].getProcessData()),
+                    .update(bundles[0].getProcessName(),
                         bundles[0].getProcessData()).getMessage()
                     .contains("updated successfully"),
                 "process was not updated successfully");
-            String newBundleId = InstanceUtil
-                .getLatestBundleID(cluster, Util.readEntityName(bundles[0].getProcessData()),
+            String newBundleId = OozieUtil
+                .getLatestBundleID(clusterOC, bundles[0].getProcessName(),
                     EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
@@ -507,7 +503,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             waitTillCertainPercentageOfProcessHasStarted(clusterOC, bundleId, 25);
 
@@ -517,11 +513,11 @@ public class NewRetryTest extends BaseTestClass {
 
             LOGGER.info("going to update process at:" + DateTime.now(DateTimeZone.UTC));
             Assert.assertFalse(
-                prism.getProcessHelper().update(Util.readEntityName(bundles[0].getProcessData())
+                prism.getProcessHelper().update(bundles[0].getProcessName()
                     , bundles[0].getProcessData()).getMessage().contains("updated successfully"),
                 "process was updated successfully!!!");
-            String newBundleId = InstanceUtil.getLatestBundleID(cluster,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS);
+            String newBundleId = OozieUtil.getLatestBundleID(clusterOC,
+                bundles[0].getProcessName(), EntityType.PROCESS);
 
             Assert.assertEquals(bundleId, newBundleId, "its creating a new bundle!!!");
 
@@ -559,7 +555,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             //now to validate all failed instances to check if they were retried or not.
             validateRetry(clusterOC, bundleId,
@@ -599,7 +595,7 @@ public class NewRetryTest extends BaseTestClass {
 
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             for (int attempt = 0;
                  attempt < 10 && !validateFailureRetries(clusterOC, bundleId, 1); ++attempt) {
@@ -612,7 +608,7 @@ public class NewRetryTest extends BaseTestClass {
             LOGGER.info("now firing user reruns:");
             for (int i = 0; i < 1; i++) {
                 prism.getProcessHelper()
-                    .getProcessInstanceRerun(Util.readEntityName(bundles[0].getProcessData()),
+                    .getProcessInstanceRerun(bundles[0].getProcessName(),
                         "?start=" + timeFormatter.print(startDate).replace("/", "T") + "Z"
                             + "&end=" + timeFormatter.print(endDate).replace("/", "T") + "Z");
             }
@@ -652,7 +648,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()),
+                bundles[0].getProcessName(),
                 EntityType.PROCESS).get(0);
 
             //now to validate all failed instances to check if they were retried or not.
@@ -663,7 +659,7 @@ public class NewRetryTest extends BaseTestClass {
 
             DateTime[] dateBoundaries = getFailureTimeBoundaries(clusterOC, bundleId);
             InstancesResult piResult = prism.getProcessHelper()
-                .getProcessInstanceRerun(Util.readEntityName(bundles[0].getProcessData()),
+                .getProcessInstanceRerun(bundles[0].getProcessName(),
                     "?start=" + timeFormatter.print(dateBoundaries[0]).replace("/", "T") + "Z"
                         + "&end=" + timeFormatter.print(dateBoundaries[dateBoundaries.length - 1])
                          .replace("/", "T") + "Z");
@@ -682,11 +678,11 @@ public class NewRetryTest extends BaseTestClass {
     @Test(dataProvider = "DP", groups = {"0.2.2", "retry"}, enabled = false)
     public void testRetryInSuspendedAndResumeCaseWithLateData(Retry retry) throws Exception {
 
-        String feed =
-            Util.setFeedPathValue(bundles[0].getInputFeedFromBundle(), latePath);
-        feed = Util.insertLateFeedValue(feed, new Frequency("minutes(10)"));
+        FeedMerlin feed = new FeedMerlin(bundles[0].getInputFeedFromBundle());
+        feed.setFeedPathValue(latePath);
+        feed.insertLateFeedValue(new Frequency("minutes(10)"));
         bundles[0].getDataSets().remove(bundles[0].getInputFeedFromBundle());
-        bundles[0].getDataSets().add(feed);
+        bundles[0].getDataSets().add(feed.toString());
         bundles[0].setRetry(retry);
 
         for (String data : bundles[0].getDataSets()) {
@@ -706,7 +702,7 @@ public class NewRetryTest extends BaseTestClass {
             AssertUtil.assertSucceeded(
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
             List<DateTime> dates = null;
 
             for (int i = 0; i < 10 && dates == null; ++i) {
@@ -776,13 +772,13 @@ public class NewRetryTest extends BaseTestClass {
     @Test(dataProvider = "DP", groups = {"0.2.2", "retry"}, enabled = false)
     public void testRetryInLateDataCase(Retry retry) throws Exception {
 
-        String feed =
-            Util.setFeedPathValue(bundles[0].getInputFeedFromBundle(), latePath);
+        FeedMerlin feed = new FeedMerlin(bundles[0].getInputFeedFromBundle());
+        feed.setFeedPathValue(latePath);
 
-        feed = Util.insertLateFeedValue(feed, getFrequency(retry));
+        feed.insertLateFeedValue(getFrequency(retry));
 
         bundles[0].getDataSets().remove(bundles[0].getInputFeedFromBundle());
-        bundles[0].getDataSets().add(feed);
+        bundles[0].getDataSets().add(feed.toString());
 
         bundles[0].setRetry(retry);
 
@@ -806,7 +802,7 @@ public class NewRetryTest extends BaseTestClass {
             AssertUtil.assertSucceeded(
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
             List<DateTime> dates = null;
 
             for (int i = 0; i < 10 && dates == null; ++i) {
@@ -856,11 +852,11 @@ public class NewRetryTest extends BaseTestClass {
     @Test(dataProvider = "DP", groups = {"0.2.2", "retry"}, enabled = false)
     public void testRetryInDeleteAfterPartialRetryCase(Retry retry) throws Exception {
 
-        String feed =
-            Util.setFeedPathValue(bundles[0].getInputFeedFromBundle(), latePath);
-        feed = Util.insertLateFeedValue(feed, new Frequency("minutes(1)"));
+        FeedMerlin feed = new FeedMerlin(bundles[0].getInputFeedFromBundle());
+        feed.setFeedPathValue(latePath);
+        feed.insertLateFeedValue(new Frequency("minutes(1)"));
         bundles[0].getDataSets().remove(bundles[0].getInputFeedFromBundle());
-        bundles[0].getDataSets().add(feed);
+        bundles[0].getDataSets().add(feed.toString());
 
         bundles[0].setRetry(retry);
 
@@ -882,7 +878,7 @@ public class NewRetryTest extends BaseTestClass {
                 prism.getProcessHelper().schedule(bundles[0].getProcessData()));
             //now wait till the process is over
             String bundleId = OozieUtil.getBundles(clusterOC,
-                Util.readEntityName(bundles[0].getProcessData()), EntityType.PROCESS).get(0);
+                bundles[0].getProcessName(), EntityType.PROCESS).get(0);
 
             validateRetry(clusterOC, bundleId,
                 (bundles[0].getProcessObject().getRetry().getAttempts()) / 2);
@@ -1181,11 +1177,6 @@ public class NewRetryTest extends BaseTestClass {
 
         return new Frequency(retry.getDelay().getTimeUnit() + "(" + delay + ")");
 
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }
 

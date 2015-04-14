@@ -45,7 +45,6 @@ import org.apache.oozie.client.OozieClient;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -53,7 +52,6 @@ import org.testng.annotations.DataProvider;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,7 +66,7 @@ public class HCatRetentionTest extends BaseTestClass {
     private Bundle bundle;
     private static HCatClient cli;
     private final String testDir = "/HCatRetentionTest/";
-    private final String baseTestHDFSDir = baseHDFSDir + testDir;
+    private final String baseTestHDFSDir = cleanAndGetTestDir();
     private final String dBName = "default";
     private final ColoHelper cluster = servers.get(0);
     private final FileSystem clusterFS = serverFS.get(0);
@@ -80,7 +78,7 @@ public class HCatRetentionTest extends BaseTestClass {
         HadoopUtil.recreateDir(clusterFS, baseTestHDFSDir);
         cli = cluster.getClusterHelper().getHCatClient();
         bundle = new Bundle(BundleUtil.readHCat2Bundle(), cluster);
-        bundle.generateUniqueBundle();
+        bundle.generateUniqueBundle(this);
         bundle.submitClusters(prism);
     }
 
@@ -119,7 +117,7 @@ public class HCatRetentionTest extends BaseTestClass {
                 freqType.getFormatter());
             AssertUtil.checkForListSizes(dataDates, dataDateStrings);
             final List<String> dataFolders = HadoopUtil.flattenAndPutDataInFolder(clusterFS,
-                OSUtil.OOZIE_EXAMPLE_INPUT_LATE_INPUT, baseTestHDFSDir, dataDateStrings);
+                OSUtil.SINGLE_FILE, baseTestHDFSDir, dataDateStrings);
             addPartitionsToExternalTable(cli, dBName, tableName, freqType, dataDates, dataFolders);
             List<String> initialData =
                 getHadoopDataFromDir(clusterFS, baseTestHDFSDir, testDir, freqType);
@@ -270,7 +268,7 @@ public class HCatRetentionTest extends BaseTestClass {
     }
 
     @DataProvider(name = "loopBelow")
-    public Object[][] getTestData(Method m) {
+    public Object[][] getTestData() {
         RetentionUnit[] retentionUnits = new RetentionUnit[]{
             RetentionUnit.HOURS,
             RetentionUnit.DAYS,
@@ -285,10 +283,5 @@ public class HCatRetentionTest extends BaseTestClass {
                 FreqType.YEARLY,
             };
         return MatrixUtil.crossProduct(periods, retentionUnits, dataTypes);
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

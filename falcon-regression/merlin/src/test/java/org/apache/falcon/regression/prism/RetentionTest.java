@@ -44,7 +44,6 @@ import org.apache.oozie.client.OozieClientException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -53,7 +52,6 @@ import org.testng.annotations.Test;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,8 +63,8 @@ import java.util.Random;
  */
 @Test(groups = "embedded")
 public class RetentionTest extends BaseTestClass {
-    private static final String TEST_FOLDERS = "testFolders/";
-    private String baseTestHDFSDir = baseHDFSDir + "/RetentionTest/";
+    private static final String TEST_FOLDERS = "/testFolders/";
+    private String baseTestHDFSDir = cleanAndGetTestDir();
     private String testHDFSDir = baseTestHDFSDir + TEST_FOLDERS;
     private static final Logger LOGGER = Logger.getLogger(RetentionTest.class);
     private ColoHelper cluster = servers.get(0);
@@ -75,18 +73,17 @@ public class RetentionTest extends BaseTestClass {
     private static final int[] GAPS = new int[]{2, 4, 5, 1};
 
     @BeforeMethod(alwaysRun = true)
-    public void testName(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setup() throws Exception {
         Bundle bundle = BundleUtil.readRetentionBundle();
         bundles[0] = new Bundle(bundle, cluster);
         bundles[0].setInputFeedDataPath(testHDFSDir);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].submitClusters(prism);
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws Exception {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -149,8 +146,7 @@ public class RetentionTest extends BaseTestClass {
         LOGGER.info("dataDates = " + dataDates);
         dataDates.add(HadoopUtil.SOMETHING_RANDOM);
         if (withData) {
-            HadoopUtil.flattenAndPutDataInFolder(clusterFS, OSUtil.RESOURCES + "log_01.txt",
-                testHDFSDir, dataDates);
+            HadoopUtil.flattenAndPutDataInFolder(clusterFS, OSUtil.SINGLE_FILE, testHDFSDir, dataDates);
         } else {
             HadoopUtil.createFolders(clusterFS, testHDFSDir, dataDates);
         }
@@ -225,7 +221,7 @@ public class RetentionTest extends BaseTestClass {
     private void validateDataFromFeedQueue(String feedName, List<MapMessage> messages,
         List<String> missingData) throws OozieClientException, JMSException {
         //just verify that each element in queue is same as deleted data!
-        List<String> workflowIds = OozieUtil.getWorkflowJobs(cluster,
+        List<String> workflowIds = OozieUtil.getWorkflowJobs(clusterOC,
                 OozieUtil.getBundles(clusterOC, feedName, EntityType.FEED).get(0));
 
         //create queue data folderList:
@@ -282,7 +278,7 @@ public class RetentionTest extends BaseTestClass {
      * Provides different sets of parameters for retention workflow.
      */
     @DataProvider(name = "betterDP")
-    public Object[][] getTestData(Method m) {
+    public Object[][] getTestData() {
         // a negative value like -4 should be covered in validation scenarios.
         Integer[] retentionPeriods = new Integer[]{0, 10080, 60, 8, 24};
         RetentionUnit[] retentionUnits = new RetentionUnit[]{
@@ -294,10 +290,5 @@ public class RetentionTest extends BaseTestClass {
         final Boolean[] withData = new Boolean[]{true};
 
         return MatrixUtil.crossProduct(retentionPeriods, retentionUnits, gaps, freqTypes, withData);
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

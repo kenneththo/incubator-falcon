@@ -18,31 +18,32 @@
 
 package org.apache.falcon.client;
 
-import org.apache.falcon.entity.v0.Entity;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.TrustManagerUtils;
 import org.apache.falcon.LifeCycle;
 import org.apache.falcon.cli.FalconMetadataCLI;
+import org.apache.falcon.entity.v0.Entity;
 import org.apache.falcon.entity.v0.EntityType;
-import org.apache.falcon.entity.v0.SchemaHelper;
 import org.apache.falcon.recipe.RecipeTool;
 import org.apache.falcon.recipe.RecipeToolArgs;
 import org.apache.falcon.resource.APIResult;
 import org.apache.falcon.resource.EntityList;
 import org.apache.falcon.resource.EntitySummaryResult;
 import org.apache.falcon.resource.FeedInstanceResult;
+import org.apache.falcon.resource.FeedLookupResult;
 import org.apache.falcon.resource.InstancesResult;
 import org.apache.falcon.resource.InstancesSummaryResult;
+import org.apache.falcon.resource.LineageGraphResult;
 import org.apache.hadoop.security.authentication.client.AuthenticatedURL;
 import org.apache.hadoop.security.authentication.client.KerberosAuthenticator;
 import org.apache.hadoop.security.authentication.client.PseudoAuthenticator;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -64,7 +65,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.SecureRandom;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -191,7 +191,9 @@ public class FalconClient {
         DEFINITION("api/entities/definition/", HttpMethod.GET, MediaType.TEXT_XML),
         LIST("api/entities/list/", HttpMethod.GET, MediaType.TEXT_XML),
         SUMMARY("api/entities/summary", HttpMethod.GET, MediaType.APPLICATION_JSON),
-        DEPENDENCY("api/entities/dependencies/", HttpMethod.GET, MediaType.TEXT_XML);
+        LOOKUP("api/entities/lookup/", HttpMethod.GET, MediaType.APPLICATION_JSON),
+        DEPENDENCY("api/entities/dependencies/", HttpMethod.GET, MediaType.TEXT_XML),
+        TOUCH("api/entities/touch", HttpMethod.POST, MediaType.TEXT_XML);
 
         private String path;
         private String method;
@@ -212,7 +214,8 @@ public class FalconClient {
         LIST("api/metadata/discovery/", HttpMethod.GET, MediaType.APPLICATION_JSON),
         RELATIONS("api/metadata/discovery/", HttpMethod.GET, MediaType.APPLICATION_JSON),
         VERTICES("api/metadata/lineage/vertices", HttpMethod.GET, MediaType.APPLICATION_JSON),
-        EDGES("api/metadata/lineage/edges", HttpMethod.GET, MediaType.APPLICATION_JSON);
+        EDGES("api/metadata/lineage/edges", HttpMethod.GET, MediaType.APPLICATION_JSON),
+        LINEAGE("api/metadata/lineage/entities", HttpMethod.GET, MediaType.APPLICATION_JSON);
 
         private String path;
         private String method;
@@ -324,14 +327,11 @@ public class FalconClient {
                 entityStream, null);
     }
 
-    public APIResult update(String entityType, String entityName, String filePath, Date effectiveTime)
+    public APIResult update(String entityType, String entityName, String filePath)
         throws FalconCLIException {
         InputStream entityStream = getServletInputStream(filePath);
         Entities operation = Entities.UPDATE;
         WebResource resource = service.path(operation.path).path(entityType).path(entityName);
-        if (effectiveTime != null) {
-            resource = resource.queryParam("effective", SchemaHelper.formatDateUTC(effectiveTime));
-        }
         ClientResponse clientResponse = resource
                 .header("Cookie", AUTH_COOKIE_EQ + authenticationToken)
                 .accept(operation.mimeType).type(MediaType.TEXT_XML)
@@ -369,10 +369,10 @@ public class FalconClient {
     //SUSPEND CHECKSTYLE CHECK ParameterNumberCheck
 
     public EntityList getEntityList(String entityType, String fields, String filterBy, String filterTags,
-                                    String orderBy, String sortOrder,
-                                    Integer offset, Integer numResults) throws FalconCLIException {
+                                    String orderBy, String sortOrder, Integer offset,
+                                    Integer numResults, String searchPattern) throws FalconCLIException {
         return sendListRequest(Entities.LIST, entityType, fields, filterBy,
-                filterTags, orderBy, sortOrder, offset, numResults);
+                filterTags, orderBy, sortOrder, offset, numResults, searchPattern);
     }
 
     public EntitySummaryResult getEntitySummary(String entityType, String cluster, String start, String end,
@@ -382,6 +382,20 @@ public class FalconClient {
         throws FalconCLIException {
         return sendEntitySummaryRequest(Entities.SUMMARY, entityType, cluster, start, end, fields, filterBy, filterTags,
                 orderBy, sortOrder, offset, numResults, numInstances);
+    }
+
+    public APIResult touch(String entityType, String entityName, String colo) throws FalconCLIException {
+        Entities operation = Entities.TOUCH;
+        WebResource resource = service.path(operation.path).path(entityType).path(entityName);
+        if (colo != null) {
+            resource = resource.queryParam("colo", colo);
+        }
+        ClientResponse clientResponse = resource
+                .header("Cookie", AUTH_COOKIE_EQ + authenticationToken)
+                .accept(operation.mimeType).type(MediaType.TEXT_XML)
+                .method(operation.method, ClientResponse.class);
+        checkIfSuccessful(clientResponse);
+        return parseAPIResult(clientResponse);
     }
 
     public InstancesResult getRunningInstances(String type, String entity, String colo, List<LifeCycle> lifeCycles,
@@ -449,7 +463,8 @@ public class FalconClient {
 
     public InstancesResult rerunInstances(String type, String entity, String start,
                                  String end, String filePath, String colo,
-                                 String clusters, String sourceClusters, List<LifeCycle> lifeCycles)
+                                 String clusters, String sourceClusters, List<LifeCycle> lifeCycles,
+                                 Boolean isForced)
         throws FalconCLIException, IOException {
 
         StringBuilder buffer = new StringBuilder();
@@ -468,7 +483,7 @@ public class FalconClient {
         }
         String temp = (buffer.length() == 0) ? null : buffer.toString();
         return sendInstanceRequest(Instances.RERUN, type, entity, start, end,
-                getServletInputStream(clusters, sourceClusters, temp), null, colo, lifeCycles);
+                getServletInputStream(clusters, sourceClusters, temp), null, colo, lifeCycles, isForced);
     }
 
     public InstancesResult getLogsOfInstances(String type, String entity, String start,
@@ -510,6 +525,19 @@ public class FalconClient {
 
     public String getDimensionList(String dimensionType, String cluster) throws FalconCLIException {
         return sendMetadataDiscoveryRequest(MetadataOperations.LIST, dimensionType, null, cluster);
+    }
+
+    public LineageGraphResult getEntityLineageGraph(String pipelineName) throws FalconCLIException {
+        MetadataOperations operation = MetadataOperations.LINEAGE;
+        WebResource resource = service.path(operation.path)
+                .queryParam(FalconMetadataCLI.PIPELINE_OPT, pipelineName);
+
+        ClientResponse clientResponse = resource
+            .header("Cookie", AUTH_COOKIE_EQ + authenticationToken)
+            .accept(operation.mimeType).type(operation.mimeType)
+            .method(operation.method, ClientResponse.class);
+        checkIfSuccessful(clientResponse);
+        return clientResponse.getEntity(LineageGraphResult.class);
     }
 
     public String getDimensionRelations(String dimensionType, String dimensionName) throws FalconCLIException {
@@ -579,8 +607,9 @@ public class FalconClient {
     private WebResource addParamsToResource(WebResource resource,
                                             String start, String end, String runId, String colo,
                                             String fields, String filterBy, String tags,
-                                            String orderBy, String sortOrder,
-                                            Integer offset, Integer numResults, Integer numInstances) {
+                                            String orderBy, String sortOrder, Integer offset,
+                                            Integer numResults, Integer numInstances, String searchPattern,
+                                            Boolean isForced) {
 
         if (!StringUtils.isEmpty(fields)) {
             resource = resource.queryParam("fields", fields);
@@ -618,6 +647,13 @@ public class FalconClient {
         if (numInstances != null) {
             resource = resource.queryParam("numInstances", numInstances.toString());
         }
+
+        if (!StringUtils.isEmpty(searchPattern)) {
+            resource = resource.queryParam("pattern", searchPattern);
+        }
+        if (isForced != null) {
+            resource = resource.queryParam("force", String.valueOf(isForced));
+        }
         return resource;
 
     }
@@ -635,7 +671,7 @@ public class FalconClient {
         resource = addParamsToResource(resource, start, end, null, null,
                 fields, filterBy, filterTags,
                 orderBy, sortOrder,
-                offset, numResults, numInstances);
+                offset, numResults, numInstances, null, null);
 
         ClientResponse clientResponse = resource
                 .header("Cookie", AUTH_COOKIE_EQ + authenticationToken)
@@ -659,8 +695,7 @@ public class FalconClient {
         checkIfSuccessful(clientResponse);
         String entity = clientResponse.getEntity(String.class);
 
-        return Entity.fromString(EntityType.valueOf(entityType.toUpperCase()),
-            entity);
+        return Entity.fromString(EntityType.getEnum(entityType), entity);
 
     }
 
@@ -696,6 +731,17 @@ public class FalconClient {
         return clientResponse.getEntity(APIResult.class);
     }
 
+    public FeedLookupResult reverseLookUp(String type, String path) throws FalconCLIException {
+        Entities api = Entities.LOOKUP;
+        WebResource resource = service.path(api.path).path(type);
+        resource = resource.queryParam("path", path);
+        ClientResponse response = resource.header("Cookie", AUTH_COOKIE_EQ + authenticationToken)
+                .accept(api.mimeType)
+                .method(api.method, ClientResponse.class);
+        checkIfSuccessful(response);
+        return response.getEntity(FeedLookupResult.class);
+    }
+
     //SUSPEND CHECKSTYLE CHECK VisibilityModifierCheck
     private InstancesResult sendInstanceRequest(Instances instances, String type,
                                        String entity, String start, String end, InputStream props,
@@ -706,16 +752,35 @@ public class FalconClient {
                 .getEntity(InstancesResult.class);
     }
 
+    private InstancesResult sendInstanceRequest(Instances instances, String type,
+                                                String entity, String start, String end, InputStream props,
+                                                String runid, String colo, List<LifeCycle> lifeCycles,
+                                                Boolean isForced) throws FalconCLIException {
+        return sendInstanceRequest(instances, type, entity, start, end, props,
+                runid, colo, lifeCycles, "", "", "", 0, DEFAULT_NUM_RESULTS, isForced).getEntity(InstancesResult.class);
+    }
+
+
+
     private ClientResponse sendInstanceRequest(Instances instances, String type, String entity,
                                        String start, String end, InputStream props, String runid, String colo,
                                        List<LifeCycle> lifeCycles, String filterBy, String orderBy, String sortOrder,
                                        Integer offset, Integer numResults) throws FalconCLIException {
+
+        return sendInstanceRequest(instances, type, entity, start, end, props,
+                runid, colo, lifeCycles, filterBy, orderBy, sortOrder, offset, numResults, null);
+    }
+
+    private ClientResponse sendInstanceRequest(Instances instances, String type, String entity,
+                                       String start, String end, InputStream props, String runid, String colo,
+                                       List<LifeCycle> lifeCycles, String filterBy, String orderBy, String sortOrder,
+                                       Integer offset, Integer numResults, Boolean isForced) throws FalconCLIException {
         checkType(type);
         WebResource resource = service.path(instances.path).path(type)
                 .path(entity);
 
         resource = addParamsToResource(resource, start, end, runid, colo,
-                null, filterBy, null, orderBy, sortOrder, offset, numResults, null);
+                null, filterBy, null, orderBy, sortOrder, offset, numResults, null, null, isForced);
 
         if (lifeCycles != null) {
             checkLifeCycleOption(lifeCycles, type);
@@ -744,7 +809,7 @@ public class FalconClient {
 
     private void checkLifeCycleOption(List<LifeCycle> lifeCycles, String type) throws FalconCLIException {
         if (lifeCycles != null && !lifeCycles.isEmpty()) {
-            EntityType entityType = EntityType.valueOf(type.toUpperCase().trim());
+            EntityType entityType = EntityType.getEnum(type);
             for (LifeCycle lifeCycle : lifeCycles) {
                 if (entityType != lifeCycle.getTag().getType()) {
                     throw new FalconCLIException("Incorrect lifecycle: " + lifeCycle + "for given type: " + type);
@@ -757,7 +822,7 @@ public class FalconClient {
         if (type == null || type.isEmpty()) {
             throw new FalconCLIException("entity type is empty");
         } else {
-            EntityType entityType = EntityType.valueOf(type.toUpperCase().trim());
+            EntityType entityType = EntityType.getEnum(type);
             if (entityType == EntityType.CLUSTER) {
                 throw new FalconCLIException(
                         "Instance management functions don't apply to Cluster entities");
@@ -768,11 +833,11 @@ public class FalconClient {
     //SUSPEND CHECKSTYLE CHECK ParameterNumberCheck
     private EntityList sendListRequest(Entities entities, String entityType, String fields, String filterBy,
                                        String filterTags, String orderBy, String sortOrder, Integer offset,
-                                       Integer numResults) throws FalconCLIException {
+                                       Integer numResults, String searchPattern) throws FalconCLIException {
         WebResource resource = service.path(entities.path)
                 .path(entityType);
         resource = addParamsToResource(resource, null, null, null, null, fields, filterBy, filterTags,
-                orderBy, sortOrder, offset, numResults, null);
+                orderBy, sortOrder, offset, numResults, null, searchPattern, null);
 
         ClientResponse clientResponse = resource
                 .header("Cookie", AUTH_COOKIE_EQ + authenticationToken)

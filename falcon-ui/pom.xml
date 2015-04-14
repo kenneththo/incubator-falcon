@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.falcon</groupId>
     <artifactId>falcon-main</artifactId>
-    <version>0.6-incubating-SNAPSHOT</version>    
+    <version>0.7-SNAPSHOT</version>
   </parent>
   <artifactId>falcon-ui</artifactId>
   <packaging>pom</packaging>
@@ -29,85 +29,80 @@
   <description>Apache Falcon UI Application</description>
   <build>
     <plugins>
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>0.0.14</version>
         <executions>
+
           <execution>
-            <id>clean</id>
-            <phase>clean</phase>
+            <id>install node and npm</id>
             <goals>
-              <goal>run</goal>
+              <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <target name="falcon-ui clean">
-                <exec dir="${basedir}" executable="rm">
-                  <arg value="-rf"/>
-                  <arg value="dist"/>
-                  <arg value="node_modules"/>
-                  <arg value="../webapp/src/main/webapp/public"/>
-                </exec>
-                <exec dir="${basedir}" executable="rm">
-                  <arg value="-rf"/>
-                  <arg value="dist"/>
-                  <arg value="node_modules"/>
-                  <arg value="../falcon-ambari-view/src/main/resources/ui"/>
-                </exec>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target name="falcon-ui-compile">
-                <exec dir="${basedir}" executable="npm">
-                  <arg value="install"/>
-                </exec>
-                <exec dir="${basedir}" executable="grunt" failonerror="true">
-                  <arg value="build"/>
-                </exec>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target name="falcon-ui unit tests" unless="${skipTests}">
-                <exec dir="${basedir}" executable="grunt" failonerror="true">
-                  <arg value="test"/>
-                </exec>
-              </target>
+              <nodeVersion>v0.10.30</nodeVersion>
+              <npmVersion>1.4.3</npmVersion>
             </configuration>
           </execution>
 
           <execution>
-            <id>package</id>
-            <phase>package</phase>
+            <id>npm install</id>
             <goals>
-              <goal>run</goal>
+              <goal>npm</goal>
             </goals>
             <configuration>
-              <target name="falcon-ui package">
-                <exec dir="${basedir}" executable="grunt">
-                  <arg value="copy:webapp"/>
-                </exec>
-                <exec dir="${basedir}" executable="grunt">
-                  <arg value="copy:ambariview"/>
-                </exec>
-              </target>
+              <arguments>install</arguments>
             </configuration>
           </execution>
+
+          <execution>
+            <id>grunt build</id>
+            <goals>
+              <goal>grunt</goal>
+            </goals>
+            <configuration>
+              <arguments>build</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>grunt test</id>
+            <goals>
+              <goal>grunt</goal>
+            </goals>
+            <configuration>
+              <arguments>test</arguments>
+            </configuration>
+          </execution>
+
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>app/js/lib/**</exclude>
+            <exclude>app/css/bootstrap/**</exclude>
+            <exclude>app/test/lib/**</exclude>
+            <exclude>app/css/fonts/**</exclude>
+            <exclude>app/config/loginData.js</exclude>
+            <exclude>dist/**</exclude>
+            <exclude>node/**</exclude>
+	    <exclude>node_modules/**</exclude>
+            <exclude>package.json</exclude>
+            <exclude>bower.json</exclude>
+            <exclude>karma.conf.js</exclude>
+            <exclude>bower.json</exclude>
+            <exclude>app/css/main.css</exclude>
+            <exclude>app/test/e2e/protractor.js</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 </project>

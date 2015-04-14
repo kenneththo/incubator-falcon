@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import org.apache.oozie.client.CoordinatorAction;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -45,19 +44,19 @@ import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 
 /**
  * tests for instance option params.
  */
+@Test(groups = "embedded")
 public class InstanceParamTest extends BaseTestClass {
 
     /**
      * test cases for https://issues.apache.org/jira/browse/FALCON-263.
      */
 
-    private String baseTestHDFSDir = baseHDFSDir + "/InstanceParamTest";
+    private String baseTestHDFSDir = cleanAndGetTestDir();
     private String feedInputPath = baseTestHDFSDir + "/testInputData" + MINUTE_DATE_PATTERN;
     private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
     private String startTime;
@@ -76,16 +75,15 @@ public class InstanceParamTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setup(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setup() throws Exception {
         processBundle = BundleUtil.readELBundle();
         processBundle = new Bundle(processBundle, cluster1);
-        processBundle.generateUniqueBundle();
+        processBundle.generateUniqueBundle(this);
         processBundle.setInputFeedDataPath(feedInputPath);
         processBundle.setProcessWorkflow(aggregateWorkflowDir);
         for (int i = 0; i < 3; i++) {
             bundles[i] = new Bundle(processBundle, servers.get(i));
-            bundles[i].generateUniqueBundle();
+            bundles[i].generateUniqueBundle(this);
             bundles[i].setProcessWorkflow(aggregateWorkflowDir);
         }
         processName = processBundle.getProcessName();
@@ -104,7 +102,7 @@ public class InstanceParamTest extends BaseTestClass {
         processBundle.addClusterToBundle(bundles[2].getClusters().get(0),
             ClusterType.SOURCE, null, null);
         processBundle.submitFeedsScheduleProcess(prism);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, processBundle.getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, processBundle.getProcessData(), 0);
         InstancesResult r = prism.getProcessHelper().getInstanceParams(processName,
             "?start=" + startTime);
         r.getMessage();
@@ -123,7 +121,7 @@ public class InstanceParamTest extends BaseTestClass {
         processBundle.addClusterToBundle(bundles[2].getClusters().get(0),
             ClusterType.SOURCE, null, null);
         processBundle.submitFeedsScheduleProcess(prism);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, processBundle.getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, processBundle.getProcessData(), 0);
         OozieUtil.createMissingDependencies(cluster1, EntityType.PROCESS, processName, 0);
         InstanceUtil.waitTillInstanceReachState(cluster1OC, processName, 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS, 10);
@@ -145,7 +143,7 @@ public class InstanceParamTest extends BaseTestClass {
         processBundle.addClusterToBundle(bundles[2].getClusters().get(0),
             ClusterType.SOURCE, null, null);
         processBundle.submitFeedsScheduleProcess(prism);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, processBundle.getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, processBundle.getProcessData(), 0);
         OozieUtil.createMissingDependencies(cluster1, EntityType.PROCESS, processName, 0);
         InstanceUtil.waitTillInstanceReachState(cluster1OC, processName, 0,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS); //change according to test case
@@ -156,15 +154,9 @@ public class InstanceParamTest extends BaseTestClass {
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws IOException {
-        processBundle.deleteBundle(prism);
-        removeBundles();
+        removeTestClassEntities();
         for (FileSystem fs : serverFS) {
             HadoopUtil.deleteDirIfExists(Util.getPathPrefix(feedInputPath), fs);
         }
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

@@ -28,25 +28,21 @@ import org.apache.falcon.regression.core.response.lineage.VerticesResult;
 import org.apache.falcon.regression.core.util.BundleUtil;
 import org.apache.falcon.regression.core.util.GraphAssert;
 import org.apache.falcon.regression.core.util.HadoopUtil;
-import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
 import org.apache.falcon.regression.core.util.OozieUtil;
 import org.apache.falcon.regression.core.util.TimeUtil;
-import org.apache.falcon.regression.core.util.Util;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
 import org.apache.falcon.resource.InstancesResult;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.Job;
+import org.apache.oozie.client.OozieClient;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +55,9 @@ public class LineageApiProcessInstanceTest extends BaseTestClass {
 
     private ColoHelper cluster = servers.get(0);
     private FileSystem clusterFS = serverFS.get(0);
+    private OozieClient clusterOC = serverOC.get(0);
     private LineageHelper lineageHelper;
-    private String baseTestHDFSDir = baseHDFSDir + "/LineageApiInstanceTest";
+    private String baseTestHDFSDir = cleanAndGetTestDir();
     private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
     private String feedInputPrefix = baseTestHDFSDir + "/input";
     private String feedInputPath = feedInputPrefix + MINUTE_DATE_PATTERN;
@@ -79,12 +76,12 @@ public class LineageApiProcessInstanceTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true, firstTimeOnly = true)
-    public void setup(Method method) throws Exception {
+    public void setup() throws Exception {
         HadoopUtil.deleteDirIfExists(baseTestHDFSDir, clusterFS);
         HadoopUtil.uploadDir(clusterFS, aggregateWorkflowDir, OSUtil.RESOURCES_OOZIE);
 
         bundles[0] = new Bundle(BundleUtil.readELBundle(), cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
 
         bundles[0].setInputFeedDataPath(feedInputPath);
 
@@ -108,8 +105,7 @@ public class LineageApiProcessInstanceTest extends BaseTestClass {
         outputFeedName = bundles[0].getOutputFeedNameFromBundle();
         Job.Status status = null;
         for (int i = 0; i < 20; i++) {
-            status = InstanceUtil.getDefaultCoordinatorStatus(cluster,
-                Util.getProcessName(bundles[0].getProcessData()), 0);
+            status = OozieUtil.getDefaultCoordinatorStatus(clusterOC, bundles[0].getProcessName(), 0);
             if (status == Job.Status.SUCCEEDED || status == Job.Status.KILLED) {
                 break;
             }
@@ -122,7 +118,7 @@ public class LineageApiProcessInstanceTest extends BaseTestClass {
 
     @AfterMethod(alwaysRun = true, lastTimeOnly = true)
     public void tearDown() {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -227,10 +223,5 @@ public class LineageApiProcessInstanceTest extends BaseTestClass {
                 "Expecting output feed instance time and process instance time to be same");
         }
 
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

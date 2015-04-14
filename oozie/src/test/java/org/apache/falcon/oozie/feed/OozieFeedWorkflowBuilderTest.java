@@ -17,7 +17,7 @@
  */
 package org.apache.falcon.oozie.feed;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.falcon.FalconException;
 import org.apache.falcon.Tag;
 import org.apache.falcon.cluster.util.EmbeddedCluster;
@@ -31,6 +31,7 @@ import org.apache.falcon.entity.v0.Entity;
 import org.apache.falcon.entity.v0.EntityType;
 import org.apache.falcon.entity.v0.SchemaHelper;
 import org.apache.falcon.entity.v0.cluster.Cluster;
+import org.apache.falcon.entity.v0.cluster.ClusterLocationType;
 import org.apache.falcon.entity.v0.cluster.Interfacetype;
 import org.apache.falcon.entity.v0.feed.Feed;
 import org.apache.falcon.hadoop.HadoopClientFactory;
@@ -167,6 +168,9 @@ public class OozieFeedWorkflowBuilderTest extends AbstractTestBase {
         Assert.assertEquals("FALCON_FEED_REPLICATION_" + feed.getName() + "_"
                 + srcCluster.getName(), coord.getName());
         Assert.assertEquals("${coord:minutes(20)}", coord.getFrequency());
+        Assert.assertEquals("2", coord.getControls().getConcurrency());
+        Assert.assertEquals("120", coord.getControls().getTimeout());
+        Assert.assertEquals("FIFO", coord.getControls().getExecution());
         SYNCDATASET inputDataset = (SYNCDATASET) coord.getDatasets()
                 .getDatasetOrAsyncDataset().get(0);
         SYNCDATASET outputDataset = (SYNCDATASET) coord.getDatasets()
@@ -327,7 +331,7 @@ public class OozieFeedWorkflowBuilderTest extends AbstractTestBase {
         ACTION replicationActionNode = getAction(workflow, "replication");
         JAVA replication = replicationActionNode.getJava();
         List<String> args = replication.getArg();
-        Assert.assertEquals(args.size(), 13);
+        Assert.assertEquals(args.size(), 15);
 
         HashMap<String, String> props = getCoordProperties(coord);
 
@@ -714,14 +718,14 @@ public class OozieFeedWorkflowBuilderTest extends AbstractTestBase {
     }
 
     private void verifyClusterLocationsUMask(Cluster aCluster, FileSystem fs) throws IOException {
-        String stagingLocation = ClusterHelper.getLocation(aCluster, "staging");
+        String stagingLocation = ClusterHelper.getLocation(aCluster, ClusterLocationType.STAGING).getPath();
         Path stagingPath = new Path(stagingLocation);
         if (fs.exists(stagingPath)) {
             FileStatus fileStatus = fs.getFileStatus(stagingPath);
             Assert.assertEquals(fileStatus.getPermission().toShort(), 511);
         }
 
-        String workingLocation = ClusterHelper.getLocation(aCluster, "working");
+        String workingLocation = ClusterHelper.getLocation(aCluster, ClusterLocationType.WORKING).getPath();
         Path workingPath = new Path(workingLocation);
         if (fs.exists(workingPath)) {
             FileStatus fileStatus = fs.getFileStatus(workingPath);

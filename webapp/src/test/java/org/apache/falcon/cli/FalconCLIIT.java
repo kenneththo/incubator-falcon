@@ -75,6 +75,10 @@ public class FalconCLIIT {
                 "falcon/default/Submit successful (feed) "
                         + overlay.get("inputFeedName"));
 
+        // Test the lookup command
+        Assert.assertEquals(executeWithURL("entity -lookup -type feed -path "
+                + "/falcon/test/input/2014/11/23/23"), 0);
+
         filePath = TestContext.overlayParametersOverTemplate(TestContext.FEED_TEMPLATE2, overlay);
         Assert.assertEquals(executeWithURL("entity -submit -type feed -file " + filePath), 0);
         Assert.assertEquals(
@@ -116,9 +120,13 @@ public class FalconCLIIT {
 
         filePath = TestContext.overlayParametersOverTemplate(TestContext.PROCESS_TEMPLATE, overlay);
         Assert.assertEquals(executeWithURL("entity -submitAndSchedule -type process -file " + filePath), 0);
+        OozieTestUtils.waitForProcessWFtoStart(context);
 
         Assert.assertEquals(executeWithURL("entity -update -name " + overlay.get("processName")
-                + " -type process -file " + filePath + " -effective 2025-04-20T00:00Z"), 0);
+                + " -type process -file " + filePath), 0);
+
+        Assert.assertEquals(0,
+                executeWithURL("entity -touch -name " + overlay.get("processName") + " -type process"));
     }
 
     public void testValidateValidCommands() throws Exception {
@@ -487,6 +495,30 @@ public class FalconCLIIT {
                 + " -file " + createTempJobPropertiesFile()), 0);
     }
 
+
+    @Test
+    public void testEntityLineage() throws Exception {
+        TestContext context = new TestContext();
+        Map<String, String> overlay = context.getUniqueOverlay();
+
+        String filePath;
+        filePath = TestContext.overlayParametersOverTemplate(context.getClusterFileTemplate(), overlay);
+        context.setCluster(overlay.get("cluster"));
+        Assert.assertEquals(executeWithURL("entity -submit -type cluster -file " + filePath), 0);
+
+        filePath = TestContext.overlayParametersOverTemplate(TestContext.FEED_TEMPLATE1, overlay);
+        Assert.assertEquals(executeWithURL("entity -submit -type feed -file " + filePath), 0);
+
+        filePath = TestContext.overlayParametersOverTemplate(TestContext.FEED_TEMPLATE2, overlay);
+        Assert.assertEquals(executeWithURL("entity -submit -type feed -file " + filePath), 0);
+
+        filePath = TestContext.overlayParametersOverTemplate(TestContext.PROCESS_TEMPLATE, overlay);
+        Assert.assertEquals(executeWithURL("entity -submit -type process -file " + filePath), 0);
+
+        Assert.assertEquals(executeWithURL("metadata -lineage -pipeline testPipeline"), 0);
+
+    }
+
     @Test
     public void testEntityPaginationFilterByCommands() throws Exception {
 
@@ -523,6 +555,11 @@ public class FalconCLIIT {
 
         // test entity List cli
         Assert.assertEquals(executeWithURL("entity -list -type cluster" + " -offset 0 -numResults 1"), 0);
+
+        Assert.assertEquals(executeWithURL("entity -list -type process -fields status "
+                + " -filterBy STATUS:SUBMITTED,TYPE:process -orderBy name "
+                + " -sortOrder asc -offset 1 -numResults 1 -pattern abc"), 0);
+
         Assert.assertEquals(executeWithURL("entity -list -type process -fields status "
                 + " -filterBy STATUS:SUBMITTED,TYPE:process -orderBy name "
                 + " -sortOrder asc -offset 1 -numResults 1"), 0);

@@ -33,6 +33,7 @@ import org.apache.falcon.regression.core.util.HadoopUtil;
 import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.core.util.MatrixUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
+import org.apache.falcon.regression.core.util.OozieUtil;
 import org.apache.falcon.regression.core.util.TimeUtil;
 import org.apache.falcon.regression.core.util.Util;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
@@ -57,8 +58,8 @@ import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Tests for operations with external file systems.
@@ -74,11 +75,11 @@ public class ExternalFSTest extends BaseTestClass{
     private FileSystem wasbFS;
     private Bundle externalBundle;
 
-
-    private String baseTestDir = baseHDFSDir + "/ExternalFSTest";
+    private String baseTestDir = cleanAndGetTestDir();
     private String sourcePath = baseTestDir + "/source";
-    private String baseWasbDir = "/falcon-regression/" + Util.getUniqueString().substring(1);
-    private String testWasbTargetDir = baseWasbDir + "/"+ Util.getUniqueString().substring(1) + "/";
+    private String baseWasbDir = "/falcon-regression/" + UUID.randomUUID().toString().split("-")[0];
+    private String testWasbTargetDir = baseWasbDir + '/'
+        + UUID.randomUUID().toString().split("-")[0] + '/';
 
     private static final Logger LOGGER = Logger.getLogger(ExternalFSTest.class);
 
@@ -94,15 +95,14 @@ public class ExternalFSTest extends BaseTestClass{
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws JAXBException, IOException {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws JAXBException, IOException {
         Bundle bundle = BundleUtil.readFeedReplicationBundle();
 
         bundles[0] = new Bundle(bundle, cluster);
         externalBundle = new Bundle(bundle, cluster);
 
-        bundles[0].generateUniqueBundle();
-        externalBundle.generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
+        externalBundle.generateUniqueBundle(this);
 
         LOGGER.info("checking wasb credentials with location: " + testWasbTargetDir);
         wasbFS.create(new Path(testWasbTargetDir));
@@ -111,13 +111,12 @@ public class ExternalFSTest extends BaseTestClass{
 
     @AfterMethod
     public void tearDown() throws IOException {
-        removeBundles(externalBundle);
+        removeTestClassEntities();
         wasbFS.delete(new Path(testWasbTargetDir), true);
     }
 
     @AfterClass(alwaysRun = true)
     public void tearDownClass() throws IOException {
-        cleanTestDirs();
         wasbFS.delete(new Path(baseWasbDir), true);
     }
 
@@ -132,7 +131,6 @@ public class ExternalFSTest extends BaseTestClass{
 
     }
 
-
     @Test(dataProvider = "getData")
     public void replicateToExternalFS(final FileSystem externalFS,
         final String separator, final boolean withData) throws Exception {
@@ -145,30 +143,30 @@ public class ExternalFSTest extends BaseTestClass{
             new String[]{"${YEAR}", "${MONTH}", "${DAY}", "${HOUR}", "${MINUTE}"}, separator);
 
         //configure feed
-        String feed = bundles[0].getDataSets().get(0);
+        FeedMerlin feed = new FeedMerlin(bundles[0].getDataSets().get(0));
         String targetDataLocation = endpoint + testWasbTargetDir + datePattern;
-        feed = InstanceUtil.setFeedFilePath(feed, sourcePath + '/' + datePattern);
+        feed.setFilePath(sourcePath + '/' + datePattern);
         //erase all clusters from feed definition
-        feed = FeedMerlin.fromString(feed).clearFeedClusters().toString();
+        feed.clearFeedClusters();
         //set local cluster as source
-        feed = FeedMerlin.fromString(feed).addFeedCluster(
+        feed.addFeedCluster(
             new FeedMerlin.FeedClusterBuilder(Util.readEntityName(bundles[0].getClusters().get(0)))
                 .withRetention("days(1000000)", ActionType.DELETE)
                 .withValidity(startTime, endTime)
                 .withClusterType(ClusterType.SOURCE)
-                .build()).toString();
+                .build());
         //set externalFS cluster as target
-        feed = FeedMerlin.fromString(feed).addFeedCluster(
+        feed.addFeedCluster(
             new FeedMerlin.FeedClusterBuilder(Util.readEntityName(externalBundle.getClusters().get(0)))
                 .withRetention("days(1000000)", ActionType.DELETE)
                 .withValidity(startTime, endTime)
                 .withClusterType(ClusterType.TARGET)
                 .withDataLocation(targetDataLocation)
-                .build()).toString();
+                .build());
 
         //submit and schedule feed
-        LOGGER.info("Feed : " + Util.prettyPrintXml(feed));
-        AssertUtil.assertSucceeded(prism.getFeedHelper().submitAndSchedule(feed));
+        LOGGER.info("Feed : " + Util.prettyPrintXml(feed.toString()));
+        AssertUtil.assertSucceeded(prism.getFeedHelper().submitAndSchedule(feed.toString()));
         datePattern = StringUtils.join(new String[]{"yyyy", "MM", "dd", "HH", "mm"}, separator);
         //upload necessary data
         DateTime date = new DateTime(startTime, DateTimeZone.UTC);
@@ -183,15 +181,12 @@ public class ExternalFSTest extends BaseTestClass{
         Path dstPath = new Path(endpoint + testWasbTargetDir + '/' + timePattern);
 
         //check if coordinator exists
-        InstanceUtil.waitTillInstancesAreCreated(cluster, feed, 0);
-
-        Assert.assertEquals(InstanceUtil
-            .checkIfFeedCoordExist(cluster.getFeedHelper(), Util.readEntityName(feed),
-                "REPLICATION"), 1);
-
+        InstanceUtil.waitTillInstancesAreCreated(clusterOC, feed.toString(), 0);
+        Assert.assertEquals(OozieUtil.checkIfFeedCoordExist(clusterOC, feed.getName(), "REPLICATION"), 1);
         TimeUtil.sleepSeconds(10);
+
         //replication should start, wait while it ends
-        InstanceUtil.waitTillInstanceReachState(clusterOC, Util.readEntityName(feed), 1,
+        InstanceUtil.waitTillInstanceReachState(clusterOC, Util.readEntityName(feed.toString()), 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.FEED);
 
         //check if data has been replicated correctly

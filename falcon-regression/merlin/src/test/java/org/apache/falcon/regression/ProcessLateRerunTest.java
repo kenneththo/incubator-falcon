@@ -36,20 +36,17 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
  * Process late data test.
  */
-
+@Test(groups = "embedded")
 public class ProcessLateRerunTest extends BaseTestClass {
-
-
     private ColoHelper cluster1 = servers.get(0);
     private OozieClient cluster1OC = serverOC.get(0);
     private FileSystem cluster1FS = serverFS.get(0);
-    private String aggregateWorkflowDir = baseHDFSDir + "/ProcessLateRerunTest/aggregator";
+    private String aggregateWorkflowDir = cleanAndGetTestDir() + "/aggregator";
     private static final Logger LOGGER = Logger.getLogger(ProcessLateRerunTest.class);
 
     @BeforeClass(alwaysRun = true)
@@ -58,19 +55,18 @@ public class ProcessLateRerunTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws Exception {
         Bundle bundle = BundleUtil.readLateDataBundle();
         for (int i = 0; i < 1; i++) {
             bundles[i] = new Bundle(bundle, servers.get(i));
-            bundles[i].generateUniqueBundle();
+            bundles[i].generateUniqueBundle(this);
             bundles[i].setProcessWorkflow(aggregateWorkflowDir);
         }
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -79,7 +75,6 @@ public class ProcessLateRerunTest extends BaseTestClass {
      * It checks the number of rerun attempts once late data has been added
      * ensuring that late rerun happened.
      */
-
     @Test(enabled = true)
     public void testProcessLateRerunOnEmptyFolder() throws Exception {
         String startTime = TimeUtil.getTimeWrtSystemTime(0);
@@ -90,14 +85,13 @@ public class ProcessLateRerunTest extends BaseTestClass {
         bundles[0].setOutputFeedPeriodicity(10, Frequency.TimeUnit.minutes);
         bundles[0].setProcessConcurrency(2);
 
-        ProcessMerlin processMerlin = new ProcessMerlin(bundles[0].getProcessData());
-        String inputName = processMerlin.getInputs().getInputs().get(0).getName();
+        String inputName = bundles[0].getProcessObject().getFirstInputName();
         bundles[0].setProcessLatePolicy(getLateData(2, "minutes", "periodic", inputName, aggregateWorkflowDir));
 
         bundles[0].submitAndScheduleProcess();
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
         TimeUtil.sleepSeconds(10);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, bundles[0].getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, bundles[0].getProcessData(), 0);
 
         getAndCreateDependencies(cluster1, bundles[0], cluster1OC, cluster1FS, false, 1);
 
@@ -106,17 +100,14 @@ public class ProcessLateRerunTest extends BaseTestClass {
             LOGGER.info("Waiting...");
             TimeUtil.sleepSeconds(60);
         }
-
-        InstanceUtil.waitTillInstanceReachState(cluster1OC,
-            Util.getProcessName(bundles[0].getProcessData()), 1,
+        InstanceUtil.waitTillInstanceReachState(cluster1OC, bundles[0].getProcessName(), 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
         List<String> bundleList =  OozieUtil.getBundles(cluster1.getFeedHelper().getOozieClient(),
-            Util.getProcessName(bundles[0].getProcessData()), EntityType.PROCESS);
+            bundles[0].getProcessName(), EntityType.PROCESS);
         String bundleID = bundleList.get(0);
 
-        OozieUtil.validateRetryAttempts(cluster1, bundleID, EntityType.PROCESS, 1);
-
+        OozieUtil.validateRetryAttempts(cluster1OC, bundleID, EntityType.PROCESS, 1);
     }
 
     /**
@@ -134,14 +125,13 @@ public class ProcessLateRerunTest extends BaseTestClass {
         bundles[0].setOutputFeedPeriodicity(5, Frequency.TimeUnit.minutes);
         bundles[0].setProcessConcurrency(2);
 
-        ProcessMerlin processMerlin = new ProcessMerlin(bundles[0].getProcessData());
-        String inputName = processMerlin.getInputs().getInputs().get(0).getName();
+        String inputName = bundles[0].getProcessObject().getFirstInputName();
 
         bundles[0].setProcessLatePolicy(getLateData(4, "minutes", "periodic", inputName, aggregateWorkflowDir));
         bundles[0].submitAndScheduleProcess();
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
         TimeUtil.sleepSeconds(10);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, bundles[0].getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, bundles[0].getProcessData(), 0);
 
         getAndCreateDependencies(cluster1, bundles[0], cluster1OC, cluster1FS, true, 1);
 
@@ -150,17 +140,14 @@ public class ProcessLateRerunTest extends BaseTestClass {
             LOGGER.info("Waiting...");
             TimeUtil.sleepSeconds(60);
         }
-
-        InstanceUtil.waitTillInstanceReachState(cluster1OC,
-            Util.getProcessName(bundles[0].getProcessData()), 1,
+        InstanceUtil.waitTillInstanceReachState(cluster1OC, bundles[0].getProcessName(), 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
         List<String> bundleList =  OozieUtil.getBundles(cluster1.getFeedHelper().getOozieClient(),
-            Util.getProcessName(bundles[0].getProcessData()), EntityType.PROCESS);
+            bundles[0].getProcessName(), EntityType.PROCESS);
         String bundleID = bundleList.get(0);
 
-        OozieUtil.validateRetryAttempts(cluster1, bundleID, EntityType.PROCESS, 1);
-
+        OozieUtil.validateRetryAttempts(cluster1OC, bundleID, EntityType.PROCESS, 1);
     }
 
     /**
@@ -177,8 +164,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
         bundles[0].setProcessValidity(startTime, endTime);
         bundles[0].setProcessPeriodicity(10, Frequency.TimeUnit.minutes);
         bundles[0].setOutputFeedPeriodicity(10, Frequency.TimeUnit.minutes);
-        ProcessMerlin processMerlin = new ProcessMerlin(bundles[0].getProcessData());
-        String inputName = processMerlin.getInputs().getInputs().get(0).getName();
+        String inputName = bundles[0].getProcessObject().getFirstInputName();
 
         bundles[0].setProcessLatePolicy(getLateData(4, "minutes", "periodic", inputName, aggregateWorkflowDir));
         bundles[0].setProcessConcurrency(2);
@@ -189,7 +175,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
 
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
         TimeUtil.sleepSeconds(10);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, bundles[0].getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, bundles[0].getProcessData(), 0);
 
         getAndCreateDependencies(cluster1, bundles[0], cluster1OC, cluster1FS, false, 3);
 
@@ -198,17 +184,14 @@ public class ProcessLateRerunTest extends BaseTestClass {
             LOGGER.info("Waiting...");
             TimeUtil.sleepSeconds(60);
         }
-
-        InstanceUtil.waitTillInstanceReachState(cluster1OC,
-            Util.getProcessName(bundles[0].getProcessData()), 1,
+        InstanceUtil.waitTillInstanceReachState(cluster1OC, bundles[0].getProcessName(), 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
         List<String> bundleList =  OozieUtil.getBundles(cluster1.getFeedHelper().getOozieClient(),
-            Util.getProcessName(bundles[0].getProcessData()), EntityType.PROCESS);
+            bundles[0].getProcessName(), EntityType.PROCESS);
         String bundleID = bundleList.get(0);
 
-        OozieUtil.validateRetryAttempts(cluster1, bundleID, EntityType.PROCESS, 1);
-
+        OozieUtil.validateRetryAttempts(cluster1OC, bundleID, EntityType.PROCESS, 1);
     }
 
     /**
@@ -230,17 +213,17 @@ public class ProcessLateRerunTest extends BaseTestClass {
         // Increase the window of input for process
         bundles[0].setDatasetInstances(startInstance, endInstance);
 
-        ProcessMerlin processMerlin = new ProcessMerlin(bundles[0].getProcessData());
-        String inputName = processMerlin.getInputs().getInputs().get(0).getName();
-        Input tempFeed = processMerlin.getInputs().getInputs().get(0);
+        ProcessMerlin process = bundles[0].getProcessObject();
+        String inputName = process.getFirstInputName();
+        Input tempFeed = process.getInputs().getInputs().get(0);
 
         Input gateInput = new Input();
         gateInput.setName("Gate");
         gateInput.setFeed(tempFeed.getFeed());
         gateInput.setEnd("now(0,1)");
         gateInput.setStart("now(0,1)");
-        processMerlin.getInputs().getInputs().add(gateInput);
-        bundles[0].setProcessData(processMerlin.toString());
+        process.getInputs().getInputs().add(gateInput);
+        bundles[0].setProcessData(process.toString());
 
         bundles[0].setProcessLatePolicy(getLateData(4, "minutes", "periodic", inputName, aggregateWorkflowDir));
 
@@ -248,7 +231,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
 
         TimeUtil.sleepSeconds(10);
-        InstanceUtil.waitTillInstancesAreCreated(cluster1, bundles[0].getProcessData(), 0);
+        InstanceUtil.waitTillInstancesAreCreated(cluster1OC, bundles[0].getProcessData(), 0);
 
         getAndCreateDependencies(cluster1, bundles[0], cluster1OC, cluster1FS, false, 7);
 
@@ -258,23 +241,20 @@ public class ProcessLateRerunTest extends BaseTestClass {
             TimeUtil.sleepSeconds(60);
         }
 
-        InstanceUtil.waitTillInstanceReachState(cluster1OC,
-            Util.getProcessName(bundles[0].getProcessData()), 1,
+        InstanceUtil.waitTillInstanceReachState(cluster1OC, bundles[0].getProcessName(), 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
         List<String> bundleList =  OozieUtil.getBundles(cluster1.getFeedHelper().getOozieClient(),
-            Util.getProcessName(bundles[0].getProcessData()), EntityType.PROCESS);
+            bundles[0].getProcessName(), EntityType.PROCESS);
         String bundleID = bundleList.get(0);
 
-        OozieUtil.validateRetryAttempts(cluster1, bundleID, EntityType.PROCESS, 0);
-
+        OozieUtil.validateRetryAttempts(cluster1OC, bundleID, EntityType.PROCESS, 0);
     }
 
     /*
     dataFlag - denotes whether process should run initially on empty folders or folders containing data
     dataFolder - denotes the folder where you want to upload data for late rerun
      */
-
     private void getAndCreateDependencies(ColoHelper prismHelper, Bundle bundle,
                                           OozieClient oozieClient, FileSystem clusterFS,
                                           boolean dataFlag, int dataFolder) {
@@ -282,7 +262,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
             List<String> bundles = null;
             for (int i = 0; i < 10; ++i) {
                 bundles = OozieUtil.getBundles(prismHelper.getFeedHelper().getOozieClient(),
-                    Util.getProcessName(bundle.getProcessData()), EntityType.PROCESS);
+                    bundle.getProcessName(), EntityType.PROCESS);
                 if (bundles.size() > 0) {
                     break;
                 }
@@ -291,10 +271,10 @@ public class ProcessLateRerunTest extends BaseTestClass {
             Assert.assertTrue(bundles != null && bundles.size() > 0, "Bundle job not created.");
             String bundleID = bundles.get(0);
             LOGGER.info("bundle id: " + bundleID);
-            List<String> missingDependencies = OozieUtil.getMissingDependencies(prismHelper, bundleID);
+            List<String> missingDependencies = OozieUtil.getMissingDependencies(oozieClient, bundleID);
             for (int i = 0; i < 10 && missingDependencies == null; ++i) {
                 TimeUtil.sleepSeconds(30);
-                missingDependencies = OozieUtil.getMissingDependencies(prismHelper, bundleID);
+                missingDependencies = OozieUtil.getMissingDependencies(oozieClient, bundleID);
             }
             Assert.assertNotNull(missingDependencies, "Missing dependencies not found.");
 
@@ -305,8 +285,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
 
             //create missing dependencies
             LOGGER.info("Creating missing dependencies...");
-            OozieUtil.createMissingDependencies(prismHelper, EntityType.PROCESS,
-                Util.getProcessName(bundle.getProcessData()), 0, 0);
+            OozieUtil.createMissingDependencies(prismHelper, EntityType.PROCESS, bundle.getProcessName(), 0, 0);
 
             //Adding data to empty folders depending on dataFlag
             if (dataFlag) {
@@ -314,7 +293,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
                 for (String location : missingDependencies) {
                     if (tempCount==1) {
                         LOGGER.info("Transferring data to : " + location);
-                        HadoopUtil.copyDataToFolder(clusterFS, location, OSUtil.RESOURCES + "feed-s4Replication.xml");
+                        HadoopUtil.copyDataToFolder(clusterFS, location, OSUtil.NORMAL_INPUT + "dataFile.xml");
                         tempCount++;
                     }
                 }
@@ -322,8 +301,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
 
             //Process succeeding on empty folders
             LOGGER.info("Waiting for process to succeed...");
-            InstanceUtil.waitTillInstanceReachState(oozieClient,
-                Util.getProcessName(bundle.getProcessData()), 1,
+            InstanceUtil.waitTillInstanceReachState(oozieClient, bundle.getProcessName(), 1,
                 CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
             TimeUtil.sleepSeconds(30);
@@ -333,7 +311,7 @@ public class ProcessLateRerunTest extends BaseTestClass {
             for (String dependency : missingDependencies) {
                 if (tempCounter==dataFolder) {
                     LOGGER.info("Transferring late data to : " + dependency);
-                    HadoopUtil.copyDataToFolder(clusterFS, dependency, OSUtil.RESOURCES + "log4j.properties");
+                    HadoopUtil.copyDataToFolder(clusterFS, dependency, OSUtil.NORMAL_INPUT + "dataFile.properties");
                 }
                 tempCounter++;
             }
@@ -355,5 +333,4 @@ public class ProcessLateRerunTest extends BaseTestClass {
         lateProcess.getLateInputs().add(lateInput);
         return lateProcess;
     }
-
 }

@@ -20,9 +20,10 @@ package org.apache.falcon;
 
 import java.util.Date;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.falcon.entity.v0.SchemaHelper;
 import org.apache.falcon.resource.FeedInstanceResult;
+import org.apache.falcon.resource.FeedLookupResult;
 import org.apache.falcon.resource.InstancesResult;
 import org.apache.falcon.resource.InstancesSummaryResult;
 import org.apache.falcon.resource.EntitySummaryResult;
@@ -207,9 +208,9 @@ public final class ResponseHelper {
                 sb.append(toAppend).append("\n");
 
                 if (instance.getWfParams() != null) {
-                    Map<String, String> props = instance.getWfParams();
+                    InstancesResult.KeyValuePair[] props = instance.getWfParams();
                     sb.append("Workflow params").append("\n");
-                    for (Map.Entry<String, String> entry : props.entrySet()) {
+                    for (InstancesResult.KeyValuePair entry : props) {
                         sb.append(entry.getKey()).append("=")
                             .append(entry.getValue()).append("\n");
                     }
@@ -261,6 +262,19 @@ public final class ResponseHelper {
         sb.append("\nAdditional Information:\n");
         sb.append("Response: ").append(result.getMessage());
         sb.append("Request Id: ").append(result.getRequestId());
+        return sb.toString();
+    }
+
+    public static String getString(FeedLookupResult feedLookupResult) {
+        StringBuilder sb = new StringBuilder();
+        String results = feedLookupResult.toString();
+        if (StringUtils.isEmpty(results)) {
+            sb.append("No matching feeds found!");
+        } else {
+            sb.append(results);
+        }
+        sb.append("\n\nResponse: ").append(feedLookupResult.getMessage());
+        sb.append("\nRequest Id: ").append(feedLookupResult.getRequestId());
         return sb.toString();
     }
 }

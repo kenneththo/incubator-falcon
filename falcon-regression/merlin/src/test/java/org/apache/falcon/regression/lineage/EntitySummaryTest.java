@@ -30,7 +30,6 @@ import org.apache.falcon.regression.core.helpers.ColoHelper;
 import org.apache.falcon.regression.core.helpers.entity.AbstractEntityHelper;
 import org.apache.falcon.regression.core.util.AssertUtil;
 import org.apache.falcon.regression.core.util.BundleUtil;
-import org.apache.falcon.regression.core.util.CleanupUtil;
 import org.apache.falcon.regression.core.util.HadoopUtil;
 import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
@@ -67,12 +66,10 @@ import java.util.List;
 public class EntitySummaryTest extends BaseTestClass {
     private static final Logger LOGGER = Logger.getLogger(EntitySummaryTest.class);
     private ColoHelper cluster1 = servers.get(0);
-    private ColoHelper cluster2 = servers.get(1);
     private OozieClient cluster1OC = serverOC.get(0);
     private OozieClient cluster2OC = serverOC.get(1);
     private FileSystem cluster1FS = serverFS.get(0);
-    private String testDir = "/EntitySummaryTest";
-    private String baseTestHDFSDir = baseHDFSDir + testDir;
+    private String baseTestHDFSDir = cleanAndGetTestDir();
     private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
     private String sourcePath = baseTestHDFSDir + "/source";
     private String feedDataLocation = baseTestHDFSDir + "/source" + MINUTE_DATE_PATTERN;
@@ -87,7 +84,7 @@ public class EntitySummaryTest extends BaseTestClass {
         Bundle bundle = BundleUtil.readELBundle();
         for (int i = 0; i <= 1; i++) {
             bundles[i] = new Bundle(bundle, servers.get(i));
-            bundles[i].generateUniqueBundle();
+            bundles[i].generateUniqueBundle(this);
             bundles[i].setProcessWorkflow(aggregateWorkflowDir);
             bundles[i].setInputFeedDataPath(feedDataLocation);
         }
@@ -99,8 +96,8 @@ public class EntitySummaryTest extends BaseTestClass {
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws IOException {
-        cleanTestDirs();
-        CleanupUtil.cleanAllEntities(prism);
+        cleanTestsDirs();
+        removeTestClassEntities();
     }
 
     /**
@@ -114,7 +111,7 @@ public class EntitySummaryTest extends BaseTestClass {
         bundles[0].submitClusters(prism);
         bundles[0].submitFeeds(prism);
         String clusterName = Util.readEntityName(bundles[0].getClusters().get(0));
-        List<String> processes = scheduleEntityValidateWaitingInstances(cluster1,
+        List<String> processes = scheduleEntityValidateWaitingInstances(cluster1OC,
             bundles[0].getProcessData(), EntityType.PROCESS, clusterName);
 
         //create data for processes to run and wait some time for instances to make progress
@@ -163,8 +160,7 @@ public class EntitySummaryTest extends BaseTestClass {
         AssertUtil.assertSucceeded(prism.getClusterHelper().submitEntity(cluster2Def));
 
         //submit and schedule 7 feeds, check that 7 waiting instances are present for each feed
-        List<String> feeds = scheduleEntityValidateWaitingInstances(cluster2, feed,
-            EntityType.FEED, clusterName);
+        List<String> feeds = scheduleEntityValidateWaitingInstances(cluster2OC, feed, EntityType.FEED, clusterName);
 
         //create data for processes to run and wait some time for instances to make progress
         List<String> folders = TimeUtil.getMinuteDatesOnEitherSide(TimeUtil.oozieDateToDate(
@@ -182,9 +178,8 @@ public class EntitySummaryTest extends BaseTestClass {
      * Schedules 7 entities and checks that summary reflects info about the most recent 7
      * instances of each of them.
      */
-    private List<String> scheduleEntityValidateWaitingInstances(ColoHelper cluster, String entity,
-                                                                EntityType entityType,
-                                                                String clusterName)
+    private List<String> scheduleEntityValidateWaitingInstances(OozieClient oozieClient, String entity,
+                                                                EntityType entityType, String clusterName)
         throws AuthenticationException, IOException, URISyntaxException, JAXBException,
         OozieClientException, InterruptedException {
         String entityName = Util.readEntityName(entity);
@@ -205,8 +200,8 @@ public class EntitySummaryTest extends BaseTestClass {
             }
             entity = entityMerlin.toString();
             AssertUtil.assertSucceeded(helper.submitAndSchedule(entity));
-            InstanceUtil.waitTillInstancesAreCreated(cluster, entity, 0);
-            InstanceUtil.waitTillInstanceReachState(cluster.getClusterHelper().getOozieClient(),
+            InstanceUtil.waitTillInstancesAreCreated(oozieClient, entity, 0);
+            InstanceUtil.waitTillInstanceReachState(oozieClient,
                 uniqueName, 7, CoordinatorAction.Status.WAITING, entityType);
 
             //check that summary shows recent (i) number of feeds and their instances
@@ -255,11 +250,10 @@ public class EntitySummaryTest extends BaseTestClass {
             LOGGER.info("Working with " + entityType + " : " + entityName);
             //get recent instances info by -getStatus API
             r = helper.getProcessInstanceStatus(entityName, null);
-            InstancesResult.Instance[] instancesR = r.getInstances();
-            LOGGER.info("Instances from InstancesResult: " + Arrays.toString(instancesR));
+            InstancesResult.Instance[] instancesFromStatus = r.getInstances();
+            LOGGER.info("Instances from -getStatus API: " + Arrays.toString(instancesFromStatus));
             //get recent instances info by -summary API
-            EntitySummaryResult.EntitySummary[] summaries =
-                helper.getEntitySummary(clusterName, null)
+            EntitySummaryResult.EntitySummary[] summaries = helper.getEntitySummary(clusterName, null)
                     .getEntitySummaryResult().getEntitySummaries();
             EntitySummaryResult.EntitySummary summaryItem = null;
             //get instances for specific process
@@ -270,13 +264,15 @@ public class EntitySummaryTest extends BaseTestClass {
                 }
             }
             Assert.assertNotNull(summaryItem, "Appropriate summary not found for : " + entityName);
-            EntitySummaryResult.Instance[] instancesS = summaryItem.getInstances();
-            LOGGER.info("Instances from SummaryResult: " + Arrays.toString(instancesS));
-            softAssert.assertEquals(instancesS.length, 7, "7 instances should be present in "
+            EntitySummaryResult.Instance[] instancesFromSummary = summaryItem.getInstances();
+            LOGGER.info("Instances from SummaryResult: " + Arrays.toString(instancesFromSummary));
+            softAssert.assertEquals(instancesFromSummary.length, 7, "7 instances should be present in "
                 + "summary.");
-            for (EntitySummaryResult.Instance instance : instancesS) {
-                softAssert.assertTrue(containsInstances(instancesR, instance), "Instance "
-                    + instance.toString() + " is absent in list : " + Arrays.toString(instancesR));
+            for (EntitySummaryResult.Instance instanceFromSummary : instancesFromSummary) {
+                softAssert.assertTrue(containsSummaryInstance(instancesFromStatus, instanceFromSummary),
+                    String.format("Instance {%s;%s;%s} is absent in list (or differs by its properties)\n%s",
+                        instanceFromSummary.getInstance(), instanceFromSummary.getStatus(),
+                        instanceFromSummary.getCluster(), Arrays.toString(instancesFromStatus)));
             }
         }
     }
@@ -285,15 +281,25 @@ public class EntitySummaryTest extends BaseTestClass {
      * Checks if array of instances of InstancesResult contains particular instance
      * from SummaryResult by common properties.
      */
-    private boolean containsInstances(InstancesResult.Instance[] instancesR,
-                                      EntitySummaryResult.Instance instanceS) {
-        for (InstancesResult.Instance instanceR : instancesR) {
-            if (instanceR.getInstance().equals(instanceS.getInstance())
-                && instanceR.getStatus().toString().equals(instanceS.getStatus().toString())
-                && instanceR.getCluster().equals(instanceS.getCluster())) {
+    private boolean containsSummaryInstance(InstancesResult.Instance[] instancesFromStatus,
+                                            EntitySummaryResult.Instance instanceFromSummary) {
+        for (InstancesResult.Instance instanceFromStatus : instancesFromStatus) {
+            if (instanceFromStatus.getInstance().equals(instanceFromSummary.getInstance())) {
+                String status1 = instanceFromStatus.getStatus().toString();
+                String status2 = instanceFromSummary.getStatus().toString();
+                if (!status1.equals(status2)) {
+                    LOGGER.info(String.format("Statuses comparison failed : %s and %s", status1, status2));
+                    return false;
+                }
+                if (!instanceFromStatus.getCluster().equals(instanceFromSummary.getCluster())) {
+                    LOGGER.info(String.format("Clusters comparison failed : %s and %s",
+                            instanceFromStatus.getCluster(), instanceFromSummary.getCluster()));
+                    return false;
+                }
                 return true;
             }
         }
+        LOGGER.info("Instance " + instanceFromSummary.getInstance() + " not found in list.");
         return false;
     }
 

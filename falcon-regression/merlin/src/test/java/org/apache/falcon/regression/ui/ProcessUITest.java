@@ -28,7 +28,6 @@ import org.apache.falcon.entity.v0.process.Process;
 import org.apache.falcon.regression.core.helpers.ColoHelper;
 import org.apache.falcon.regression.core.util.AssertUtil;
 import org.apache.falcon.regression.core.util.BundleUtil;
-import org.apache.falcon.regression.core.util.CleanupUtil;
 import org.apache.falcon.regression.core.util.Generator;
 import org.apache.falcon.regression.core.util.HadoopUtil;
 import org.apache.falcon.regression.core.util.InstanceUtil;
@@ -47,15 +46,13 @@ import org.apache.oozie.client.CoordinatorAction;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
@@ -69,7 +66,7 @@ import java.util.Random;
 public class ProcessUITest extends BaseUITestClass {
 
     private ColoHelper cluster = servers.get(0);
-    private String baseTestDir = baseHDFSDir + "/TestProcessUI";
+    private String baseTestDir = cleanAndGetTestDir();
     private String aggregateWorkflowDir = baseTestDir + "/aggregator";
     private static final Logger LOGGER = Logger.getLogger(ProcessUITest.class);
     private final String feedInputPath = baseTestDir + "/input";
@@ -78,17 +75,16 @@ public class ProcessUITest extends BaseUITestClass {
     private OozieClient clusterOC = serverOC.get(0);
     private SoftAssert softAssert = new SoftAssert();
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp()
         throws IOException, JAXBException, NoSuchMethodException, IllegalAccessException,
         InvocationTargetException, URISyntaxException, AuthenticationException,
         InterruptedException {
-        CleanupUtil.cleanAllEntities(prism);
         uploadDirToClusters(aggregateWorkflowDir, OSUtil.RESOURCES_OOZIE);
         openBrowser();
         bundles[0] = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
         String startTime = TimeUtil.getTimeWrtSystemTime(0);
         String endTime = TimeUtil.addMinsToTime(startTime, 5);
@@ -138,21 +134,23 @@ public class ProcessUITest extends BaseUITestClass {
         final FeedMerlin inputMerlin = new FeedMerlin(bundles[0].getInputFeedFromBundle());
         final FeedMerlin outputMerlin = new FeedMerlin(bundles[0].getOutputFeedFromBundle());
 
-
+        String namePrefix = this.getClass().getSimpleName() + '-';
         inputFeeds = LineageApiTest.generateFeeds(numInputFeeds, inputMerlin,
-                Generator.getNameGenerator("infeed", inputMerlin.getName()),
+                Generator.getNameGenerator(namePrefix + "infeed",
+                    inputMerlin.getName().replace(namePrefix, "")),
                 Generator.getHadoopPathGenerator(feedInputPath, MINUTE_DATE_PATTERN));
         int j = 0;
         for (FeedMerlin feed : inputFeeds) {
-            bundles[0].addInputFeedToBundle("inputFeed" + j, feed.toString(), j++);
+            bundles[0].addInputFeedToBundle("inputFeed" + j++, feed);
         }
 
         outputFeeds = LineageApiTest.generateFeeds(numOutputFeeds, outputMerlin,
-                Generator.getNameGenerator("outfeed", outputMerlin.getName()),
+                Generator.getNameGenerator(namePrefix + "outfeed",
+                    inputMerlin.getName().replace(namePrefix, "")),
                 Generator.getHadoopPathGenerator(feedOutputPath, MINUTE_DATE_PATTERN));
         j = 0;
         for (FeedMerlin feed : outputFeeds) {
-            bundles[0].addOutputFeedToBundle("outputFeed" + j, feed.toString(), j++);
+            bundles[0].addOutputFeedToBundle("outputFeed" + j++, feed);
         }
 
         AssertUtil.assertSucceeded(bundles[0].submitBundle(prism));
@@ -160,10 +158,10 @@ public class ProcessUITest extends BaseUITestClass {
     }
 
 
-    @AfterMethod(alwaysRun = true)
-    public void tearDown(Method method) throws IOException {
+    @AfterClass(alwaysRun = true)
+    public void tearDown() throws IOException {
         closeBrowser();
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -194,16 +192,16 @@ public class ProcessUITest extends BaseUITestClass {
         ProcessPage processPage = new ProcessPage(getDriver(), cluster, processName);
         processPage.navigateTo();
 
-        String bundleID = InstanceUtil.getLatestBundleID(cluster, processName, EntityType.PROCESS);
-        Map<Date, CoordinatorAction.Status> actions = OozieUtil.getActionsNominalTimeAndStatus(prism, bundleID,
-                EntityType.PROCESS);
+        String bundleID = OozieUtil.getLatestBundleID(clusterOC, processName, EntityType.PROCESS);
+        Map<Date, CoordinatorAction.Status> actions = OozieUtil.getActionsNominalTimeAndStatus(
+            clusterOC, bundleID,   EntityType.PROCESS);
         checkActions(actions, processPage);
 
         InstanceUtil.waitTillInstanceReachState(clusterOC, processName, 1,
             CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
         processPage.refresh();
-        actions = OozieUtil.getActionsNominalTimeAndStatus(prism, bundleID, EntityType.PROCESS);
+        actions = OozieUtil.getActionsNominalTimeAndStatus(clusterOC, bundleID, EntityType.PROCESS);
         checkActions(actions, processPage);
 
         softAssert.assertAll();
@@ -226,10 +224,5 @@ public class ProcessUITest extends BaseUITestClass {
                 softAssert.assertFalse(isPresent, "Lineage button should not be present for instance: " + oozieDate);
             }
         }
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

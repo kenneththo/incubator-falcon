@@ -35,14 +35,11 @@ import org.apache.log4j.Logger;
 import org.apache.oozie.client.Job;
 import org.apache.oozie.client.OozieClient;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 
 /**
  * Submit and schedule feed via prism tests.
@@ -54,7 +51,8 @@ public class PrismFeedSnSTest extends BaseTestClass {
     private OozieClient cluster1OC = serverOC.get(0);
     private OozieClient cluster2OC = serverOC.get(1);
     private boolean restartRequired;
-    private String aggregateWorkflowDir = baseHDFSDir + "/PrismFeedSnSTest/aggregator";
+    private String baseTestHDFSDir = cleanAndGetTestDir();
+    private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
     private static final Logger LOGGER = Logger.getLogger(PrismFeedSnSTest.class);
     private String feed1, feed2;
 
@@ -64,13 +62,12 @@ public class PrismFeedSnSTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws Exception {
         restartRequired = false;
         Bundle bundle = BundleUtil.readELBundle();
         for (int i = 0; i < 2; i++) {
             bundles[i] = new Bundle(bundle, servers.get(i));
-            bundles[i].generateUniqueBundle();
+            bundles[i].generateUniqueBundle(this);
             bundles[i].setProcessWorkflow(aggregateWorkflowDir);
         }
         feed1 = bundles[0].getDataSets().get(0);
@@ -82,7 +79,7 @@ public class PrismFeedSnSTest extends BaseTestClass {
         if (restartRequired) {
             Util.restartService(cluster1.getFeedHelper());
         }
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -391,7 +388,7 @@ public class PrismFeedSnSTest extends BaseTestClass {
                 .withValidity(startTimeUA1, "2099-10-01T12:10Z")
                 .withClusterType(ClusterType.SOURCE)
                 .withPartition("${cluster.colo}")
-                .withDataLocation(baseHDFSDir + "/localDC/rc/billing" + MINUTE_DATE_PATTERN)
+                .withDataLocation(baseTestHDFSDir + "/localDC/rc/billing" + MINUTE_DATE_PATTERN)
                 .build())
             .toString();
         feed = FeedMerlin.fromString(feed).addFeedCluster(
@@ -400,7 +397,7 @@ public class PrismFeedSnSTest extends BaseTestClass {
                 .withValidity(startTimeUA2, "2099-10-01T12:25Z")
                 .withClusterType(ClusterType.TARGET)
                 .withDataLocation(
-                    baseHDFSDir + "/clusterPath/localDC/rc/billing" + MINUTE_DATE_PATTERN)
+                    baseTestHDFSDir + "/clusterPath/localDC/rc/billing" + MINUTE_DATE_PATTERN)
                 .build()).toString();
         LOGGER.info("feed: " + Util.prettyPrintXml(feed));
 
@@ -447,10 +444,5 @@ public class PrismFeedSnSTest extends BaseTestClass {
         AssertUtil.checkNotStatus(cluster2OC, EntityType.FEED, bundles[0], Job.Status.RUNNING);
         AssertUtil.checkStatus(cluster1OC, EntityType.FEED, bundles[0], Job.Status.KILLED);
         AssertUtil.checkNotStatus(cluster1OC, EntityType.FEED, bundles[1], Job.Status.RUNNING);
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

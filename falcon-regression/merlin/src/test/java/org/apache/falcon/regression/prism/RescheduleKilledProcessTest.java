@@ -23,20 +23,16 @@ import org.apache.falcon.regression.core.bundle.Bundle;
 import org.apache.falcon.regression.core.helpers.ColoHelper;
 import org.apache.falcon.regression.core.util.AssertUtil;
 import org.apache.falcon.regression.core.util.BundleUtil;
-import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
 import org.apache.falcon.regression.core.util.TimeUtil;
 import org.apache.falcon.regression.core.util.Util;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
 import org.apache.log4j.Logger;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -48,7 +44,8 @@ import java.util.Random;
 public class RescheduleKilledProcessTest extends BaseTestClass {
 
     private ColoHelper cluster = servers.get(0);
-    private String aggregateWorkflowDir = baseHDFSDir + "/RescheduleKilledProcessTest/aggregator";
+    private String baseTestHDFSDir = cleanAndGetTestDir();
+    private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
     private static final Logger LOGGER = Logger.getLogger(RescheduleKilledProcessTest.class);
 
     @BeforeClass(alwaysRun = true)
@@ -57,17 +54,16 @@ public class RescheduleKilledProcessTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws Exception {
         bundles[0] = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -79,22 +75,21 @@ public class RescheduleKilledProcessTest extends BaseTestClass {
     public void rescheduleKilledProcess() throws Exception {
         String processStartTime = TimeUtil.getTimeWrtSystemTime(-11);
         String processEndTime = TimeUtil.getTimeWrtSystemTime(6);
-        String process = bundles[0].getProcessData();
-        process = InstanceUtil.setProcessName(process, "zeroInputProcess" + new Random().nextInt());
+        ProcessMerlin process = bundles[0].getProcessObject();
+        process.setName(this.getClass().getSimpleName() + "-zeroInputProcess"
+            + new Random().nextInt());
         List<String> feed = new ArrayList<String>();
         feed.add(bundles[0].getOutputFeedFromBundle());
-        final ProcessMerlin processMerlin = new ProcessMerlin(process);
-        processMerlin.setProcessFeeds(feed, 0, 0, 1);
-        process = processMerlin.toString();
+        process.setProcessFeeds(feed, 0, 0, 1);
 
-        process = ProcessMerlin.fromString(process).clearProcessCluster().toString();
-        process = ProcessMerlin.fromString(process).addProcessCluster(
+        process.clearProcessCluster();
+        process.addProcessCluster(
             new ProcessMerlin.ProcessClusterBuilder(
                 Util.readEntityName(bundles[0].getClusters().get(0)))
                 .withValidity(processStartTime, processEndTime)
                 .build()
-        ).toString();
-        bundles[0].setProcessData(process);
+        );
+        bundles[0].setProcessData(process.toString());
 
         bundles[0].submitFeedsScheduleProcess(prism);
 
@@ -114,7 +109,7 @@ public class RescheduleKilledProcessTest extends BaseTestClass {
         bundles[0].setProcessValidity(TimeUtil.getTimeWrtSystemTime(-11),
             TimeUtil.getTimeWrtSystemTime(6));
 
-        bundles[0].setInputFeedDataPath(baseHDFSDir + "/rawLogs" + MINUTE_DATE_PATTERN);
+        bundles[0].setInputFeedDataPath(baseTestHDFSDir + "/rawLogs" + MINUTE_DATE_PATTERN);
 
         LOGGER.info("process: " + Util.prettyPrintXml(bundles[0].getProcessData()));
 
@@ -126,10 +121,5 @@ public class RescheduleKilledProcessTest extends BaseTestClass {
         AssertUtil.assertSucceeded(prism.getProcessHelper().delete(processData));
         AssertUtil.assertSucceeded(prism.getProcessHelper().submitEntity(processData));
         AssertUtil.assertSucceeded(prism.getProcessHelper().schedule(processData));
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

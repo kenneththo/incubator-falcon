@@ -18,6 +18,7 @@
 
 package org.apache.falcon.regression.security;
 
+import org.apache.falcon.entity.v0.process.ACL;
 import org.apache.falcon.regression.Entities.ProcessMerlin;
 import org.apache.falcon.regression.core.bundle.Bundle;
 import org.apache.falcon.regression.core.enumsAndConstants.MerlinConstants;
@@ -30,19 +31,15 @@ import org.apache.falcon.regression.core.util.MatrixUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Date;
 
 /**
@@ -50,11 +47,10 @@ import java.util.Date;
  */
 @Test(groups = "authorization")
 public class ProcessAclTest extends BaseTestClass {
-    private static final Logger LOGGER = Logger.getLogger(ProcessAclTest.class);
 
     private ColoHelper cluster = servers.get(0);
     private FileSystem clusterFS = serverFS.get(0);
-    private String baseTestDir = baseHDFSDir + "/ProcessAclTest";
+    private String baseTestDir = cleanAndGetTestDir();
     private String aggregateWorkflowDir = baseTestDir + "/aggregator";
     private String feedInputPath = baseTestDir + "/input" + MINUTE_DATE_PATTERN;
     private final AbstractEntityHelper processHelper = prism.getProcessHelper();
@@ -66,11 +62,10 @@ public class ProcessAclTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setup(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setup() throws Exception {
         Bundle bundle = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundle, cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setInputFeedDataPath(feedInputPath);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
         bundles[0].setProcessACL(MerlinConstants.CURRENT_USER_NAME,
@@ -105,7 +100,8 @@ public class ProcessAclTest extends BaseTestClass {
         final Object[][] allowedCombinations = MatrixUtil.crossProduct(
             new String[]{MerlinConstants.FALCON_SUPER_USER_NAME,
                 MerlinConstants.FALCON_SUPER_USER2_NAME,
-                MerlinConstants.USER2_NAME, },
+                MerlinConstants.USER2_NAME,
+            },
             falconReadOps,
             new Boolean[]{true}
         );
@@ -215,44 +211,50 @@ public class ProcessAclTest extends BaseTestClass {
      * Test process acl modification.
      * @throws Exception
      */
-    @Test(enabled = false)
-    public void processAclUpdate() throws Exception {
+    @Test(dataProvider = "generateAclOwnerAndGroup")
+    public void processAclUpdate(final String newOwner, final String newGroup) throws Exception {
         bundles[0].submitFeedsScheduleProcess();
-        final String oldProcess = bundles[0].getProcessData();
-        AssertUtil.assertSucceeded(prism.getProcessHelper().submitAndSchedule(oldProcess));
-        final ProcessMerlin processMerlin = new ProcessMerlin(oldProcess);
-        processMerlin.setACL(MerlinConstants.DIFFERENT_USER_NAME,
-            MerlinConstants.DIFFERENT_USER_GROUP, "*");
+        final ProcessMerlin processMerlin = new ProcessMerlin(processString);
+        processMerlin.setACL(newOwner, newGroup, "*");
         final String newProcess = processMerlin.toString();
-        AssertUtil.assertSucceeded(processHelper.update(oldProcess, newProcess));
-        //check that current user can't access the feed
+        AssertUtil.assertSucceeded(processHelper.update(processString, newProcess));
+        //check that current user can access the feed
         for(EntityOp op : new EntityOp[]{EntityOp.status, EntityOp.dependency, EntityOp.listing,
             EntityOp.definition, }) {
             final boolean executeRes =
-                op.executeAs(MerlinConstants.DIFFERENT_USER_NAME, processHelper, newProcess);
-            Assert.assertFalse(executeRes, "Unexpected result: user "
-                + MerlinConstants.DIFFERENT_USER_GROUP + " was not able to perform: " + op);
+                op.executeAs(MerlinConstants.CURRENT_USER_NAME, processHelper, newProcess);
+            Assert.assertEquals(executeRes, newGroup.equals(MerlinConstants.CURRENT_USER_GROUP),
+                "Unexpected result: user " + MerlinConstants.CURRENT_USER_NAME
+                    + " was not able to perform: " + op);
         }
-        //check that different user can access the feed
+        //check that second user can access the feed
         for(EntityOp op : new EntityOp[]{EntityOp.status, EntityOp.dependency, EntityOp.listing,
             EntityOp.definition, }) {
-            final boolean executeRes =
-                op.executeAs(MerlinConstants.DIFFERENT_USER_NAME, processHelper, newProcess);
+            final boolean executeRes = op.executeAs(newOwner, processHelper, newProcess);
             Assert.assertTrue(executeRes, "Unexpected result: user "
-                + MerlinConstants.DIFFERENT_USER_GROUP + " was not able to perform: " + op);
+                + newOwner + " was not able to perform: " + op);
         }
-        //check modification permissions
-        AssertUtil.assertSucceeded(processHelper.update(newProcess, oldProcess,
-            MerlinConstants.DIFFERENT_USER_NAME));
+        //check modified permissions
+        final String retrievedProcess = processHelper.getEntityDefinition(newProcess).getMessage();
+        final ACL retrievedProcessAcl = new ProcessMerlin(retrievedProcess).getACL();
+        Assert.assertEquals(retrievedProcessAcl.getOwner(), newOwner,
+            "Expecting " + newOwner + " to be the acl owner.");
+        Assert.assertEquals(retrievedProcessAcl.getGroup(), newGroup,
+            "Expecting " + newGroup + " to be the acl group.");
+        //check that second user can modify process acl
+        AssertUtil.assertSucceeded(processHelper.update(newProcess, processString, newOwner));
+    }
+
+    @DataProvider(name = "generateAclOwnerAndGroup")
+    public Object[][] generateAclOwnerAndGroup() {
+        return new Object[][]{
+            //{MerlinConstants.USER2_NAME, MerlinConstants.CURRENT_USER_GROUP},
+            {MerlinConstants.DIFFERENT_USER_NAME, MerlinConstants.DIFFERENT_USER_GROUP},
+        };
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
+        removeTestClassEntities();
     }
 }

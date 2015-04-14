@@ -33,14 +33,11 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.CoordinatorAction;
 import org.apache.oozie.client.OozieClient;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 
@@ -53,7 +50,7 @@ public class OptionalInputTest extends BaseTestClass {
     private ColoHelper cluster = servers.get(0);
     private FileSystem clusterFS = serverFS.get(0);
     private OozieClient oozieClient = serverOC.get(0);
-    private String baseTestDir = baseHDFSDir + "/OptionalInputTest";
+    private String baseTestDir = cleanAndGetTestDir();
     private String inputPath = baseTestDir + "/input";
     private String aggregateWorkflowDir = baseTestDir + "/aggregator";
     private static final Logger LOGGER = Logger.getLogger(OptionalInputTest.class);
@@ -64,18 +61,17 @@ public class OptionalInputTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setup(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setup() throws Exception {
         bundles[0] = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(aggregateWorkflowDir);
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws Exception {
         HadoopUtil.deleteDirIfExists(inputPath + "/", clusterFS);
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -97,15 +93,15 @@ public class OptionalInputTest extends BaseTestClass {
 
         bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
         bundles[0].setProcessConcurrency(2);
-        String process = bundles[0].getProcessData();
-        LOGGER.info(Util.prettyPrintXml(process));
+        ProcessMerlin process = bundles[0].getProcessObject();
+        LOGGER.info(Util.prettyPrintXml(process.toString()));
 
         bundles[0].submitAndScheduleBundle(prism, false);
         List<String> dataDates = TimeUtil.getMinuteDatesOnEitherSide("2010-01-02T00:50Z",
             "2010-01-02T01:10Z", 5);
         HadoopUtil.flattenAndPutDataInFolder(clusterFS, OSUtil.SINGLE_FILE,
             inputPath + "/input1/", dataDates);
-        InstanceUtil.waitTillInstanceReachState(oozieClient, Util.getProcessName(process),
+        InstanceUtil.waitTillInstanceReachState(oozieClient, process.getName(),
                 2, CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
     }
 
@@ -129,7 +125,7 @@ public class OptionalInputTest extends BaseTestClass {
 
         bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
         bundles[0].setProcessConcurrency(2);
-        String processName = Util.readEntityName(bundles[0].getProcessData());
+        String processName = bundles[0].getProcessName();
         LOGGER.info(Util.prettyPrintXml(bundles[0].getProcessData()));
         bundles[0].submitAndScheduleBundle(prism, false);
 
@@ -167,7 +163,7 @@ public class OptionalInputTest extends BaseTestClass {
 
         bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
         bundles[0].setProcessConcurrency(2);
-        String processName = Util.readEntityName(bundles[0].getProcessData());
+        String processName = bundles[0].getProcessName();
         LOGGER.info(Util.prettyPrintXml(bundles[0].getProcessData()));
 
         bundles[0].submitAndScheduleBundle(prism, false);
@@ -202,8 +198,8 @@ public class OptionalInputTest extends BaseTestClass {
 
         bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
         bundles[0].setProcessConcurrency(2);
-        String process = bundles[0].getProcessData();
-        LOGGER.info(Util.prettyPrintXml(process));
+        ProcessMerlin process = new ProcessMerlin(bundles[0].getProcessData());
+        LOGGER.info(Util.prettyPrintXml(process.toString()));
 
         List<String> dataDates = TimeUtil.getMinuteDatesOnEitherSide(
             TimeUtil.addMinsToTime(startTime, -10), endTime, 5);
@@ -214,7 +210,7 @@ public class OptionalInputTest extends BaseTestClass {
             HadoopUtil.recreateDir(clusterFS, inputPath + "/input0/" + date);
         }
         bundles[0].submitFeedsScheduleProcess(prism);
-        InstanceUtil.waitTillInstanceReachState(oozieClient, Util.getProcessName(process),
+        InstanceUtil.waitTillInstanceReachState(oozieClient, process.getName(),
                 2, CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
     }
 
@@ -236,11 +232,11 @@ public class OptionalInputTest extends BaseTestClass {
             LOGGER.info(Util.prettyPrintXml(bundles[0].getDataSets().get(i)));
         }
 
-        String process = bundles[0].getProcessData();
-        LOGGER.info(Util.prettyPrintXml(process));
+
+        LOGGER.info(Util.prettyPrintXml(bundles[0].getProcessData()));
 
         bundles[0].submitAndScheduleBundle(prism, false);
-        InstanceUtil.waitTillInstanceReachState(oozieClient, Util.getProcessName(process),
+        InstanceUtil.waitTillInstanceReachState(oozieClient, bundles[0].getProcessName(),
                 2, CoordinatorAction.Status.KILLED, EntityType.PROCESS);
     }
 
@@ -266,9 +262,8 @@ public class OptionalInputTest extends BaseTestClass {
 
         bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
         bundles[0].setProcessConcurrency(2);
-        String process = bundles[0].getProcessData();
-        String processName = Util.getProcessName(process);
-        LOGGER.info(Util.prettyPrintXml(process));
+        LOGGER.info(Util.prettyPrintXml(bundles[0].getProcessData()));
+        String processName = bundles[0].getProcessName();
 
         bundles[0].submitAndScheduleBundle(prism, true);
         InstanceUtil.waitTillInstanceReachState(oozieClient, processName,
@@ -281,17 +276,15 @@ public class OptionalInputTest extends BaseTestClass {
         InstanceUtil.waitTillInstanceReachState(oozieClient, processName,
             1, CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
-        final ProcessMerlin processMerlin = new ProcessMerlin(process);
-        processMerlin.setProcessFeeds(bundles[0].getDataSets(), 2, 0, 1);
-        bundles[0].setProcessData(processMerlin.toString());
-        bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
-        process = bundles[0].getProcessData();
-        LOGGER.info("modified process:" + Util.prettyPrintXml(process));
+        ProcessMerlin process = bundles[0].getProcessObject();
+        process.setProcessFeeds(bundles[0].getDataSets(), 2, 0, 1);
+        process.setProcessInputStartEnd("now(0,-10)", "now(0,0)");
+        LOGGER.info("modified process:" + Util.prettyPrintXml(process.toString()));
 
-        prism.getProcessHelper().update(process, process);
+        prism.getProcessHelper().update(process.toString(), process.toString());
 
         //from now on ... it should wait of input0 also
-        InstanceUtil.waitTillInstancesAreCreated(cluster, process, 0);
+        InstanceUtil.waitTillInstancesAreCreated(serverOC.get(0), process.toString(), 0);
         InstanceUtil.waitTillInstanceReachState(oozieClient, processName,
                 2, CoordinatorAction.Status.WAITING, EntityType.PROCESS, 10);
         HadoopUtil.flattenAndPutDataInFolder(clusterFS, OSUtil.SINGLE_FILE,
@@ -322,40 +315,32 @@ public class OptionalInputTest extends BaseTestClass {
 
         bundles[0].setProcessInputStartEnd("now(0,-10)", "now(0,0)");
         bundles[0].setProcessConcurrency(4);
-        String process = bundles[0].getProcessData();
-        String processName = Util.getProcessName(process);
-        LOGGER.info(Util.prettyPrintXml(process));
+        ProcessMerlin process = bundles[0].getProcessObject();
+        LOGGER.info(Util.prettyPrintXml(process.toString()));
 
         bundles[0].submitAndScheduleBundle(prism, true);
-        InstanceUtil.waitTillInstanceReachState(oozieClient, processName,
+        InstanceUtil.waitTillInstanceReachState(oozieClient, process.getName(),
                 2, CoordinatorAction.Status.WAITING, EntityType.PROCESS);
 
         List<String> dataDates = TimeUtil.getMinuteDatesOnEitherSide(
             TimeUtil.addMinsToTime(startTime, -10), TimeUtil.addMinsToTime(endTime, 10), 5);
         HadoopUtil.flattenAndPutDataInFolder(clusterFS, OSUtil.SINGLE_FILE,
-            inputPath + "/input1/", dataDates);
-        InstanceUtil.waitTillInstanceReachState(oozieClient, processName,
-            1, CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
+                inputPath + "/input1/", dataDates);
+        InstanceUtil.waitTillInstanceReachState(oozieClient, process.getName(),
+                1, CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS);
 
-        final ProcessMerlin processMerlin = new ProcessMerlin(process);
-        processMerlin.setProcessFeeds(bundles[0].getDataSets(), 2, 2, 1);
-        bundles[0].setProcessData(processMerlin.toString());
-        process = bundles[0].getProcessData();
+        process.setProcessFeeds(bundles[0].getDataSets(), 2, 2, 1);
+        bundles[0].setProcessData(process.toString());
 
         //delete all input data
         HadoopUtil.deleteDirIfExists(inputPath + "/", clusterFS);
         bundles[0].setProcessInputNames("inputData0", "inputData");
-        LOGGER.info("modified process:" + Util.prettyPrintXml(process));
+        LOGGER.info("modified process:" + Util.prettyPrintXml(process.toString()));
 
-        prism.getProcessHelper().update(process, process);
+        prism.getProcessHelper().update(process.toString(), process.toString());
 
         //from now on ... it should wait of input0 also
-        InstanceUtil.waitTillInstanceReachState(oozieClient, processName,
+        InstanceUtil.waitTillInstanceReachState(oozieClient, process.getName(),
                 2, CoordinatorAction.Status.KILLED, EntityType.PROCESS);
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

@@ -18,9 +18,9 @@
 
 package org.apache.falcon.util;
 
-import org.apache.falcon.entity.store.FeedLocationStore;
 import org.apache.falcon.entity.store.FeedPathStore;
 import org.apache.falcon.entity.v0.feed.LocationType;
+import org.apache.falcon.resource.FeedLookupResult;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -34,6 +34,7 @@ import java.util.List;
 public class RadixTreeTest {
 
     private RadixTree<String> tree;
+    private FalconRadixUtils.INodeAlgorithm regexAlgorithm = new FalconRadixUtils.FeedRegexAlgorithm();
 
     @BeforeMethod
     public void setUp() {
@@ -115,6 +116,27 @@ public class RadixTreeTest {
         Assert.assertTrue(tree.find("rand").contains("rand"));
         Assert.assertTrue(tree.find("random").contains("random"));
         Assert.assertTrue(tree.find("randomizer").contains("randomizer"));
+
+    }
+
+    //Tests for find using regular expression
+    @Test
+    public void testFindUsingRegex() {
+        tree.insert("/data/cas/${YEAR}/", "rtbd");
+        Assert.assertTrue(tree.find("/data/cas/2014/", regexAlgorithm).contains("rtbd"));
+        Assert.assertNull(tree.find("/data/cas/", regexAlgorithm));
+        Assert.assertNull(tree.find("/data/cas/2014/09", regexAlgorithm));
+        Assert.assertNull(tree.find("/data/cas/${YEAR}/", regexAlgorithm));
+
+        tree.insert("/data/cas/${YEAR}/colo", "local");
+        tree.insert("/data/cas/${YEAR}/colo", "duplicate-local");
+        Assert.assertNull(tree.find("/data/cas/${YEAR}/", regexAlgorithm));
+        Assert.assertNull(tree.find("/data/cas/${YEAR}/colo", regexAlgorithm));
+        Assert.assertNull(tree.find("/data/cas/", regexAlgorithm));
+        Assert.assertTrue(tree.find("/data/cas/2014/", regexAlgorithm).contains("rtbd"));
+        Assert.assertTrue(tree.find("/data/cas/2014/colo", regexAlgorithm).contains("local"));
+        Assert.assertTrue(tree.find("/data/cas/2014/colo", regexAlgorithm).contains("duplicate-local"));
+
 
     }
 
@@ -200,7 +222,15 @@ public class RadixTreeTest {
         Assert.assertTrue(tree.delete("key2", "value2"));
         tree.insert("water", "water");
         Assert.assertTrue(tree.find("water").contains("water"));
+    }
 
+    @Test
+    public void testDeleteFromListAndChildren() {
+        //check that a delete of a key with multiple values and children is handled
+        tree.insert("keyWithManyValuesAndChild", "value1");
+        tree.insert("keyWithManyValuesAndChild", "value2");
+        tree.insert("keyWithManyValuesAndChildren", "childValue");
+        Assert.assertTrue(tree.delete("keyWithManyValuesAndChild", "value1"));
     }
 
     @Test
@@ -246,15 +276,15 @@ public class RadixTreeTest {
 
     @Test
     public void testFeedPropertiesEquals() {
-        FeedLocationStore.FeedProperties f1 = new FeedLocationStore.FeedProperties("feed",
+        FeedLookupResult.FeedProperties f1 = new FeedLookupResult.FeedProperties("feed",
                 LocationType.DATA, "cluster");
-        FeedLocationStore.FeedProperties f1Copy = new FeedLocationStore.FeedProperties("feed",
+        FeedLookupResult.FeedProperties f1Copy = new FeedLookupResult.FeedProperties("feed",
                 LocationType.DATA, "cluster");
-        FeedLocationStore.FeedProperties f3 = new FeedLocationStore.FeedProperties("anotherFeed",
+        FeedLookupResult.FeedProperties f3 = new FeedLookupResult.FeedProperties("anotherFeed",
                 LocationType.DATA, "cluster");
-        FeedLocationStore.FeedProperties f4 = new FeedLocationStore.FeedProperties("feed",
+        FeedLookupResult.FeedProperties f4 = new FeedLookupResult.FeedProperties("feed",
                 LocationType.STATS, "cluster");
-        FeedLocationStore.FeedProperties f5 = new FeedLocationStore.FeedProperties("feed",
+        FeedLookupResult.FeedProperties f5 = new FeedLookupResult.FeedProperties("feed",
                 LocationType.DATA, "anotherCluster");
 
         Assert.assertTrue(f1.equals(f1Copy));

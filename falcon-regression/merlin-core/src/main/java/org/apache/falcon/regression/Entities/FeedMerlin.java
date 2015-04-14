@@ -35,13 +35,12 @@ import org.apache.falcon.entity.v0.feed.Locations;
 import org.apache.falcon.entity.v0.feed.Property;
 import org.apache.falcon.entity.v0.feed.Retention;
 import org.apache.falcon.entity.v0.feed.Validity;
+import org.apache.falcon.entity.v0.feed.Sla;
 import org.apache.falcon.regression.core.util.TimeUtil;
-import org.apache.falcon.regression.core.util.Util;
 import org.testng.Assert;
 
 import javax.xml.bind.JAXBException;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,12 +57,8 @@ public class FeedMerlin extends Feed {
         try {
             PropertyUtils.copyProperties(this, feed);
             this.setACL(feed.getACL());
-        } catch (IllegalAccessException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
-        } catch (InvocationTargetException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
-        } catch (NoSuchMethodException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
+        } catch (ReflectiveOperationException e) {
+            Assert.fail("Can't create FeedMerlin: " + ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -77,6 +72,74 @@ public class FeedMerlin extends Feed {
 
     public static FeedMerlin fromString(String feedString) {
         return new FeedMerlin(feedString);
+    }
+
+    /**
+     * Sets custom feed property.
+     * @param propertyName custom property name
+     * @param propertyValue custom property value
+     */
+    public FeedMerlin setFeedProperty(String propertyName, String propertyValue) {
+        boolean found = false;
+        for (Property prop : this.getProperties().getProperties()) {
+            //check if it is present
+            if (prop.getName().equalsIgnoreCase(propertyName)) {
+                prop.setValue(propertyValue);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            Property property = new Property();
+            property.setName(propertyName);
+            property.setValue(propertyValue);
+            this.getProperties().getProperties().add(property);
+        }
+        return this;
+    }
+
+    /**
+     * @return feed data path
+     */
+    public String getFeedPath() {
+        for (Location location : this.getLocations().getLocations()) {
+            if (location.getType() == LocationType.DATA) {
+                return location.getPath();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sets cut-off period.
+     * @param frequency cut-off period
+     */
+    public FeedMerlin insertLateFeedValue(Frequency frequency) {
+        this.getLateArrival().setCutOff(frequency);
+        return this;
+    }
+
+    /**
+     * Sets data location for a feed.
+     * @param pathValue new path
+     */
+    public FeedMerlin setFeedPathValue(String pathValue) {
+        for (Location location : this.getLocations().getLocations()) {
+            if (location.getType() == LocationType.DATA) {
+                location.setPath(pathValue);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Sets name for a cluster by given order number.
+     * @param clusterName new cluster name
+     * @param clusterIndex index of cluster which should be updated
+     */
+    public FeedMerlin setClusterNameInFeed(String clusterName, int clusterIndex) {
+        this.getClusters().getClusters().get(clusterIndex).setName(clusterName);
+        return this;
     }
 
     /** clear clusters of this feed. */
@@ -148,6 +211,13 @@ public class FeedMerlin extends Feed {
             cluster.setLocations(feedLocations);
             return this;
         }
+
+        public FeedClusterBuilder withDelay(Frequency frequency) {
+            cluster.setDelay(frequency);
+            return this;
+        }
+
+
     }
 
     /**
@@ -213,10 +283,11 @@ public class FeedMerlin extends Feed {
     /**
      * Sets unique names for the feed.
      * @return mapping of old name to new name
+     * @param prefix prefix of new name
      */
-    public Map<? extends String, ? extends String> setUniqueName() {
+    public Map<? extends String, ? extends String> setUniqueName(String prefix) {
         final String oldName = getName();
-        final String newName =  oldName + Util.getUniqueString();
+        final String newName = TestEntityUtil.generateUniqueName(prefix, oldName);
         setName(newName);
         final HashMap<String, String> nameMap = new HashMap<String, String>(1);
         nameMap.put(oldName, newName);
@@ -242,6 +313,65 @@ public class FeedMerlin extends Feed {
         acl.setGroup(group);
         acl.setPermission(permission);
         this.setACL(acl);
+    }
+
+    /**
+     * Sel SLA.
+     * @param slaLow : low value of SLA
+     * @param slaHigh : high value of SLA
+     */
+
+    public void setSla(Frequency slaLow, Frequency slaHigh) {
+        Sla sla = new Sla();
+        sla.setSlaLow(slaLow);
+        sla.setSlaHigh(slaHigh);
+        this.setSla(sla);
+    }
+
+    /**
+     * Sets new feed data path (for first location).
+     *
+     * @param path new feed data path
+     */
+    public void setFilePath(String path) {
+        getLocations().getLocations().get(0).setPath(path);
+    }
+
+
+    /**
+     * Retrieves prefix (main sub-folders) of first feed data path.
+     */
+    public String getFeedPrefix() {
+        String path = getLocations().getLocations().get(0).getPath();
+        return path.substring(0, path.indexOf('$'));
+    }
+
+    public void setValidity(String feedStart, String feedEnd) {
+        this.getClusters().getClusters().get(0).getValidity()
+            .setStart(TimeUtil.oozieDateToDate(feedStart).toDate());
+        this.getClusters().getClusters().get(0).getValidity()
+            .setEnd(TimeUtil.oozieDateToDate(feedEnd).toDate());
+
+    }
+
+    public void setDataLocationPath(String path) {
+        final List<Location> locations = this.getLocations().getLocations();
+        for (Location location : locations) {
+            if (location.getType() == LocationType.DATA) {
+                location.setPath(path);
+            }
+        }
+    }
+
+    public void setPeriodicity(int frequency, Frequency.TimeUnit periodicity) {
+        Frequency frq = new Frequency(String.valueOf(frequency), periodicity);
+        this.setFrequency(frq);
+    }
+
+    public void setTableUri(String tableUri) {
+        final CatalogTable catalogTable = new CatalogTable();
+        catalogTable.setUri(tableUri);
+        this.setTable(catalogTable);
     }
 
 }

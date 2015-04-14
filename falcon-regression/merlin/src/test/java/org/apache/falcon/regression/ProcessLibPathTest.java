@@ -33,14 +33,12 @@ import org.apache.falcon.regression.testHelper.BaseTestClass;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.Job.Status;
-import org.testng.annotations.AfterClass;
+import org.apache.oozie.client.OozieClient;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -50,8 +48,9 @@ import java.util.List;
 public class ProcessLibPathTest extends BaseTestClass {
 
     private ColoHelper cluster = servers.get(0);
+    private OozieClient clusterOC = serverOC.get(0);
     private FileSystem clusterFS = serverFS.get(0);
-    private String testDir = baseHDFSDir + "/ProcessLibPath";
+    private String testDir = cleanAndGetTestDir();
     private String testLibDir = testDir + "/TestLib";
     private static final Logger LOGGER = Logger.getLogger(ProcessLibPathTest.class);
     private String processName;
@@ -61,7 +60,7 @@ public class ProcessLibPathTest extends BaseTestClass {
     public void createTestData() throws Exception {
         LOGGER.info("in @BeforeClass");
         Bundle b = BundleUtil.readELBundle();
-        b.generateUniqueBundle();
+        b.generateUniqueBundle(this);
         b = new Bundle(b, cluster);
         String startDate = "2010-01-01T22:00Z";
         String endDate = "2010-01-02T03:00Z";
@@ -73,16 +72,15 @@ public class ProcessLibPathTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void testName(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setup() throws Exception {
         bundles[0] = BundleUtil.readELBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
-        bundles[0].setInputFeedDataPath(baseHDFSDir + MINUTE_DATE_PATTERN);
+        bundles[0].generateUniqueBundle(this);
+        bundles[0].setInputFeedDataPath(testDir + MINUTE_DATE_PATTERN);
         bundles[0].setProcessValidity("2010-01-02T01:00Z", "2010-01-02T01:04Z");
         bundles[0].setProcessPeriodicity(5, TimeUnit.minutes);
         bundles[0].setOutputFeedPeriodicity(5, TimeUnit.minutes);
-        bundles[0].setOutputFeedLocationData(baseHDFSDir + "/output-data" + MINUTE_DATE_PATTERN);
+        bundles[0].setOutputFeedLocationData(testDir + "/output-data" + MINUTE_DATE_PATTERN);
         bundles[0].setProcessConcurrency(1);
         bundles[0].setProcessLibPath(testLibDir);
         process = bundles[0].getProcessData();
@@ -91,7 +89,7 @@ public class ProcessLibPathTest extends BaseTestClass {
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -106,9 +104,9 @@ public class ProcessLibPathTest extends BaseTestClass {
         bundles[0].setProcessWorkflow(workflowDir);
         LOGGER.info("processData: " + Util.prettyPrintXml(process));
         bundles[0].submitFeedsScheduleProcess(prism);
-        InstanceUtil.waitTillInstancesAreCreated(cluster, process, 0);
+        InstanceUtil.waitTillInstancesAreCreated(clusterOC, process, 0);
         OozieUtil.createMissingDependencies(cluster, EntityType.PROCESS, processName, 0);
-        InstanceUtil.waitForBundleToReachState(cluster, processName, Status.SUCCEEDED);
+        OozieUtil.waitForBundleToReachState(clusterOC, processName, Status.SUCCEEDED);
     }
 
     /**
@@ -122,17 +120,12 @@ public class ProcessLibPathTest extends BaseTestClass {
         HadoopUtil.uploadDir(clusterFS, workflowDir, OSUtil.RESOURCES_OOZIE);
         HadoopUtil.recreateDir(clusterFS, workflowDir + "/lib");
         HadoopUtil.copyDataToFolder(clusterFS, workflowDir + "/lib/invalid.jar",
-            OSUtil.RESOURCES + "feed-s4Replication.xml");
+            OSUtil.NORMAL_INPUT + "dataFile.xml");
         bundles[0].setProcessWorkflow(workflowDir);
         LOGGER.info("processData: " + Util.prettyPrintXml(process));
         bundles[0].submitFeedsScheduleProcess(prism);
-        InstanceUtil.waitTillInstancesAreCreated(cluster, process, 0);
+        InstanceUtil.waitTillInstancesAreCreated(clusterOC, process, 0);
         OozieUtil.createMissingDependencies(cluster, EntityType.PROCESS, processName, 0);
-        InstanceUtil.waitForBundleToReachState(cluster, processName, Status.SUCCEEDED);
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
+        OozieUtil.waitForBundleToReachState(clusterOC, processName, Status.SUCCEEDED);
     }
 }

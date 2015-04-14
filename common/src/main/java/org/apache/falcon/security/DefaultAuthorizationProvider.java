@@ -18,7 +18,7 @@
 
 package org.apache.falcon.security;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.falcon.FalconException;
 import org.apache.falcon.entity.EntityNotRegisteredException;
@@ -316,7 +316,7 @@ public class DefaultAuthorizationProvider implements AuthorizationProvider {
         throws EntityNotRegisteredException, AuthorizationException {
 
         try {
-            EntityType type = EntityType.valueOf(entityType.toUpperCase());
+            EntityType type = EntityType.getEnum(entityType);
             return EntityUtil.getEntity(type, entityName);
         } catch (FalconException e) {
             if (e instanceof EntityNotRegisteredException) {

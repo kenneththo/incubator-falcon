@@ -32,14 +32,13 @@ import org.apache.falcon.regression.core.util.AssertUtil;
 import org.apache.falcon.regression.core.util.BundleUtil;
 import org.apache.falcon.regression.core.util.HCatUtil;
 import org.apache.falcon.regression.core.util.OSUtil;
+import org.apache.falcon.regression.core.util.OozieUtil;
 import org.apache.falcon.regression.core.util.Util;
-import org.apache.falcon.regression.core.util.InstanceUtil;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
 import org.apache.hive.hcatalog.api.HCatClient;
 import org.apache.hive.hcatalog.api.HCatCreateTableDesc;
 import org.apache.hive.hcatalog.common.HCatException;
 import org.apache.hive.hcatalog.data.schema.HCatFieldSchema;
-import org.apache.log4j.Logger;
 import org.apache.oozie.client.Job;
 import org.apache.oozie.client.OozieClient;
 import org.testng.Assert;
@@ -50,13 +49,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Tests with operations with hcat feed.
  */
+@Test(groups = "embedded")
 public class HCatFeedOperationsTest extends BaseTestClass {
 
     private ColoHelper cluster = servers.get(0);
@@ -71,8 +70,7 @@ public class HCatFeedOperationsTest extends BaseTestClass {
     private String tableName = "hcatFeedOperationsTest";
     private String randomTblName = "randomTable_HcatFeedOperationsTest";
     private String feed;
-    private String aggregateWorkflowDir = baseHDFSDir + "/HCatFeedOperationsTest/aggregator";
-    private static final Logger LOGGER = Logger.getLogger(HCatFeedOperationsTest.class);
+    private String aggregateWorkflowDir = cleanAndGetTestDir() + "/aggregator";
 
     public void uploadWorkflow() throws Exception {
         uploadDirToClusters(aggregateWorkflowDir, OSUtil.RESOURCES_OOZIE);
@@ -95,22 +93,21 @@ public class HCatFeedOperationsTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws Exception {
         Bundle bundle = BundleUtil.readHCatBundle();
         bundles[0] = new Bundle(bundle, cluster.getPrefix());
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setClusterInterface(Interfacetype.REGISTRY, cluster.getClusterHelper().getHCatEndpoint());
 
 
         bundles[1] = new Bundle(bundle, cluster2.getPrefix());
-        bundles[1].generateUniqueBundle();
+        bundles[1].generateUniqueBundle(this);
         bundles[1].setClusterInterface(Interfacetype.REGISTRY, cluster2.getClusterHelper().getHCatEndpoint());
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws HCatException {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     @AfterClass(alwaysRun = true)
@@ -118,7 +115,6 @@ public class HCatFeedOperationsTest extends BaseTestClass {
         clusterHC.dropTable(dbName, tableName, true);
         clusterHC.dropTable(dbName, randomTblName, true);
         cluster2HC.dropTable(dbName, tableName, true);
-        cleanTestDirs();
     }
 
     /**
@@ -216,9 +212,7 @@ public class HCatFeedOperationsTest extends BaseTestClass {
                 .build()).toString();
 
         AssertUtil.assertSucceeded(prism.getFeedHelper().submitAndSchedule(feed));
-        Assert.assertEquals(InstanceUtil
-                .checkIfFeedCoordExist(cluster2.getFeedHelper(), Util.readEntityName(feed),
-                        "REPLICATION"), 1);
+        Assert.assertEquals(OozieUtil.checkIfFeedCoordExist(cluster2OC, Util.readEntityName(feed), "REPLICATION"), 1);
         //This test doesn't wait for replication to succeed.
     }
 

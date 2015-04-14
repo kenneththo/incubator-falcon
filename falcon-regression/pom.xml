@@ -24,11 +24,11 @@
     <parent>
         <groupId>org.apache.falcon</groupId>
         <artifactId>falcon-main</artifactId>
-        <version>0.7-incubating-SNAPSHOT</version>
+        <version>0.7-SNAPSHOT</version>
     </parent>
     <groupId>org.apache.falcon.regression</groupId>
     <artifactId>falcon-regression</artifactId>
-    <version>0.7-incubating-SNAPSHOT</version>
+    <version>0.7-SNAPSHOT</version>
     <description>Regression Framework for Falcon</description>
     <name>Apache Falcon Regression</name>
     <packaging>pom</packaging>
@@ -41,6 +41,8 @@
     <properties>
         <oozie.version>4.0.0.2.1.7.0-784</oozie.version>
         <hive.version>0.13.1</hive.version>
+        <testng.exclude.pattern>nothing</testng.exclude.pattern>
+        <testng.include.pattern>**/Test*.java,**/*Test.java,**/*TestCase.java</testng.include.pattern>
     </properties>
 
     <profiles>
@@ -181,7 +183,7 @@
             <dependency>
                 <groupId>com.jcraft</groupId>
                 <artifactId>jsch</artifactId>
-                <version>0.1.44-1</version>
+                <version>0.1.51</version>
             </dependency>
 
             <dependency>
@@ -236,12 +238,6 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>2.2.1</version>
                 </plugin>
@@ -281,15 +277,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
@@ -326,6 +313,12 @@
                     <threadCount>1</threadCount>
                     <groups>${testng.groups}</groups>
                     <excludedGroups>${testng.exclude.groups}</excludedGroups>
+                    <excludes>
+                        <exclude>${testng.exclude.pattern}</exclude>
+                    </excludes>
+                    <includes>
+                        <include>${testng.include.pattern}</include>
+                    </includes>
                     <additionalClasspathElements>
                         <!-- Hack to get the dir in CP through CLI and idea -->
                         <additionalClasspathElement>${hadoop.conf.dir}</additionalClasspathElement>

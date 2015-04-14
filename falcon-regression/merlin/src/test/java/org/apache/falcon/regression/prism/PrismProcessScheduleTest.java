@@ -31,19 +31,15 @@ import org.apache.falcon.regression.core.util.OozieUtil;
 import org.apache.falcon.regression.core.util.TimeUtil;
 import org.apache.falcon.regression.core.util.Util;
 import org.apache.falcon.regression.testHelper.BaseTestClass;
-import org.apache.log4j.Logger;
 import org.apache.oozie.client.CoordinatorAction;
 import org.apache.oozie.client.Job;
 import org.apache.oozie.client.OozieClient;
 import org.testng.TestNGException;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -55,9 +51,9 @@ public class PrismProcessScheduleTest extends BaseTestClass {
     private ColoHelper cluster2 = servers.get(1);
     private OozieClient cluster1OC = serverOC.get(0);
     private OozieClient cluster2OC = serverOC.get(1);
-    private String aggregateWorkflowDir = baseHDFSDir + "/PrismProcessScheduleTest/aggregator";
-    private String workflowForNoIpOp = baseHDFSDir + "/PrismProcessScheduleTest/noinop";
-    private static final Logger LOGGER = Logger.getLogger(PrismProcessScheduleTest.class);
+    private String baseTestHDFSDir = cleanAndGetTestDir();
+    private String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
+    private String workflowForNoIpOp = baseTestHDFSDir + "/noinop";
     private String process1;
     private String process2;
 
@@ -68,12 +64,11 @@ public class PrismProcessScheduleTest extends BaseTestClass {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) throws Exception {
-        LOGGER.info("test name: " + method.getName());
+    public void setUp() throws Exception {
         Bundle bundle = BundleUtil.readLateDataBundle();
         for (int i = 0; i < 2; i++) {
             bundles[i] = new Bundle(bundle, servers.get(i));
-            bundles[i].generateUniqueBundle();
+            bundles[i].generateUniqueBundle(this);
             bundles[i].setProcessWorkflow(aggregateWorkflowDir);
         }
         process1 = bundles[0].getProcessData();
@@ -82,7 +77,7 @@ public class PrismProcessScheduleTest extends BaseTestClass {
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
+        removeTestClassEntities();
     }
 
     /**
@@ -127,8 +122,8 @@ public class PrismProcessScheduleTest extends BaseTestClass {
         AssertUtil.checkNotStatus(cluster1OC, EntityType.PROCESS, bundles[1], Job.Status.RUNNING);
         AssertUtil.checkNotStatus(cluster2OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
 
-        AssertUtil.assertSucceeded(cluster2.getProcessHelper().schedule(process1));
-        AssertUtil.assertSucceeded(cluster1.getProcessHelper().schedule(process2));
+        AssertUtil.assertSucceeded(cluster1.getProcessHelper().schedule(process1));
+        AssertUtil.assertSucceeded(cluster2.getProcessHelper().schedule(process2));
 
         //now check if they have been scheduled correctly or not
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
@@ -151,18 +146,18 @@ public class PrismProcessScheduleTest extends BaseTestClass {
         bundles[1].submitAndScheduleProcess();
 
         //suspend process on colo-1
-        AssertUtil.assertSucceeded(cluster2.getProcessHelper().suspend(process1));
+        AssertUtil.assertSucceeded(cluster1.getProcessHelper().suspend(process1));
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.SUSPENDED);
         AssertUtil.checkStatus(cluster2OC, EntityType.PROCESS, bundles[1], Job.Status.RUNNING);
 
         //now check if it has been scheduled correctly or not
-        AssertUtil.assertSucceeded(cluster2.getProcessHelper().schedule(process1));
+        AssertUtil.assertSucceeded(cluster1.getProcessHelper().schedule(process1));
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.SUSPENDED);
-        AssertUtil.assertSucceeded(cluster2.getProcessHelper().resume(process1));
+        AssertUtil.assertSucceeded(cluster1.getProcessHelper().resume(process1));
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
 
         //suspend process on colo-2
-        AssertUtil.assertSucceeded(cluster1.getProcessHelper().suspend(process2));
+        AssertUtil.assertSucceeded(cluster2.getProcessHelper().suspend(process2));
         AssertUtil.checkStatus(cluster2OC, EntityType.PROCESS, bundles[1], Job.Status.SUSPENDED);
         AssertUtil.checkStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
 
@@ -209,7 +204,7 @@ public class PrismProcessScheduleTest extends BaseTestClass {
     }
 
     /**
-     * Submit process which has colo-2 in it definition through prism. Shutdown falcon on colo-2.
+     * Submit process which has colo-2 in it definition through prism. Shutdown falcon on colo-1.
      * Submit and schedule the same process through prism. Check that mentioned process is running
      * on colo-2.
      *
@@ -219,7 +214,7 @@ public class PrismProcessScheduleTest extends BaseTestClass {
     public void testProcessScheduleOn1ColoWhileOtherColoIsDown() throws Exception {
         try {
             bundles[1].submitProcess(true);
-            Util.shutDownService(cluster2.getProcessHelper());
+            Util.shutDownService(cluster1.getProcessHelper());
             AssertUtil.assertSucceeded(prism.getProcessHelper().submitAndSchedule(process2));
 
             //now check if they have been scheduled correctly or not
@@ -232,7 +227,7 @@ public class PrismProcessScheduleTest extends BaseTestClass {
             e.printStackTrace();
             throw new TestNGException(e.getMessage());
         } finally {
-            Util.restartService(cluster2.getProcessHelper());
+            Util.restartService(cluster1.getProcessHelper());
         }
     }
 
@@ -246,15 +241,15 @@ public class PrismProcessScheduleTest extends BaseTestClass {
     public void testProcessScheduleOn1ColoWhileThatColoIsDown() throws Exception {
         try {
             bundles[0].submitProcess(true);
-            Util.shutDownService(cluster2.getProcessHelper());
+            Util.shutDownService(cluster1.getProcessHelper());
             AssertUtil.assertFailed(prism.getProcessHelper().schedule(process1));
             AssertUtil
-                .checkNotStatus(cluster2OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
+                .checkNotStatus(cluster1OC, EntityType.PROCESS, bundles[0], Job.Status.RUNNING);
         } catch (Exception e) {
             e.printStackTrace();
             throw new TestNGException(e.getMessage());
         } finally {
-            Util.restartService(cluster2.getProcessHelper());
+            Util.restartService(cluster1.getProcessHelper());
         }
     }
 
@@ -324,7 +319,6 @@ public class PrismProcessScheduleTest extends BaseTestClass {
      */
     @Test(groups = {"prism", "0.2", "embedded"}, enabled = true, timeOut = 1800000)
     public void testRescheduleKilledProcess() throws Exception {
-        /* add test data generator pending */
         bundles[0].setProcessValidity(TimeUtil.getTimeWrtSystemTime(-1),
                TimeUtil.getTimeWrtSystemTime(1));
         HadoopFileEditor hadoopFileEditor = null;
@@ -332,20 +326,28 @@ public class PrismProcessScheduleTest extends BaseTestClass {
         try {
             hadoopFileEditor = new HadoopFileEditor(cluster1.getClusterHelper().getHadoopFS());
             hadoopFileEditor.edit(new ProcessMerlin(process).getWorkflow().getPath()
-                    + "/workflow.xml", "<value>${outputData}</value>",
-                                        "<property>\n"
+                    + "/workflow.xml", "<value>${outputData}</value>", "<property>\n"
                        + "                    <name>randomProp</name>\n"
                        + "                    <value>randomValue</value>\n"
                        + "                </property>");
+
             bundles[0].submitFeedsScheduleProcess(prism);
-            InstanceUtil.waitForBundleToReachState(cluster1,
+
+            InstanceUtil.waitTillInstancesAreCreated(cluster1OC, bundles[0].getProcessData(), 0);
+            OozieUtil.createMissingDependencies(cluster1, EntityType.PROCESS,
+                    bundles[0].getProcessName(), 0);
+            InstanceUtil.waitTillInstanceReachState(cluster1OC,
+                    bundles[0].getProcessName(), 2,
+                    CoordinatorAction.Status.RUNNING, EntityType.PROCESS, 5);
+
+            OozieUtil.waitForBundleToReachState(cluster1OC,
                 Util.readEntityName(process), Job.Status.KILLED);
-            String oldBundleID = InstanceUtil.getLatestBundleID(cluster1,
+            String oldBundleID = OozieUtil.getLatestBundleID(cluster1OC,
                 Util.readEntityName(process), EntityType.PROCESS);
             prism.getProcessHelper().delete(process);
 
             bundles[0].submitAndScheduleProcess();
-            OozieUtil.verifyNewBundleCreation(cluster1, oldBundleID,
+            OozieUtil.verifyNewBundleCreation(cluster1OC, oldBundleID,
                 new ArrayList<String>(), process, true, false);
         } finally {
             if (hadoopFileEditor != null) {
@@ -356,6 +358,7 @@ public class PrismProcessScheduleTest extends BaseTestClass {
 
     /**
     * Schedule a process that contains no inputs. The process should be successfully scheduled.
+    * Asserting that the instance is running after successfully scheduling.
     *
     * @throws Exception
     */
@@ -375,7 +378,7 @@ public class PrismProcessScheduleTest extends BaseTestClass {
 
     /**
     * Schedule a process that contains no inputs or outputs. The process should be successfully scheduled.
-    *
+    * Asserting that the instance is running after successfully scheduling.
     * @throws Exception
     */
     @Test(groups = {"prism", "0.2", "embedded"}, enabled = true, timeOut = 1800000)
@@ -390,11 +393,5 @@ public class PrismProcessScheduleTest extends BaseTestClass {
             processObj.toString()));
         InstanceUtil.waitTillInstanceReachState(cluster1OC, Util.readEntityName(processObj.toString()), 2,
                 CoordinatorAction.Status.SUCCEEDED, EntityType.PROCESS, 10);
-    }
-
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
     }
 }

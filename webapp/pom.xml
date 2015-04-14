@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.falcon</groupId>
         <artifactId>falcon-main</artifactId>
-        <version>0.7-incubating-SNAPSHOT</version>
+        <version>0.7-SNAPSHOT</version>
     </parent>
     <artifactId>falcon-webapp</artifactId>
     <description>Apache Falcon Web Application</description>
@@ -43,6 +43,10 @@
                         <configuration>
                             <packagingExcludes>WEB-INF/classes/deploy.properties</packagingExcludes>
                             <webResources>
+                                <resource>
+                                    <directory>../falcon-ui/dist</directory>
+                                    <targetPath>public</targetPath>
+                                </resource>
                                 <resource>
                                     <directory>src/main/webapp/WEB-INF/distributed</directory>
                                     <targetPath>WEB-INF</targetPath>
@@ -195,8 +199,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hcatalog</groupId>
-            <artifactId>webhcat-java-client</artifactId>
+            <groupId>org.apache.hive.hcatalog</groupId>
+            <artifactId>hive-webhcat-java-client</artifactId>
         </dependency>
 
         <dependency>
@@ -239,6 +243,10 @@
                     <webResources>
                         <resource>
                             <directory>../html5-ui</directory>
+                        </resource>
+                        <resource>
+                            <directory>../falcon-ui/dist</directory>
+                            <targetPath>public</targetPath>
                         </resource>
                         <resource>
                             <directory>src/main/webapp/WEB-INF/embedded</directory>
@@ -345,7 +353,7 @@
                             <target>
                                 <delete dir="../target/store" />
                                 <delete dir="target/webapps/oozie/data" />
-                                <copy file="../hadoop-webapp/target/oozie.war" toDir="target/webapps" />
+                                <copy file="../test-tools/hadoop-webapp/target/oozie.war" toDir="target/webapps" />
                                 <delete dir="../target/store" />
                             </target>
                         </configuration>
@@ -405,12 +413,12 @@
                     <useTestClasspath>true</useTestClasspath>
                     <contextHandlers>
                         <contextHandler implementation="org.mortbay.jetty.webapp.WebAppContext">
-                            <war>${project.build.directory}/webapps/oozie.war</war>
-                            <contextPath>/oozie</contextPath>
-                        </contextHandler>
-                        <contextHandler implementation="org.mortbay.jetty.webapp.WebAppContext">
                             <war>${project.build.directory}/webapps/hadoop.war</war>
                             <contextPath>/hadoop</contextPath>
+                        </contextHandler>
+                        <contextHandler implementation="org.mortbay.jetty.webapp.WebAppContext">
+                            <war>${project.build.directory}/webapps/oozie.war</war>
+                            <contextPath>/oozie</contextPath>
                         </contextHandler>
                     </contextHandlers>
                     <systemProperties>
@@ -478,6 +486,34 @@
                     </execution>
                 </executions>
             </plugin>
+
+	    <plugin>
+              <groupId>org.apache.rat</groupId>
+              <artifactId>apache-rat-plugin</artifactId>
+              <configuration>
+                <excludes>
+		  <exclude>*.txt</exclude>
+	          <exclude>**/*.txt</exclude>
+	          <exclude>.git/**</exclude>
+	          <exclude>**/.idea/**</exclude>
+	          <exclude>**/*.twiki</exclude>
+	          <exclude>**/*.iml</exclude>
+	          <exclude>**/target/**</exclude>
+	          <exclude>**/activemq-data/**</exclude>
+	          <exclude>**/build/**</exclude>
+	          <exclude>**/*.patch</exclude>
+	          <exclude>derby.log</exclude>
+	          <exclude>**/logs/**</exclude>
+	          <exclude>**/.classpath</exclude>
+	          <exclude>**/.project</exclude>
+	          <exclude>**/.settings/**</exclude>
+	          <exclude>**/test-output/**</exclude>
+	          <exclude>**/data.txt</exclude>
+	          <exclude>**/maven-eclipse.xml</exclude>
+	          <exclude>**/.externalToolBuilders/**</exclude>
+                </excludes>
+              </configuration>
+      	    </plugin>	
 
         </plugins>
     </build>

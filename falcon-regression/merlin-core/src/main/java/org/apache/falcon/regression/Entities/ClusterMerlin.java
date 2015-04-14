@@ -23,13 +23,15 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.falcon.entity.v0.EntityType;
 import org.apache.falcon.entity.v0.cluster.ACL;
 import org.apache.falcon.entity.v0.cluster.Cluster;
-import org.apache.falcon.regression.core.util.Util;
+import org.apache.falcon.entity.v0.cluster.ClusterLocationType;
+import org.apache.falcon.entity.v0.cluster.Interface;
+import org.apache.falcon.entity.v0.cluster.Interfaces;
+import org.apache.falcon.entity.v0.cluster.Interfacetype;
+import org.apache.falcon.entity.v0.cluster.Location;
 import org.testng.Assert;
 
 import javax.xml.bind.JAXBException;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,21 +44,9 @@ public class ClusterMerlin extends Cluster {
                 clusterData);
         try {
             PropertyUtils.copyProperties(this, cluster);
-        } catch (IllegalAccessException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
-        } catch (InvocationTargetException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
-        } catch (NoSuchMethodException e) {
+        } catch (ReflectiveOperationException e) {
             Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
         }
-    }
-
-    public static List<ClusterMerlin> fromString(List<String> clusterStrings) {
-        List<ClusterMerlin> clusters = new ArrayList<ClusterMerlin>();
-        for (String clusterString : clusterStrings) {
-            clusters.add(new ClusterMerlin(clusterString));
-        }
-        return clusters;
     }
 
     @Override
@@ -73,10 +63,11 @@ public class ClusterMerlin extends Cluster {
     /**
      * Sets unique names for the cluster.
      * @return mapping of old name to new name
+     * @param prefix prefix of new name
      */
-    public Map<? extends String, ? extends String> setUniqueName() {
+    public Map<? extends String, ? extends String> setUniqueName(String prefix) {
         final String oldName = getName();
-        final String newName =  oldName + Util.getUniqueString();
+        final String newName = TestEntityUtil.generateUniqueName(prefix, oldName);
         setName(newName);
         final HashMap<String, String> nameMap = new HashMap<String, String>(1);
         nameMap.put(oldName, newName);
@@ -93,4 +84,24 @@ public class ClusterMerlin extends Cluster {
         acl.setPermission(permission);
         this.setACL(acl);
     }
+
+    public void setInterface(Interfacetype interfacetype, String value) {
+        final Interfaces interfaces = this.getInterfaces();
+        final List<Interface> interfaceList = interfaces.getInterfaces();
+        for (final Interface anInterface : interfaceList) {
+            if (anInterface.getType() == interfacetype) {
+                anInterface.setEndpoint(value);
+            }
+        }
+    }
+
+    public void setWorkingLocationPath(String path) {
+        for (Location location : getLocations().getLocations()) {
+            if (location.getName() == ClusterLocationType.WORKING) {
+                location.setPath(path);
+                break;
+            }
+        }
+    }
+
 }

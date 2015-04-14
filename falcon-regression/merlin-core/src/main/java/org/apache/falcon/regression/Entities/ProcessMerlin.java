@@ -23,6 +23,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.falcon.entity.v0.EntityType;
+import org.apache.falcon.entity.v0.Frequency;
+import org.apache.falcon.entity.v0.process.EngineType;
+import org.apache.falcon.entity.v0.process.Sla;
 import org.apache.falcon.entity.v0.process.ACL;
 import org.apache.falcon.entity.v0.process.Cluster;
 import org.apache.falcon.entity.v0.process.Input;
@@ -33,13 +36,12 @@ import org.apache.falcon.entity.v0.process.Process;
 import org.apache.falcon.entity.v0.process.Properties;
 import org.apache.falcon.entity.v0.process.Property;
 import org.apache.falcon.entity.v0.process.Validity;
+import org.apache.falcon.entity.v0.process.Workflow;
 import org.apache.falcon.regression.core.util.TimeUtil;
-import org.apache.falcon.regression.core.util.Util;
 import org.testng.Assert;
 
 import javax.xml.bind.JAXBException;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,19 +54,10 @@ public class ProcessMerlin extends Process {
     public ProcessMerlin(final Process process) {
         try {
             PropertyUtils.copyProperties(this, process);
-        } catch (IllegalAccessException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
-        } catch (InvocationTargetException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
-        } catch (NoSuchMethodException e) {
-            Assert.fail("Can't create ClusterMerlin: " + ExceptionUtils.getStackTrace(e));
+        } catch (ReflectiveOperationException e) {
+            Assert.fail("Can't create ProcessMerlin: " + ExceptionUtils.getStackTrace(e));
         }
     }
-
-    public static ProcessMerlin fromString(String processString) {
-        return new ProcessMerlin(processString);
-    }
-
 
     public ProcessMerlin clearProcessCluster() {
         getClusters().getClusters().clear();
@@ -175,10 +168,11 @@ public class ProcessMerlin extends Process {
     /**
      * Sets unique names for the process.
      * @return mapping of old name to new name
+     * @param prefix prefix of new name
      */
-    public Map<? extends String, ? extends String> setUniqueName() {
+    public Map<? extends String, ? extends String> setUniqueName(String prefix) {
         final String oldName = getName();
-        final String newName =  oldName + Util.getUniqueString();
+        final String newName = TestEntityUtil.generateUniqueName(prefix, oldName);
         setName(newName);
         final HashMap<String, String> nameMap = new HashMap<String, String>(1);
         nameMap.put(oldName, newName);
@@ -263,6 +257,162 @@ public class ProcessMerlin extends Process {
         this.setACL(acl);
     }
 
+    /**
+     * Set SLA.
+     * @param slaStart : start value of SLA
+     * @param slaEnd : end value of SLA
+     */
+
+    public void setSla(Frequency slaStart, Frequency slaEnd) {
+        Sla sla = new Sla();
+        sla.setShouldStartIn(slaStart);
+        sla.setShouldEndIn(slaEnd);
+        this.setSla(sla);
+    }
+
+    /**
+     * Sets new process validity on all the process clusters.
+     *
+     * @param startTime start of process validity
+     * @param endTime   end of process validity
+     */
+    public void setValidity(String startTime, String endTime) {
+
+        for (Cluster cluster : this.getClusters().getClusters()) {
+            cluster.getValidity().setStart(TimeUtil.oozieDateToDate(startTime).toDate());
+            cluster.getValidity().setEnd(TimeUtil.oozieDateToDate(endTime).toDate());
+        }
+    }
+
+    /**
+     * Adds one output into process.
+     */
+    public void addOutputFeed(String outputName, String feedName) {
+        Output out1 = getOutputs().getOutputs().get(0);
+        Output out2 = new Output();
+        out2.setFeed(feedName);
+        out2.setName(outputName);
+        out2.setInstance(out1.getInstance());
+        getOutputs().getOutputs().add(out2);
+    }
+
+
+
+    /**
+     * Adds one input into process.
+     */
+    public void addInputFeed(String inputName, String feedName) {
+        Input in1 = getInputs().getInputs().get(0);
+        Input in2 = new Input();
+        in2.setEnd(in1.getEnd());
+        in2.setFeed(feedName);
+        in2.setName(inputName);
+        in2.setPartition(in1.getPartition());
+        in2.setStart(in1.getStart());
+        in2.setOptional(in1.isOptional());
+        getInputs().getInputs().add(in2);
+    }
+
+
+    public void setInputFeedWithEl(String inputFeedName, String startEl, String endEl) {
+        Inputs inputs = new Inputs();
+        Input input = new Input();
+        input.setFeed(inputFeedName);
+        input.setStart(startEl);
+        input.setEnd(endEl);
+        input.setName("inputData");
+        inputs.getInputs().add(input);
+        this.setInputs(inputs);
+    }
+
+    public void setDatasetInstances(String startInstance, String endInstance) {
+        this.getInputs().getInputs().get(0).setStart(startInstance);
+        this.getInputs().getInputs().get(0).setEnd(endInstance);
+    }
+
+    public void setProcessInputStartEnd(String start, String end) {
+        for (Input input : this.getInputs().getInputs()) {
+            input.setStart(start);
+            input.setEnd(end);
+        }
+    }
+
+    /**
+     * Sets name(s) of the process output(s).
+     *
+     * @param names new names of the outputs
+     */
+    public void setOutputNames(String... names) {
+        Outputs outputs = this.getOutputs();
+        Assert.assertEquals(outputs.getOutputs().size(), names.length,
+            "Number of output names is not equal to number of outputs in process");
+        for (int i = 0; i < names.length; i++) {
+            outputs.getOutputs().get(i).setName(names[i]);
+        }
+        this.setOutputs(outputs);
+    }
+
+
+    /**
+     * Sets partition for each input, according to number of supplied partitions.
+     *
+     * @param partition partitions to be set
+     */
+    public void setInputPartition(String... partition) {
+        for (int i = 0; i < partition.length; i++) {
+            this.getInputs().getInputs().get(i).setPartition(partition[i]);
+        }
+    }
+
+    /**
+     * Adds optional property to process definition.
+     *
+     * @param properties desired properties to be added
+     */
+    public void addProperties(Property... properties) {
+        for (Property property : properties) {
+            this.getProperties().getProperties().add(property);
+        }
+    }
+
+    /**
+     * Changes names of process inputs.
+     *
+     * @param names desired names of inputs
+     */
+    public void setInputNames(String... names) {
+        for (int i = 0; i < names.length; i++) {
+            this.getInputs().getInputs().get(i).setName(names[i]);
+        }
+    }
+
+    public void setPeriodicity(int frequency, Frequency.TimeUnit periodicity) {
+        Frequency frq = new Frequency(String.valueOf(frequency), periodicity);
+        this.setFrequency(frq);
+    }
+
+    public void setTimeOut(int magnitude, Frequency.TimeUnit unit) {
+        Frequency frq = new Frequency(String.valueOf(magnitude), unit);
+        this.setTimeout(frq);
+    }
+
+
+
+    public void setWorkflow(String wfPath, String libPath, EngineType engineType) {
+        Workflow w = this.getWorkflow();
+        if (engineType != null) {
+            w.setEngine(engineType);
+        }
+        if (libPath != null) {
+            w.setLib(libPath);
+        }
+        w.setPath(wfPath);
+        this.setWorkflow(w);
+    }
+
+    public String getFirstInputName() {
+        return getInputs().getInputs().get(0).getName();
+    }
 }
 
 

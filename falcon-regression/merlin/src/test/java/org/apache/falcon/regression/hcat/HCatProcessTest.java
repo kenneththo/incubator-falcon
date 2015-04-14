@@ -51,13 +51,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,8 +71,7 @@ public class HCatProcessTest extends BaseTestClass {
     private final OozieClient clusterOC = serverOC.get(0);
     private HCatClient clusterHC;
 
-    private final String testDir = "/HCatProcessTest";
-    private final String baseTestHDFSDir = baseHDFSDir + testDir;
+    private final String baseTestHDFSDir = cleanAndGetTestDir();
     private final String hiveScriptDir = baseTestHDFSDir + "/hive";
     private final String hiveScriptFile = hiveScriptDir + "/script.hql";
     private final String aggregateWorkflowDir = baseTestHDFSDir + "/aggregator";
@@ -112,7 +109,7 @@ public class HCatProcessTest extends BaseTestClass {
         clusterHC = cluster.getClusterHelper().getHCatClient();
         bundles[0] = BundleUtil.readHCatBundle();
         bundles[0] = new Bundle(bundles[0], cluster);
-        bundles[0].generateUniqueBundle();
+        bundles[0].generateUniqueBundle(this);
         bundles[0].setProcessWorkflow(hiveScriptFile, EngineType.HIVE);
         bundles[0].setClusterInterface(Interfacetype.REGISTRY,
             cluster.getClusterHelper().getHCatEndpoint());
@@ -250,14 +247,13 @@ public class HCatProcessTest extends BaseTestClass {
         bundles[0].setInputFeedPeriodicity(1, Frequency.TimeUnit.hours);
         bundles[0].setInputFeedValidity(startDate, endDate);
         final String inputFeed1 = bundles[0].getInputFeedFromBundle();
-        final String inputFeed2Name = "second-" + Util.readEntityName(inputFeed1);
+        final String inputFeed2Name = Util.readEntityName(inputFeed1) + "-second";
 
         FeedMerlin feedObj = new FeedMerlin(inputFeed1);
         feedObj.setName(inputFeed2Name);
         feedObj.getTable().setUri(inputTableUri2);
 
-        String inputFeed2 = feedObj.toString();
-        bundles[0].addInputFeedToBundle("inputData2", inputFeed2, 0);
+        bundles[0].addInputFeedToBundle("inputData2", feedObj);
 
         String outputTableUri =
             "catalog:" + dbName + ":" + outputTableName + tableUriPartitionFragment;
@@ -346,11 +342,11 @@ public class HCatProcessTest extends BaseTestClass {
         bundles[0].setOutputFeedPeriodicity(1, Frequency.TimeUnit.hours);
         bundles[0].setOutputFeedValidity(startDate, endDate);
         final String outputFeed1 = bundles[0].getInputFeedFromBundle();
-        final String outputFeed2Name = "second-" + Util.readEntityName(outputFeed1);
+        final String outputFeed2Name = Util.readEntityName(outputFeed1) + "-second";
         FeedMerlin feedObj = new FeedMerlin(outputFeed1);
         feedObj.setName(outputFeed2Name);
         feedObj.getTable().setUri(outputTableUri2);
-        bundles[0].addOutputFeedToBundle("outputData2", feedObj.toString(), 0);
+        bundles[0].addOutputFeedToBundle("outputData2", feedObj);
 
         bundles[0].setProcessValidity(startDate, endDate);
         bundles[0].setProcessPeriodicity(1, Frequency.TimeUnit.hours);
@@ -432,12 +428,11 @@ public class HCatProcessTest extends BaseTestClass {
         bundles[0].setInputFeedPeriodicity(1, Frequency.TimeUnit.hours);
         bundles[0].setInputFeedValidity(startDate, endDate);
         final String inputFeed1 = bundles[0].getInputFeedFromBundle();
-        final String inputFeed2Name = "second-" + Util.readEntityName(inputFeed1);
+        final String inputFeed2Name = Util.readEntityName(inputFeed1) + "-second";
         FeedMerlin feedObj = new FeedMerlin(inputFeed1);
         feedObj.setName(inputFeed2Name);
         feedObj.getTable().setUri(inputTableUri2);
-        String inputFeed2 = feedObj.toString();
-        bundles[0].addInputFeedToBundle("inputData2", inputFeed2, 0);
+        bundles[0].addInputFeedToBundle("inputData2", feedObj);
 
         String outputTableUri =
             "catalog:" + dbName + ":" + outputTableName + tableUriPartitionFragment;
@@ -447,12 +442,11 @@ public class HCatProcessTest extends BaseTestClass {
         bundles[0].setOutputFeedPeriodicity(1, Frequency.TimeUnit.hours);
         bundles[0].setOutputFeedValidity(startDate, endDate);
         final String outputFeed1 = bundles[0].getOutputFeedFromBundle();
-        final String outputFeed2Name = "second-" + Util.readEntityName(outputFeed1);
+        final String outputFeed2Name = Util.readEntityName(outputFeed1) + "-second";
         FeedMerlin feedObj2 = new FeedMerlin(outputFeed1);
         feedObj2.setName(outputFeed2Name);
         feedObj2.getTable().setUri(outputTableUri2);
-        String outputFeed2 = feedObj2.toString();
-        bundles[0].addOutputFeedToBundle("outputData2", outputFeed2, 0);
+        bundles[0].addOutputFeedToBundle("outputData2", feedObj2);
         bundles[0].setProcessValidity(startDate, endDate);
         bundles[0].setProcessPeriodicity(1, Frequency.TimeUnit.hours);
         bundles[0].setProcessInputStartEnd("now(0,0)", "now(0,0)");
@@ -519,12 +513,12 @@ public class HCatProcessTest extends BaseTestClass {
         bundles[0].setInputFeedValidity(startDate, endDate);
 
         //
-        String nonHCatFeed = BundleUtil.readELBundle().getOutputFeedFromBundle();
+        FeedMerlin nonHCatFeed = new FeedMerlin(BundleUtil.readELBundle().getOutputFeedFromBundle());
         final String outputFeedName = bundles[0].getOutputFeedNameFromBundle();
-        nonHCatFeed = Util.setFeedName(nonHCatFeed, outputFeedName);
+        nonHCatFeed.setName(outputFeedName);
         final List<String> clusterNames = bundles[0].getClusterNames();
         Assert.assertEquals(clusterNames.size(), 1, "Expected only one cluster in the bundle.");
-        nonHCatFeed = Util.setClusterNameInFeed(nonHCatFeed, clusterNames.get(0), 0);
+        nonHCatFeed.setClusterNameInFeed(clusterNames.get(0), 0);
         bundles[0].writeFeedElement(nonHCatFeed, outputFeedName);
         bundles[0].setOutputFeedLocationData(outputHDFSDir + "/"
             + StringUtils.join(new String[]{"${YEAR}", "${MONTH}", "${DAY}", "${HOUR}"}, separator));
@@ -570,12 +564,12 @@ public class HCatProcessTest extends BaseTestClass {
                 .location(outputHDFSDir)
                 .build());
 
-        String nonHCatFeed = BundleUtil.readELBundle().getInputFeedFromBundle();
+        FeedMerlin nonHCatFeed = new FeedMerlin(BundleUtil.readELBundle().getInputFeedFromBundle());
         final String inputFeedName = bundles[0].getInputFeedNameFromBundle();
-        nonHCatFeed = Util.setFeedName(nonHCatFeed, inputFeedName);
+        nonHCatFeed.setName(inputFeedName);
         final List<String> clusterNames = bundles[0].getClusterNames();
         Assert.assertEquals(clusterNames.size(), 1, "Expected only one cluster in the bundle.");
-        nonHCatFeed = Util.setClusterNameInFeed(nonHCatFeed, clusterNames.get(0), 0);
+        nonHCatFeed.setClusterNameInFeed(clusterNames.get(0), 0);
         bundles[0].writeFeedElement(nonHCatFeed, inputFeedName);
         bundles[0].setInputFeedDataPath(inputHDFSDir + "/"
             + StringUtils.join(new String[]{"${YEAR}", "${MONTH}", "${DAY}", "${HOUR}"}, separator));
@@ -639,11 +633,6 @@ public class HCatProcessTest extends BaseTestClass {
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        removeBundles();
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void tearDownClass() throws IOException {
-        cleanTestDirs();
+        removeTestClassEntities();
     }
 }
