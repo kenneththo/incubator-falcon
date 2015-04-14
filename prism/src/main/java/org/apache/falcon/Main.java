@@ -88,9 +88,15 @@ public final class Main {
         if (cmd.hasOption(APP_PORT)) {
             appPort = Integer.valueOf(cmd.getOptionValue(APP_PORT));
         } else {
+            // default : falcon.enableTLS is false
+            appPort = !StringUtils.isEmpty(enableTLSFlag)
+                    && enableTLSFlag.equals("true") ? 15443 : 15000;
+
+            /*
             // default : falcon.enableTLS is true
             appPort = StringUtils.isEmpty(enableTLSFlag)
                     || enableTLSFlag.equals("true") ? 15443 : 15000;
+                    */
         }
 
         return appPort;
