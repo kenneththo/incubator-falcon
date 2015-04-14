@@ -26,6 +26,7 @@
     function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, DateHelper,
               validationService, SpinnersFlag, $timeout, $rootScope, clustersList) {
 
+
       $scope.skipUndo = false;
       $scope.$on('$destroy', function () {
         if (!$scope.skipUndo) {
@@ -37,11 +38,15 @@
         return $state.current.name === route;
       };
 
-      if (clustersList.type) { // is an object
+      console.log(clustersList);
+      if (!clustersList) {
+        $scope.clustersList = [];
+      } else if (clustersList.type) { // is an object
         $scope.clustersList = [clustersList];
       } else {
         $scope.clustersList = clustersList;
       }
+
 
 
       $scope.switchModel = function (type) {
