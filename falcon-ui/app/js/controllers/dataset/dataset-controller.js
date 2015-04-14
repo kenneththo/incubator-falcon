@@ -137,7 +137,7 @@
 
       $scope.constructDate = function () {
 
-        if ($scope.UIModel.validity.start && $scope.UIModel.validity.end) {
+        if ($scope.UIModel.validity.start && $scope.UIModel.validity.end && $scope.UIModel.validity.startTime && $scope.UIModel.validity.endTime) {
           $scope.UIModel.validity.startISO = DateHelper.createISO($scope.UIModel.validity.start, $scope.UIModel.validity.startTime, $scope.UIModel.validity.tz);
           $scope.UIModel.validity.endISO = DateHelper.createISO($scope.UIModel.validity.end, $scope.UIModel.validity.endTime, $scope.UIModel.validity.tz);
         }
