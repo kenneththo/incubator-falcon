@@ -38,7 +38,8 @@
         return $state.current.name === route;
       };
 
-      console.log(clustersList);
+      $scope.clone = $scope.$parent.cloningMode;
+
       if (!clustersList) {
         $scope.clustersList = [];
       } else if (clustersList.type) { // is an object
@@ -46,8 +47,6 @@
       } else {
         $scope.clustersList = clustersList;
       }
-
-
 
       $scope.switchModel = function (type) {
         $scope.model = EntityModel.datasetModel[type].process;
@@ -455,7 +454,7 @@
         }
         $scope.switchModel(mirrorType);
         EntityModel.datasetModel.UIModel.formType = mirrorType;
-        EntityModel.datasetModel.UIModel.name = model.process._name;
+        EntityModel.datasetModel.UIModel.name = (function () { if (!$scope.clone) { return model.process._name; } else { return ""; } }());
         EntityModel.datasetModel.UIModel.retry.policy = model.process.retry._policy;
         EntityModel.datasetModel.UIModel.retry.attempts = model.process.retry._attempts;
         EntityModel.datasetModel.UIModel.retry.delay.number = (function () {
