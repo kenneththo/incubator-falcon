@@ -578,7 +578,7 @@
                class="form-control"
                validation-optional-message="{{validations.messages.path}}" />
       </label>
-      <label>Hive server to endpoint
+      <label>HiveServer2 endpoint
         <input type="text"
                name="sourceHiveServerInput"
                ng-model="UIModel.hiveOptions.source.hiveServerToEndpoint"
@@ -596,7 +596,7 @@
                class="form-control"
                validation-optional-message="{{validations.messages.path}}" />
       </label>
-      <label>Hive server to endpoint
+      <label>HiveServer2 endpoint
         <input type="text"
                name="targetHiveServerInput"
                ng-model="UIModel.hiveOptions.target.hiveServerToEndpoint"
@@ -609,7 +609,7 @@
     <div class="retryBox">
       <h4>Retry</h4>
 
-      <div>
+      <div class="policyBox">
         <label>Policy</label>
         <select ng-model="UIModel.retry.policy"
                 class="form-control">
