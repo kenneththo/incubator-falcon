@@ -109,7 +109,7 @@
         name: "",
         tags: {
           newTag: { value:"", key:"" },
-          tagsArray: [{ value:"_falcon_mirroring_type", key:"HDFS" }],
+          tagsArray: [{ key:"_falcon_mirroring_type", value:"HDFS" }],
           tagsString: ""
         },
         formType: "HDFS",
@@ -288,7 +288,7 @@
               },
               {
                 _name: "drNotificationReceivers",
-                _value: "NA"
+                _value: ""
               },
               {
                 _name: "targetCluster",

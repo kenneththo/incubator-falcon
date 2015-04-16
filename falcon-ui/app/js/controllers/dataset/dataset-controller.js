@@ -294,7 +294,13 @@
               }
             }
             if (item._name === 'drNotificationReceivers') {
-              item._value = $scope.UIModel.alerts.alertsArray.join();
+              item._value = (function () {
+                if ($scope.UIModel.alerts.alertsArray.length === 0) {
+                  return "NA";
+                } else {
+                  return $scope.UIModel.alerts.alertsArray.join();
+                }
+              }());
             }
             if (item._name === 'sourceCluster') {
               if ($scope.UIModel.source.location === 'HDFS') { item._value = $scope.UIModel.source.cluster; }
@@ -506,7 +512,13 @@
               EntityModel.datasetModel.UIModel.target.path = item._value;
             }
             if (item._name === 'drNotificationReceivers') {
-              EntityModel.datasetModel.UIModel.alerts.alertsArray = item._value.split(',');
+              EntityModel.datasetModel.UIModel.alerts.alertsArray = (function () {
+                if (item._value !== "NA") {
+                  return item._value.split(',');
+                } else {
+                  return [];
+                }
+              }());
             }
             if (item._name === 'targetCluster') {
               EntityModel.datasetModel.UIModel.target.cluster = item._value;
