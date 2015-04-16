@@ -45,119 +45,67 @@
       userName = "";
     }
 
-    EntityModel.clusterModel = {
-      cluster:{
-        tags: "",
-        interfaces:{
-          interface:[
-            {
-              _type:"readonly",
-              _endpoint:"hftp://sandbox.hortonworks.com:50070",
-              _version:"2.2.0"
-            },
-            {
-              _type:"write",
-              _endpoint:"hdfs://sandbox.hortonworks.com:8020",
-              _version:"2.2.0"
+    EntityModel.defaultValues = {
+      cluster: {
+        cluster:{
+          tags: "",
+          interfaces:{
+            interface:[
+              {
+                _type:"readonly",
+                _endpoint:"hftp://sandbox.hortonworks.com:50070",
+                _version:"2.2.0"
+              },
+              {
+                _type:"write",
+                _endpoint:"hdfs://sandbox.hortonworks.com:8020",
+                _version:"2.2.0"
 
-            },
-            {
-              _type:"execute",
-              _endpoint:"sandbox.hortonworks.com:8050",
-              _version:"2.2.0"
+              },
+              {
+                _type:"execute",
+                _endpoint:"sandbox.hortonworks.com:8050",
+                _version:"2.2.0"
 
-            },
-            {
-              _type:"workflow",
-              _endpoint:"http://sandbox.hortonworks.com:11000/oozie/",
-              _version:"4.0.0"
+              },
+              {
+                _type:"workflow",
+                _endpoint:"http://sandbox.hortonworks.com:11000/oozie/",
+                _version:"4.0.0"
 
-            },
-            {
-              _type:"messaging",
-              _endpoint:"tcp://sandbox.hortonworks.com:61616?daemon=true",
-              _version:"5.1.6"
+              },
+              {
+                _type:"messaging",
+                _endpoint:"tcp://sandbox.hortonworks.com:61616?daemon=true",
+                _version:"5.1.6"
 
-            }
-          ]
-        },
-        locations:{
-          location:[
-            {_name: "staging", _path: ""},
-            {_name: "temp", _path: ""},
-            {_name: "working", _path: ""}
-          ]
-        },
-        ACL: {
-          _owner: "",
-          _group: "",
-          _permission: ""
-        },
-        properties: {
-          property: [
-            { _name: "", _value: ""}
-          ]
-        },
-        _xmlns:"uri:falcon:cluster:0.1",
-        _name:"",
-        _description:"",
-        _colo:""
-      }
-    };
-
-    EntityModel.feedModel = {
-      feed: {
-        tags: "",
-        groups: "",
-        frequency: "",
-        /*timezone: "GMT+00:00",*/
-        "late-arrival": {
-          "_cut-off": ""
-        },
-        clusters: [{
-          "cluster": {
-            validity: {
-              _start: "",
-              _end: ""
-            },
-            retention: {
-              _limit: "",
-              _action: ""
-            },
-            _name: "",
-            _type: "source"
-          }
-        }],
-        locations: {
-          location: [{
-            _type: "data",
-            _path: "/none"
-          }, {
-            _type: "stats",
-            _path: "/none"
-          }, {
-            _type: "meta",
-            _path: "/none"
-          }]
-        },
-        ACL: {
-          _owner: "",
-          _group: "",
-          _permission: ""
-        },
-        schema: {
-          _location: "/none",
-          _provider: "none"
-        },
-        _xmlns: "uri:falcon:feed:0.1",
-        _name: "",
-        _description: ""
-      }
-    };
-
-    EntityModel.datasetModel = {
-      toImportModel: undefined,
-      UIModel: {
+              }
+            ]
+          },
+          locations:{
+            location:[
+              {_name: "staging", _path: ""},
+              {_name: "temp", _path: ""},
+              {_name: "working", _path: ""}
+            ]
+          },
+          ACL: {
+            _owner: userName,
+            _group: "users",
+            _permission: "0x755"
+          },
+          properties: {
+            property: [
+              { _name: "", _value: ""}
+            ]
+          },
+          _xmlns:"uri:falcon:cluster:0.1",
+          _name:"",
+          _description:"",
+          _colo:""
+        }
+      },
+      MirrorUIModel: {
         name: "",
         tags: {
           newTag: { value:"", key:"" },
@@ -234,7 +182,64 @@
           group: "users",
           permissions: "0x755"
         }
-      },
+      }
+    };
+
+    EntityModel.clusterModel = {};
+
+    EntityModel.feedModel = {
+      feed: {
+        tags: "",
+        groups: "",
+        frequency: "",
+        /*timezone: "GMT+00:00",*/
+        "late-arrival": {
+          "_cut-off": ""
+        },
+        clusters: [{
+          "cluster": {
+            validity: {
+              _start: "",
+              _end: ""
+            },
+            retention: {
+              _limit: "",
+              _action: ""
+            },
+            _name: "",
+            _type: "source"
+          }
+        }],
+        locations: {
+          location: [{
+            _type: "data",
+            _path: "/none"
+          }, {
+            _type: "stats",
+            _path: "/none"
+          }, {
+            _type: "meta",
+            _path: "/none"
+          }]
+        },
+        ACL: {
+          _owner: userName,
+          _group: "users",
+          _permission: "0x755"
+        },
+        schema: {
+          _location: "/none",
+          _provider: "none"
+        },
+        _xmlns: "uri:falcon:feed:0.1",
+        _name: "",
+        _description: ""
+      }
+    };
+
+    EntityModel.datasetModel = {
+      toImportModel: undefined,
+      UIModel: {},
       HDFS: {
         process: {
           tags: "",
