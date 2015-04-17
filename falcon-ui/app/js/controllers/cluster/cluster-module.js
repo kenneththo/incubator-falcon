@@ -300,7 +300,7 @@
         catch(err) {
           console.log('xml malformed');
         }
-        
+
       };
       $scope.saveModelBuffer = function () {
         $scope.jsonString = angular.toJson($scope.clusterEntity.clusterModel);
