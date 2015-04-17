@@ -41,6 +41,13 @@
           src: ['**/*.*'],
           dest: '../webapp/src/main/webapp/',
           expand: true
+        },
+
+        ambariview : {
+          cwd: 'dist',
+          src: ['**/*.*'],
+          dest: '../falcon-ambari-view/src/main/resources/ui/',
+          expand: true
         }
       },
 
@@ -250,7 +257,7 @@
     
     grunt.registerTask('ambariview', [
       'clean', 'concat:vendor', 'uglify', 'less', 'resources', 
-      'dependencies', 'karma:unit', 'copy:ambariview']);
+      'dependencies', 'copy:ambariview']);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
