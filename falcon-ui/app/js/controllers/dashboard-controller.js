@@ -68,7 +68,7 @@
               EntityModel[modelName][type]._name = "";
               $scope.models[modelName] = angular.copy(entityModel);
               $scope.cloningMode = true; // dont know utility of this
-              $scope.$parent.cloningMode = true;
+              $scope.$parent.cloningMode = true; 
               $state.go('forms.' + type + ".general");
             }
           })
