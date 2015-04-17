@@ -17,11 +17,11 @@
  */
 (function () {
   'use strict';
-  var module = angular.module('app.services.entity.model', []);
+  var module = angular.module('app.services.entity.model', ['ngCookies']);
 
   module.factory('EntityModel', ["X2jsService", "$cookieStore", function(X2jsService, $cookieStore) {
 
-    var EntityModel = {};
+    var EntityModel = {}, userName;
 
     EntityModel.json = null;
     EntityModel.detailsPageModel = null;
@@ -38,10 +38,9 @@
       return EntityModel.identifyType(EntityModel.json);
     };
 
-    var userName;
-    if($cookieStore.get('userToken') !== null &&$cookieStore.get('userToken') !== undefined ){
+    if($cookieStore.get('userToken')){
       userName = $cookieStore.get('userToken').user;
-    }else{
+    } else {
       userName = "";
     }
 
@@ -184,8 +183,7 @@
         }
       }
     };
-
-    EntityModel.clusterModel = {};
+    EntityModel.clusterModel = {}; //>> gets copied at bottom from defaultValues
 
     EntityModel.feedModel = {
       feed: {
@@ -455,22 +453,8 @@
 
     };
 
-
-    /*setTimeout(function () {
-
-
-      var xmlStrDatasetHDFS ='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><process xmlns="uri:falcon:process:0.1" name="hdfs-replication-adtech"><tags></tags><clusters><cluster name="primaryCluster"><validity start="2015-03-13T00:00Z" end="2016-12-30T00:00Z"/></cluster></clusters><parallel>1</parallel><order>LAST_ONLY</order><frequency>minutes(5)</frequency><timezone>UTC</timezone><properties><property name="oozie.wf.subworkflow.classpath.inheritance" value="true"/><property name="distcpMaxMaps" value="5"/><property name="distcpMapBandwidth" value="100"/><property name="drSourceDir" value="/user/hrt_qa/dr/test/srcCluster/input"/><property name="drTargetDir" value="/user/hrt_qa/dr/test/targetCluster/input"/><property name="drTargetClusterFS" value="hdfs://240.0.0.10:8020"/><property name="drSourceClusterFS" value="hdfs://240.0.0.10:8020"/></properties><workflow name="hdfs-dr-workflow" engine="oozie" path="hdfs://node-1.example.com:8020/apps/falcon/recipe/hdfs-replication/resources/runtime/hdfs-replication-workflow.xml" lib=""/><retry policy="periodic" delay="minutes(30)" attempts="3"/><ACL owner="hrt_qa" group="users" permission="0x755"/></process>';
-      var xmlStrDatasetHIVE = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><process xmlns="uri:falcon:process:0.1" name="hive-disaster-recovery-sowmya-1"><tags></tags><clusters><cluster name="primaryCluster"><validity start="2015-03-14T00:00Z" end="2016-12-30T00:00Z"/></cluster></clusters><parallel>1</parallel><order>LAST_ONLY</order><frequency>minutes(3)</frequency><timezone>UTC</timezone><properties><property name="oozie.wf.subworkflow.classpath.inheritance" value="true"/><property name="distcpMaxMaps" value="1"/><property name="distcpMapBandwidth" value="100"/><property name="targetCluster" value="backupCluster"/><property name="sourceCluster" value="primaryCluster"/><property name="targetHiveServer2Uri" value="hive2://240.0.0.11:10000"/><property name="sourceHiveServer2Uri" value="hive2://240.0.0.10:10000"/><property name="sourceStagingPath" value="/apps/falcon/primaryCluster/staging"/><property name="targetStagingPath" value="/apps/falcon/backupCluster/staging"/><property name="targetNN" value="hdfs://240.0.0.11:8020"/><property name="sourceNN" value="hdfs://240.0.0.10:8020"/><property name="sourceServicePrincipal" value="hive"/><property name="targetServicePrincipal" value="hive"/><property name="targetMetastoreUri" value="thrift://240.0.0.11:9083"/><property name="sourceMetastoreUri" value="thrift://240.0.0.10:9083"/><property name="sourceTable" value="testtable_dr"/><property name="sourceDatabase" value="default"/><property name="sourceDatabase" value="db1, db2, db3"/><property name="sourceTable" value="*"/><property name="maxEvents" value="-1"/><property name="replicationMaxMaps" value="5"/><property name="clusterForJobRun" value="primaryCluster"/><property name="clusterForJobRunWriteEP" value="hdfs://240.0.0.10:8020"/><property name="drJobName" value="hive-disaster-recovery-sowmya-1"/></properties><workflow name="falcon-dr-hive-workflow" engine="oozie" path="hdfs://node-1.example.com:8020/apps/falcon/recipe/hive-disaster-recovery/resources/runtime/hive-disaster-recovery-workflow.xml" lib=""/><retry policy="periodic" delay="minutes(30)" attempts="3"/><ACL owner="hrt_qa" group="users" permission="0x755"/></process>';
-
-
-      var modelResulting = X2jsService.xml_str2json(xmlStrDatasetHIVE);
-
-      console.log(modelResulting);
-      console.log(JSON.stringify(modelResulting));
-
-    }, 3000);*/
-
-
+    angular.copy(EntityModel.defaultValues.cluster, EntityModel.clusterModel);
+    angular.copy(EntityModel.defaultValues.MirrorUIModel, EntityModel.datasetModel.UIModel);
 
     return EntityModel;
 
