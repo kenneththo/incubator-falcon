@@ -1,2 +1,3 @@
-src/main/resources
-/target/
+src/main/resources/ui/
+target/
+*.gitignore
