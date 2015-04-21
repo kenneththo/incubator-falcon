@@ -68,7 +68,7 @@ public class FalconProxyImpersonator {
     String result;
     try {
       String serviceURI = buildURI(ui);
-      return consumeService(serviceURI, GET_METHOD, null);
+      return consumeService(headers, serviceURI, GET_METHOD, null);
     } catch (Exception ex) {
       ex.printStackTrace();
       result = ex.toString();
@@ -78,12 +78,12 @@ public class FalconProxyImpersonator {
 
   @POST
   @Path("/{path: .*}")
-  public Response handlePost(String xml, @Context UriInfo ui)
+  public Response handlePost(String xml, @Context HttpHeaders headers, @Context UriInfo ui)
       throws IOException {
     String result;
     try {
       String serviceURI = buildURI(ui);
-      return consumeService(serviceURI, POST_METHOD, xml);
+      return consumeService(headers, serviceURI, POST_METHOD, xml);
     } catch (Exception ex) {
       ex.printStackTrace();
       result = ex.toString();
@@ -93,11 +93,11 @@ public class FalconProxyImpersonator {
 
   @DELETE
   @Path("/{path: .*}")
-  public Response handleDelete(@Context UriInfo ui) throws IOException {
+  public Response handleDelete(@Context HttpHeaders headers, @Context UriInfo ui) throws IOException {
     String result;
     try {
       String serviceURI = buildURI(ui);
-      return consumeService(serviceURI, DELETE_METHOD, null);
+      return consumeService(headers, serviceURI, DELETE_METHOD, null);
     } catch (Exception ex) {
       ex.printStackTrace();
       result = ex.toString();
@@ -165,27 +165,37 @@ public class FalconProxyImpersonator {
 //		return response;
 //	}
 
-  public Response consumeService(String urlToRead, String method, String xml) throws Exception {
+  public Response consumeService(HttpHeaders headers, String urlToRead, String method, String xml) throws Exception {
 
     Response response;
 
     URLStreamProvider streamProvider = viewContext.getURLStreamProvider();
     String name = viewContext.getUsername();
 //    Map<String, String> headers = Collections.singletonMap("user.name", name);
-    Map<String, String> headers = new HashMap();
-    headers.put("user.name", name);
+    Map<String, String> newHeaders = new HashMap();
+    newHeaders.put("user.name", name);
     InputStream stream;
 
+    if(headers != null){
+//      String hadoopAuth = headers.getCookies().get("hadoop.auth").getValue();
+//      newHeaders.put("Cookie", headers.getCookies().toString());
+      String cookies = headers.getCookies().toString();
+      cookies = "hadoop.auth=u=c6601&p=c6601/armando.reyna@EXAMPLE.COM&t=kerberos&e=1429665389433&s=0QFlUKf+8wdi1skmgN8FSQtasvM=;";
+      System.out.println("cookies: " + cookies);
+      newHeaders.put("Cookie", cookies);
+
+    }
+
     if (method.equals(POST_METHOD)) {
-      headers.put("Accept", MediaType.APPLICATION_JSON);
-      headers.put("Content-type", "text/xml");
-      stream = streamProvider.readFrom(urlToRead, method, xml, headers);
+      newHeaders.put("Accept", MediaType.APPLICATION_JSON);
+      newHeaders.put("Content-type", "text/xml");
+      stream = streamProvider.readFrom(urlToRead, method, xml, newHeaders);
     } else if (method.equals(DELETE_METHOD)) {
-      headers.put("Accept", MediaType.APPLICATION_JSON);
-      stream = streamProvider.readFrom(urlToRead, method, null, headers);
+      newHeaders.put("Accept", MediaType.APPLICATION_JSON);
+      stream = streamProvider.readFrom(urlToRead, method, null, newHeaders);
     } else {
-      headers = checkIfDefinition(urlToRead, headers);
-      stream = streamProvider.readFrom(urlToRead, method, null, headers);
+      newHeaders = checkIfDefinition(urlToRead, newHeaders);
+      stream = streamProvider.readFrom(urlToRead, method, null, newHeaders);
     }
 
     String sresponse = getStringFromInputStream(stream);
@@ -250,6 +260,18 @@ public class FalconProxyImpersonator {
 //			headers.put("Accept", new ArrayList<String>() {{add(MediaType.APPLICATION_JSON); }} );
       headers.put("Accept", MediaType.APPLICATION_JSON);
     }
+    return headers;
+  }
+
+  public static String appendCookie(String cookies, String newCookie) {
+    if (cookies == null || cookies.length() == 0) {
+      return newCookie;
+    }
+    return cookies + "; " + newCookie;
+  }
+
+  private Map<String, Object> setCookies(Map<String, Object> headers, Map<String, Cookie> cookies){
+
     return headers;
   }
 
