@@ -176,16 +176,6 @@ public class FalconProxyImpersonator {
     newHeaders.put("user.name", name);
     InputStream stream;
 
-    if(headers != null){
-//      String hadoopAuth = headers.getCookies().get("hadoop.auth").getValue();
-//      newHeaders.put("Cookie", headers.getCookies().toString());
-      String cookies = headers.getCookies().toString();
-      cookies = "hadoop.auth=u=c6601&p=c6601/armando.reyna@EXAMPLE.COM&t=kerberos&e=1429665389433&s=0QFlUKf+8wdi1skmgN8FSQtasvM=;";
-      System.out.println("cookies: " + cookies);
-      newHeaders.put("Cookie", cookies);
-
-    }
-
     if (method.equals(POST_METHOD)) {
       newHeaders.put("Accept", MediaType.APPLICATION_JSON);
       newHeaders.put("Content-type", "text/xml");
@@ -208,9 +198,12 @@ public class FalconProxyImpersonator {
 //			return Response.status(status).entity(impResponse.getResponse()).type(defineType(impResponse.getResponse())).build();
 //		}
 
-    System.out.println("consumeServiceStream: " + sresponse);
-
-    response = Response.status(Response.Status.BAD_REQUEST).entity(sresponse).type(MediaType.TEXT_PLAIN).build();
+    if(sresponse.contains(FALCON_ERROR) || sresponse.contains(Response.Status.BAD_REQUEST.name())){
+      response = Response.status(Response.Status.BAD_REQUEST).entity(sresponse).type(MediaType.TEXT_PLAIN).build();
+    }else{
+//      Response.Status status = Response.Status.fromStatusCode(impResponse.getResponseCode());
+      return Response.status(Response.Status.OK).entity(sresponse).type(defineType(sresponse)).build();
+    }
 
     return response;
   }
