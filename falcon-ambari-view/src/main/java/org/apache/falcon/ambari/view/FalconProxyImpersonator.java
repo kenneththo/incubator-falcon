@@ -171,7 +171,9 @@ public class FalconProxyImpersonator {
 
     URLStreamProvider streamProvider = viewContext.getURLStreamProvider();
     String name = viewContext.getUsername();
-    Map<String, String> headers = Collections.singletonMap("user.name", name);
+//    Map<String, String> headers = Collections.singletonMap("user.name", name);
+    Map<String, String> headers = new HashMap();
+    headers.put("user.name", name);
     InputStream stream;
 
     if (method.equals(POST_METHOD)) {
