@@ -78,6 +78,9 @@
                 _endpoint:"tcp://sandbox.hortonworks.com:61616?daemon=true",
                 _version:"5.1.6"
 
+              },
+              {
+                "_type":"registry","_endpoint":"","_version":""
               }
             ]
           },
@@ -85,7 +88,8 @@
             location:[
               {_name: "staging", _path: ""},
               {_name: "temp", _path: ""},
-              {_name: "working", _path: ""}
+              {_name: "working", _path: ""},
+              {"_name":"","_path":""} //>> to compare
             ]
           },
           ACL: {
@@ -99,13 +103,13 @@
             ]
           },
           _xmlns:"uri:falcon:cluster:0.1",
-          _name:"",
-          _description:"",
-          _colo:""
+          _name: undefined,
+          _description: undefined,
+          _colo: undefined
         }
       },
       MirrorUIModel: {
-        name: "",
+        name: undefined,
         tags: {
           newTag: { value:"", key:"" },
           tagsArray: [{ key:"_falcon_mirroring_type", value:"HDFS" }],
@@ -148,14 +152,14 @@
         },
         allocation: {
           hdfs:{
-            maxMaps: 5,
-            maxBandwidth: 100
+            maxMaps: "5",
+            maxBandwidth: "100"
           },
           hive:{
-            maxMapsDistcp: 1,
-            maxMapsMirror: 5,
-            maxMapsEvents: -1,
-            maxBandwidth: 100
+            maxMapsDistcp: "1",
+            maxMapsMirror: "5",
+            maxMapsEvents: "-1",
+            maxBandwidth: "100"
           }
         },
         hiveOptions: {

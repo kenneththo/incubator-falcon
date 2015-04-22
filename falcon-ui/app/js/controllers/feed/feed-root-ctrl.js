@@ -157,8 +157,18 @@
         var xmlPreviewWorker = $interval(xmlPreviewCallback, 1000);
         $scope.skipUndo = false;
         $scope.$on('$destroy', function () {
+
+          var defaultFeed = entityFactory.newEntity('feed'),
+
+              nameIsEqual = ($scope.feed.name == null || $scope.feed.name === ""),
+              groupsIsEqual = ($scope.feed.groups == null || $scope.feed.groups === ""),
+              descriptionIsEqual = ($scope.feed.description === null || $scope.feed.description === ""),
+              ACLIsEqual = angular.equals($scope.feed.ACL, defaultFeed.ACL),
+              schemaIsEqual = angular.equals($scope.feed.schema, defaultFeed.schema);
+
           $interval.cancel(xmlPreviewWorker);
-          if (!$scope.skipUndo) {
+
+          if (!$scope.skipUndo && (!nameIsEqual || !groupsIsEqual || !descriptionIsEqual || !ACLIsEqual || !schemaIsEqual)) {
             $scope.$parent.models.feedModel = angular.copy(X2jsService.xml_str2json($scope.xml));
             $scope.$parent.cancel('feed', $rootScope.previousState);
           }

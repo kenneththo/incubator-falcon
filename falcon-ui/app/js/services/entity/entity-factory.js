@@ -109,8 +109,8 @@
   }
 
   function Schema() {
-    this.location = null;
-    this.provider = null;
+    this.location = undefined;
+    this.provider = undefined;
   }
 
   function feedProperties() {
@@ -231,8 +231,8 @@
   }
 
   function Workflow() {
-    this.name = null;
-    this.engine = null;
+    this.name = "";
+    this.engine = "";
     this.version = '';
     this.path = '/';
   }
