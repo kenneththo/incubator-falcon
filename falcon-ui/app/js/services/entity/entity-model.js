@@ -113,7 +113,7 @@
           tagsString: ""
         },
         formType: "HDFS",
-        runOn: "source",
+        runOn: "target",
         source: {
           location: "HDFS",
           cluster: "",
