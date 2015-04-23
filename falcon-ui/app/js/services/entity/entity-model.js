@@ -78,9 +78,6 @@
                 _endpoint:"tcp://sandbox.hortonworks.com:61616?daemon=true",
                 _version:"5.1.6"
 
-              },
-              {
-                "_type":"registry","_endpoint":"","_version":""
               }
             ]
           },
