@@ -121,6 +121,7 @@
                        ng-click="openDatePicker($event, cluster.validity.end)"
                        ng-change="constructDate()"
                        ng-required="true"
+                       min-date="cluster.validity.start.date"
                        simple-date>
               </label>
               <label class="col-xs-24 custom-danger validationMessageGral"
