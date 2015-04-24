@@ -27,9 +27,9 @@
     EntityModel.detailsPageModel = null;
 
     EntityModel.identifyType = function(json) {
-      if(json.feed) { EntityModel.type = "feed"; }
-      else if(json.cluster) { EntityModel.type = "cluster"; }
-      else if(json.process) { EntityModel.type = "process"; }
+      if(json && json.feed) { EntityModel.type = "feed"; }
+      else if(json && json.cluster) { EntityModel.type = "cluster"; }
+      else if(json && json.process) { EntityModel.type = "process"; }
       else { EntityModel.type = 'Type not recognized'; }
     };
 
