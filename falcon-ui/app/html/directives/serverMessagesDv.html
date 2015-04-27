@@ -84,40 +84,4 @@
 
 
 
-<ul id="notificationMenu" class="notifications" ng-class="{open: notifs}">
-  <li class="titlebar">
-    <span class="title">Notifications</span>
-        <span class="settings"><i class="icon-cog"></i>
-        </span>
-  </li>
-  <div class="notifbox">
-    <!--<li class=" notif unread">-->
-      <!--<a href="#">-->
-        <!--<div class="imageblock">-->
-          <!--<img src="https://si0.twimg.com/profile_images/3186728694/7a0e012910e06dd1476c5edac8b9a28d_bigger.jpeg" class="notifimage"  />-->
-        <!--</div>-->
-        <!--<div class="messageblock">-->
-          <!--<div class="message">This guy <strong>Jonesy</strong> has just built a tower.-->
-          <!--</div>-->
-          <!--<div class="messageinfo">-->
-            <!--<i class="icon-trophy"></i>2 hours ago-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</a>-->
-    <!--</li>-->
-    <li class="notif" ng-repeat="message in server.responses.queue">
-      <div class="row">
-        <div class="col-md-2">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </div>
-        <div class="col-md-22">
-          {{ message.message }}
-        </div>
-      </div>
-    </li>
-  </div>
-  <!--<li class="seeall">-->
-    <!--<a>See All</a>-->
-  <!--</li>-->
-</ul>
 

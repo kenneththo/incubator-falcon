@@ -300,3 +300,65 @@
   top: 30px;
   right: -20px;
 }
+.remark {
+  color: #ffff00;
+}
+
+.notifbox {
+//  max-height: 300px;
+  overflow: auto;
+  li {
+    color: #666;
+    a { color: #666;}
+    &.unread {
+      background: lighten(@primary, 45%);
+    }
+    &.notif {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      position: relative;
+      &:last-child {
+        border-bottom: none;
+      }
+      .imageblock {
+        //          width: 70px;
+        position: absolute;
+        left: 5px;
+        .notifimage {
+          height: 60px;
+        }
+      }
+      .messageblock {
+        width: 200px;
+        position: relative;
+        left: 70px;
+        font-size: 14px;
+        .message {
+          a {
+            color: @primary;
+          }
+        }
+        .messageaction {
+          min-height: 30px;
+          margin-bottom: 5px;
+          .button {
+            font-weight: normal;
+            text-transform: uppercase;
+            &.success, &.alert {
+              color: #fff;
+            }
+
+          }
+        }
+        .messageinfo {
+          font-size: 12px;
+          color: #999;
+        }
+      }
+    }
+  }
+}
+
+.min-width-300{
+  min-width: 300px;
+}

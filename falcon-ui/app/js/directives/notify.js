@@ -15,96 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//(function () {
-//  'use strict';
-//
-//  var module = angular.module('cgNotify', ['app.services.falcon', 'app.services.validation']);
-//
-//  module.factory('notify', [ "$timeout", function ($timeout) {
-//
-//    var notify = function(notification){
-//
-//      switch (notification.type){
-//        case "success": {
-//          $.notify({
-//            // options
-//            icon: 'glyphicon glyphicon glyphicon-ok',
-//            message: notification.message
-//          },{
-//            // settings
-//            type: 'success',
-//            mouse_over: 'pause',
-//            animate: {
-//              enter: 'animated fadeInDown',
-//              exit: 'animated fadeOutDown'
-//            }
-//          });
-//          break;
-//        } case "error": {
-//          $.notify({
-//            // options
-//            icon: 'glyphicon glyphicon-warning-sign',
-//            message: notification.message
-//          },{
-//            // settings
-//            type: 'danger',
-//            mouse_over: 'pause',
-//            animate: {
-//              enter: 'animated fadeInDown',
-//              exit: 'animated fadeOutDown'
-//            }
-//          });
-//          break;
-//        } case "cancel": {
-//          $.notify({
-//            // options
-//            icon: 'glyphicon glyphicon-warning-sign',
-//            message: notification.message
-//          },{
-//            // settings
-//            newest_on_top: true,
-//            type: 'warning',
-//            mouse_over: 'pause',
-//            animate: {
-//              enter: 'animated fadeInDown',
-//              exit: 'animated fadeOutDown'
-//            }
-//          });
-//          break;
-//        } case "warning": default: {
-//          $.notify({
-//            // options
-//            icon: 'glyphicon glyphicon-warning-sign',
-//            message: notification.message
-//          },{
-//            // settings
-//            type: 'warning',
-//            mouse_over: 'pause',
-//            animate: {
-//              enter: 'animated fadeInDown',
-//              exit: 'animated fadeOutDown'
-//            }
-//          });
-//          break;
-//        }
-//
-//      }
-//
-//    };
-//
-//    return notify;
-//
-//  }]);
-//
-//}());
-
 (function () {
   'use strict';
 
   angular.module('cgNotify', []).factory('notify',['$timeout','$http','$compile','$templateCache','$rootScope', "$state",
     function($timeout,$http,$compile,$templateCache,$rootScope,$state){
 
-      var startTop = 10;
+      var startTop = 55;
       var verticalSpacing = 15;
       var defaultDuration = 5000;
       var defaultTemplateUrl = 'angular-notify.html';
@@ -127,7 +44,7 @@
         args.classes = args.classes ? args.classes : '';
 
         var scope = args.scope ? args.scope.$new() : $rootScope.$new();
-        scope.$position = args.position ? args.position : position;
+        scope.$position = "right";
 
         scope.$message = args.message;
         scope.$state = args.state;
@@ -195,15 +112,15 @@
             });
           }
 
+
+
           scope.$close = function(){
             templateElement.css('opacity',0).attr('data-closing','true');
             layoutMessages();
           };
 
           scope.restore = function () {
-            //console.log(status);
             $state.go(scope.$state);
-            //$scope.closeAlert(index);
           };
 
           var layoutMessages = function(){
@@ -228,10 +145,18 @@
             layoutMessages();
           });
 
-          if (args.duration > 0){
-            $timeout(function(){
+          scope.start = function(){
+            scope.timeout = $timeout(function() {
               scope.$close();
-            },args.duration);
+            }, args.duration);
+          };
+
+          scope.pause = function(){
+            $timeout.cancel(scope.timeout);
+          }
+
+          if (args.duration > 0) {
+            scope.start();
           }
 
         }).error(function(data){
@@ -254,6 +179,8 @@
             scope.$message = val;
           }
         });
+
+        $("#notifBT").addClass("blink-notification");
 
         openNotificationsScope.push(scope);
 
@@ -290,7 +217,7 @@
         "    $position === 'center' ? 'cg-notify-message-center' : '',\n" +
         "    $position === 'left' ? 'cg-notify-message-left' : '',\n" +
         "    $position === 'right' ? 'cg-notify-message-right' : '']\"\n" +
-        "    ng-style=\"{'margin-left': $centerMargin}\">\n" +
+        "    ng-style=\"{'margin-left': $centerMargin}\" ng-mouseover=\"pause()\" ng-mouseleave=\"start()\">\n" +
         "\n" +
         "    <div ng-show=\"!$messageTemplate\" class=\"row\">\n" +
         "      <div class=\"col-md-2\">\n" +

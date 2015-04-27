@@ -237,6 +237,7 @@
         type: "error",
         message: message
       };
+      Falcon.responses.queue.push(response);
       $notify(response);
     };
     Falcon.warningMessage = function (message) {
@@ -244,6 +245,7 @@
         type: "warning",
         message: message
       };
+      Falcon.responses.queue.push(response);
       $notify(response);
     };
 

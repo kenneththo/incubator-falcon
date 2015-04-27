@@ -295,6 +295,20 @@ input[type="password"]{
   animation: blink-danger 1s linear infinite;
 }
 
+@keyframes blink-notification {
+  0% { color: #ffff00; }
+  100% { color: white; }
+}
+@-webkit-keyframes blink-notification {
+  0% { color: #ffff00; }
+  100% { color: white; }
+}
+.blink-notification {
+  -webkit-animation: blink-notification 1s linear infinite;
+  -moz-animation: blink-notification 1s linear infinite;
+  animation: blink-notification 1s linear infinite;
+}
+
 .text-success {
   color: @summarySuccess;
 }
