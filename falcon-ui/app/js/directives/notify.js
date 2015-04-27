@@ -221,7 +221,7 @@
         "\n" +
         "    <div ng-show=\"!$messageTemplate\" class=\"row\">\n" +
         "      <div class=\"col-md-2\">\n" +
-        "        <span class=\"glyphicon glyphicon-info-sign\"></span>\n" +
+        "        <span class=\"glyphicon {{ $icon }}\"></span>\n" +
         "      </div>\n" +
         "      <div class=\"col-md-22\">\n" +
         "        {{ $message }} \n" +
