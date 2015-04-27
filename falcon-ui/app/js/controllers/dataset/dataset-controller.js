@@ -22,14 +22,15 @@
 
   datasetModule.controller('DatasetCtrl', [
     "$scope", "$interval", "Falcon", "EntityModel", "$state", "X2jsService", "DateHelper",
-    "ValidationService", "SpinnersFlag", "$timeout", "$rootScope", "clustersList",
+    "ValidationService", "SpinnersFlag", "$timeout", "$rootScope", "clustersList", "$cookieStore",
     function ($scope, $interval, Falcon, EntityModel, $state, X2jsService, DateHelper,
-              validationService, SpinnersFlag, $timeout, $rootScope, clustersList) {
+              validationService, SpinnersFlag, $timeout, $rootScope, clustersList, $cookieStore) {
 
 
       $scope.skipUndo = false;
       $scope.$on('$destroy', function () {
-        if (!$scope.skipUndo) {
+
+        if (!$scope.skipUndo && !angular.equals($scope.UIModel, EntityModel.defaultValues.MirrorUIModel)) {
           $scope.$parent.cancel('dataset', $rootScope.previousState);
         }
       });
@@ -58,6 +59,8 @@
       $scope.model = EntityModel.datasetModel.HDFS.process;
       $scope.UIModel = EntityModel.datasetModel.UIModel;
       $scope.completeModel = EntityModel.datasetModel.HDFS;
+
+      $scope.UIModel.acl.owner = $cookieStore.get('userToken').user;
 
       //-------------------------//
       function checkClusters() {

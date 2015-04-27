@@ -109,8 +109,8 @@
   }
 
   function Schema() {
-    this.location = null;
-    this.provider = null;
+    this.location = undefined;
+    this.provider = undefined;
   }
 
   function feedProperties() {
@@ -206,7 +206,6 @@
   function Process() {
     this.name = null;
     this.tags = [new Entry(null, null)];
-    this.ACL = new ACL();
     this.workflow = new Workflow();
     this.timezone = "";
     this.frequency = new Frequency(null, 'hours');
@@ -216,6 +215,7 @@
     this.clusters = [new Cluster('source', true)];
     this.inputs = [];
     this.outputs = [];
+    this.ACL = new ACL();
 
     /*
     this.name = 'P';
@@ -231,8 +231,8 @@
   }
 
   function Workflow() {
-    this.name = null;
-    this.engine = null;
+    this.name = "";
+    this.engine = "";
     this.version = '';
     this.path = '/';
   }

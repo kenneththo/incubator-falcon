@@ -21,14 +21,15 @@
   var navHeaderModule = angular.module('app.controllers.navHeader', [
     'app.services.entity.model',
     'app.services.validation',
-    'ngCookies'
+    'ngCookies', 'cgNotify'
   ]);
 
   navHeaderModule.controller('HeaderController', [
-    '$rootScope', '$scope', '$state', '$cookieStore', 'EntityModel', 'ValidationService',
-    function ($rootScope, $scope, $state, $cookieStore, EntityModel, validationService) {
+    '$rootScope', '$scope', '$state', '$cookieStore', '$timeout', 'EntityModel', 'ValidationService', 'notify', 'Falcon',
+    function ($rootScope, $scope, $state, $cookieStore, $timeout, EntityModel, validationService, $notify, Falcon) {
 
       $scope.fake = { focus: false }; //used in upload button to fake the focus borders
+      $scope.notifs = false;
 
       $scope.isInForm = function (type) {
         if($rootScope.currentState) {
@@ -86,6 +87,22 @@
       $scope.logOut = function() {
       	$cookieStore.put('userToken', null);
       	$state.transitionTo('login');
+      };
+
+      $scope.showNotifs = function() {
+        $notify.closeAll();
+        for(var i=0; i<Falcon.responses.queue.length; i++){
+          var response = {
+            success: true,
+            type: Falcon.responses.queue[i].type,
+            message: Falcon.responses.queue[i].message,
+            status: Falcon.responses.queue[i].state,
+            state: Falcon.responses.queue[i].state,
+            model: Falcon.responses.queue[i].model
+          };
+          $notify(response);
+        }
+        $("#notifBT").removeClass("blink-notification");
       };
 
     }]);

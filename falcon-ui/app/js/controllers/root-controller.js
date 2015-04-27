@@ -39,12 +39,17 @@
       $scope.handleFile = function (evt) {
         Falcon.logRequest();
         FileApi.loadFile(evt).then(function () {
-          Falcon.postSubmitEntity(FileApi.fileRaw, EntityModel.type).success(function (response) {
-            Falcon.logResponse('success', response, false);
-            $scope.refreshList($scope.tags);
-          }).error(function (err) {
-            Falcon.logResponse('error', err, false);
-          });
+          if (EntityModel.type === 'Type not recognized') {
+            Falcon.logResponse('error', {status: 'ERROR', message:'Invalid xml. File not uploaded'}, false);
+          } else {
+            Falcon.postSubmitEntity(FileApi.fileRaw, EntityModel.type).success(function (response) {
+              Falcon.logResponse('success', response, false);
+              $scope.refreshList($scope.tags);
+            }).error(function (err) {
+              Falcon.logResponse('error', err, false);
+            });
+          }
+
         });
       };
 
@@ -122,21 +127,12 @@
 
       };
 
-      $scope.closeAlert = function (index) {
-        Falcon.removeMessage(index);
-      };
-
       $scope.cancel = function (type, state) {
         var cancelInfo = {
           state: state || $state.current.name,
           message: type + ' edition canceled '
         };
         Falcon.logResponse('cancel', cancelInfo, type, false);
-      };
-
-      $scope.restore = function (cancelInfo, index) {
-        $state.go(cancelInfo.status);
-        $scope.closeAlert(index);
       };
 
     }]);

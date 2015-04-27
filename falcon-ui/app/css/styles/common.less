@@ -187,7 +187,7 @@ input[type="password"]{
   padding:0;
 }
 .dateInput {
-  padding-right: 25px!important;
+  //padding-right: 25px!important;
 }
 .dateInputIcon {
   position: absolute;
@@ -293,6 +293,20 @@ input[type="password"]{
   -webkit-animation: blink-danger 1s linear infinite;
   -moz-animation: blink-danger 1s linear infinite;
   animation: blink-danger 1s linear infinite;
+}
+
+@keyframes blink-notification {
+  0% { color: #ffff00; }
+  100% { color: white; }
+}
+@-webkit-keyframes blink-notification {
+  0% { color: #ffff00; }
+  100% { color: white; }
+}
+.blink-notification {
+  -webkit-animation: blink-notification 1s linear infinite;
+  -moz-animation: blink-notification 1s linear infinite;
+  animation: blink-notification 1s linear infinite;
 }
 
 .text-success {
@@ -812,4 +826,10 @@ ul.lineage-legend li:before {
 .lineage-legend-terminal:before {
   -webkit-text-stroke-width: 2px;
   -webkit-text-stroke-color: #ccc;
+}
+
+/* ALERT MESSAGE */
+
+.alert {
+  font-size: 16px;
 }
