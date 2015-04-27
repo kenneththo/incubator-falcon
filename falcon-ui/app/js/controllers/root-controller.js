@@ -127,21 +127,12 @@
 
       };
 
-      $scope.closeAlert = function (index) {
-        Falcon.removeMessage(index);
-      };
-
       $scope.cancel = function (type, state) {
         var cancelInfo = {
           state: state || $state.current.name,
           message: type + ' edition canceled '
         };
         Falcon.logResponse('cancel', cancelInfo, type, false);
-      };
-
-      $scope.restore = function (cancelInfo, index) {
-        $state.go(cancelInfo.status);
-        $scope.closeAlert(index);
       };
 
     }]);

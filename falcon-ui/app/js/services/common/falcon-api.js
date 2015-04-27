@@ -18,9 +18,10 @@
 (function () {
   'use strict';
 
-  var falconModule = angular.module('app.services.falcon', ['app.services.x2js', 'ngCookies']);
+  var falconModule = angular.module('app.services.falcon', ['app.services.x2js', 'ngCookies', 'cgNotify']);
 
-  falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', function ($http, X2jsService, $location, $rootScope, $cookieStore) {
+  falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', 'notify'
+    , function ($http, X2jsService, $location, $rootScope, $cookieStore, $notify) {
 
     var Falcon = {},
         NUMBER_OF_ENTITIES = 10,
@@ -54,84 +55,196 @@
 
     Falcon.logRequest = function () {
       Falcon.responses.count.pending = Falcon.responses.count.pending + 1;
-
     };
-    Falcon.logResponse = function (type, messageObject, entityType, hide) {
-      if(type === 'success') {
-        if(!hide) {
-          var message = { success: true, status: messageObject.status, message: messageObject.message, requestId: messageObject.requestId};
-          Falcon.responses.queue.push(message);
-          Falcon.responses.count.success = Falcon.responses.count.success +1;
-        }
-        Falcon.responses.count.pending = Falcon.responses.count.pending -1;
-      }
-      if(type === 'cancel') {
-        if(!hide) {
-          var message = {
-            success: 'cancel',
-            status: messageObject.state,
-            message: messageObject.message,
-            model: messageObject.model
-          };
-          Falcon.responses.queue.push(message);
-          return;
-          //Falcon.responses.count.success = Falcon.responses.count.success +1;
-        }
-        //Falcon.responses.count.pending = Falcon.responses.count.pending -1;
-      }
-      if(type === 'error') {
 
-        if(messageObject.status !== undefined){
-          var message = { success: false, status: messageObject.status, message: messageObject.message, requestId: messageObject.requestId};
-        }else{
-          if(messageObject.slice(0,6) !== "Cannot") {
-          var errorMessage = X2jsService.xml_str2json(messageObject);
-          var message = { success: false, status: errorMessage.result.status, message: errorMessage.result.message, requestId: errorMessage.result.requestId};
+    //Falcon.logResponse = function (type, messageObject, entityType, hide) {
+    //  if(type === 'success') {
+    //    if(!hide) {
+    //      var message = { success: true, status: messageObject.status, message: messageObject.message, requestId: messageObject.requestId};
+    //      Falcon.responses.queue.push(message);
+    //      Falcon.responses.count.success = Falcon.responses.count.success +1;
+    //    }
+    //    Falcon.responses.count.pending = Falcon.responses.count.pending -1;
+    //  }
+    //  if(type === 'cancel') {
+    //    if(!hide) {
+    //      var message = {
+    //        success: 'cancel',
+    //        status: messageObject.state,
+    //        message: messageObject.message,
+    //        model: messageObject.model
+    //      };
+    //      Falcon.responses.queue.push(message);
+    //      return;
+    //      //Falcon.responses.count.success = Falcon.responses.count.success +1;
+    //    }
+    //    //Falcon.responses.count.pending = Falcon.responses.count.pending -1;
+    //  }
+    //  if(type === 'error') {
+    //
+    //    if(messageObject.status !== undefined){
+    //      var message = { success: false, status: messageObject.status, message: messageObject.message, requestId: messageObject.requestId};
+    //    }else{
+    //      if(messageObject.slice(0,6) !== "Cannot") {
+    //      var errorMessage = X2jsService.xml_str2json(messageObject);
+    //      var message = { success: false, status: errorMessage.result.status, message: errorMessage.result.message, requestId: errorMessage.result.requestId};
+    //      }
+    //      else {
+    //        var message = { success: false, status: "No connection", message: messageObject, requestId: "no ID"};
+    //      }
+    //    }
+    //
+    //    Falcon.responses.queue.push(message);
+    //    Falcon.responses.count.error = Falcon.responses.count.error +1;
+    //    Falcon.responses.count.pending = Falcon.responses.count.pending -1;
+    //  }
+    //  if(type === 'warning') {
+    //    if(!hide) {
+    //      var message = {
+    //        success: type,
+    //        status: messageObject.status,
+    //        message: messageObject.message,
+    //        model: ''
+    //      };
+    //      Falcon.responses.queue.push(message);
+    //      return;
+    //    }
+    //  }
+    //  if(entityType !== false) {
+    //    entityType = entityType.toLowerCase();
+    //    Falcon.responses.multiRequest[entityType] = Falcon.responses.multiRequest[entityType] - 1;
+    //  }
+    //
+    //};
+    //Falcon.removeMessage = function (index) {
+    //  if(index === -1){
+    //    index = Falcon.responses.queue.length-1;
+    //    console.log(index);
+    //  }
+    //  if(Falcon.responses.queue[index].success) {
+    //    Falcon.responses.count.success = Falcon.responses.count.success -1;
+    //  }
+    //  else {
+    //    Falcon.responses.count.error = Falcon.responses.count.error -1;
+    //  }
+    //  Falcon.responses.queue.splice(index, 1);
+    //};
+
+
+      Falcon.logResponse = function (type, messageObject, entityType, hide) {
+        if(type === 'success') {
+          if(!hide) {
+            var response = {
+              success: true,
+              type: "success",
+              status: messageObject.status,
+              message: messageObject.message,
+              requestId: messageObject.requestId
+            };
+            Falcon.responses.queue.push(response);
+            Falcon.responses.count.success = Falcon.responses.count.success +1;
+            $notify(response);
           }
-          else {
-            var message = { success: false, status: "No connection", message: messageObject, requestId: "no ID"};
+          Falcon.responses.count.pending = Falcon.responses.count.pending -1;
+        }
+        if(type === 'cancel') {
+          if(!hide) {
+            var response = {
+              success: true,
+              type: "cancel",
+              status: messageObject.state,
+              state: messageObject.state,
+              message: messageObject.message,
+              model: messageObject.model
+            };
+            Falcon.responses.queue.push(response);
+            $notify(response);
+            return;
           }
         }
-
-        Falcon.responses.queue.push(message);
-        Falcon.responses.count.error = Falcon.responses.count.error +1;
-        Falcon.responses.count.pending = Falcon.responses.count.pending -1;
-      }
-      if(type === 'warning') {
-        if(!hide) {
-          var message = {
-            success: type,
-            status: messageObject.status,
-            message: messageObject.message,
-            model: ''
-          };
-          Falcon.responses.queue.push(message);
-          return;
+        if(type === 'error') {
+          if(messageObject.status !== undefined){
+            var response = {
+              success: false,
+              type: "error",
+              status: messageObject.status,
+              message: messageObject.message,
+              requestId: messageObject.requestId
+            };
+          }else{
+            if(messageObject.slice(0,6) !== "Cannot") {
+              var errorMessage = X2jsService.xml_str2json(messageObject);
+              var response = {
+                success: false,
+                type: "error",
+                status: errorMessage.result.status,
+                message: errorMessage.result.message,
+                requestId: errorMessage.result.requestId
+              };
+            }
+            else {
+              var response = {
+                success: false,
+                type: "error",
+                status: "No connection",
+                message: messageObject,
+                requestId: "no ID"
+              };
+            }
+          }
+          Falcon.responses.queue.push(response);
+          Falcon.responses.count.error = Falcon.responses.count.error +1;
+          Falcon.responses.count.pending = Falcon.responses.count.pending -1;
+          $notify(response);
         }
-      }
-      if(entityType !== false) {
-        entityType = entityType.toLowerCase();
-        Falcon.responses.multiRequest[entityType] = Falcon.responses.multiRequest[entityType] - 1;
-      }
+        if(type === 'warning') {
+          if(!hide) {
+            var response = {
+              success: true,
+              type: "warning",
+              status: messageObject.status,
+              message: messageObject.message,
+              model: ''
+            };
+            Falcon.responses.queue.push(response);
+            $notify(response);
+            return;
+          }
+        }
+        if(entityType !== false) {
+          entityType = entityType.toLowerCase();
+          Falcon.responses.multiRequest[entityType] = Falcon.responses.multiRequest[entityType] - 1;
+        }
 
-    };
-    Falcon.removeMessage = function (index) {
-      if(Falcon.responses.queue[index].success) { Falcon.responses.count.success = Falcon.responses.count.success -1; }
-      else { Falcon.responses.count.error = Falcon.responses.count.error -1; }
-      Falcon.responses.queue.splice(index, 1);
-    };
+      };
+      Falcon.removeMessage = function (index) {
+        if(index === -1){
+          index = Falcon.responses.queue.length-1;
+          console.log(index);
+        }
+        if(Falcon.responses.queue[index].success) {
+          Falcon.responses.count.success = Falcon.responses.count.success -1;
+        }
+        else {
+          Falcon.responses.count.error = Falcon.responses.count.error -1;
+        }
+        Falcon.responses.queue.splice(index, 1);
+      };
+
+
     Falcon.errorMessage = function (message) {
-      var err = {};
-      err.status = "ERROR";
-      err.message = message;
-      err.requestId = "";
-      Falcon.logResponse('error', err, false, true);
+      var response = {
+        type: "error",
+        message: message
+      };
+      $notify(response);
     };
     Falcon.warningMessage = function (message) {
-      var err = {};
-      err.status = "WARNING";
-      err.message = message;
-      Falcon.logResponse('warning', err, false, false);
+      var response = {
+        type: "warning",
+        message: message
+      };
+      $notify(response);
     };
 
     //-------------METHODS-----------------------------//

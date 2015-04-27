@@ -29,6 +29,7 @@
     function ($rootScope, $scope, $state, $cookieStore, EntityModel, validationService) {
 
       $scope.fake = { focus: false }; //used in upload button to fake the focus borders
+      $scope.notifs = false;
 
       $scope.isInForm = function (type) {
         if($rootScope.currentState) {
@@ -86,6 +87,10 @@
       $scope.logOut = function() {
       	$cookieStore.put('userToken', null);
       	$state.transitionTo('login');
+      };
+
+      $scope.showNotifs = function() {
+        $scope.notifs = !$scope.notifs;
       };
 
     }]);
