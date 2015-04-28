@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 -->
+
+
 <table class="listTable table">
   <thead>
     <tr>
@@ -102,10 +104,10 @@
       </td>
     </tr>
 
-    <tr>
-      <td ng-if="server.responses.multiRequest[type] > 0 || server.responses.listLoaded[type] === false">
-        <div class="spinner" ng-class="{active: server.responses.multiRequest[type] > 0 || server.responses.listLoaded[type] === false}">
-          <img src="css/img/ajax-loader.gif" />
+    <tr> 
+      <td ng-if="server.responses.multiRequest[type] > 0 || server.responses.count.pending > 0">
+        <div class="spinner" ng-class="{active: server.responses.multiRequest[type] > 0 || server.responses.count.pending > 0}">
+          <img src="css/img/ajax-loader_2.gif" />
         </div>
       </td>
     </tr>
