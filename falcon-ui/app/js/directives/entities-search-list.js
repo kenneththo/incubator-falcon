@@ -90,6 +90,19 @@
           return isInArray;
         };
 
+        var nameOrder = true;
+        scope.toggleSortOrder = function () {
+          Falcon.orderBy.enable = true;
+          if (nameOrder) {
+            Falcon.orderBy.name = 'asc';
+          } else {
+            Falcon.orderBy.name = 'desc';
+          }
+          nameOrder = !nameOrder;
+          scope.$parent.refreshList(scope.$parent.tags);
+
+        };
+
         scope.simpleFilter = {};
 
         scope.selectedDisabledButtons = {

@@ -44,6 +44,12 @@
       return uri;
     }
 
+    //response Order
+
+      Falcon.orderBy = {
+        enable: false,
+        name: "asc"
+      };
     //-------------Server RESPONSE----------------------//
     Falcon.responses = {
       display:true,
@@ -288,7 +294,7 @@
       return $http.get(buildURI('../api/entities/definition/' + type + '/' + name), { headers: {'Accept': 'text/plain'} });
     };
 
-    Falcon.searchEntities = function (name, tags, entityType, offset) {
+    Falcon.searchEntities = function (name, tags, entityType, offset, order) {
       var searchUrl = "../api/entities/list/";
       if(entityType !== undefined && entityType !== ""){
         if(entityType === "mirror"){
@@ -316,6 +322,9 @@
       }
       if(offset !== undefined && offset !== ""){
         searchUrl += '&offset=' + offset + '&numResults=' + NUMBER_OF_ENTITIES;
+      }
+      if (Falcon.orderBy.enable) {
+        searchUrl += 'orderBy=name&sortOrder=' + Falcon.orderBy.name;
       }
       return $http.get(buildURI(searchUrl));
     };
