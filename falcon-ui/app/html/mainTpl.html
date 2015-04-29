@@ -21,7 +21,8 @@
 <div class="col-sm-offset-1 col-sm-22">
 
   <div class="row searchBoxContainer">
-    <div class="col-sm-24">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-16">
       <img src="css/img/ajax-loader.gif" class="glyphicon search-loading-icon" ng-show="loading"/>
       <i class="glyphicon glyphicon-search search-icon" ng-hide="loading"></i>
       <tags-input ng-model="tags" min-length="1" add-on-space="true" on-tag-added="displayResults()"
@@ -48,6 +49,7 @@
       </script>
       <i class="glyphicon glyphicon-remove remove-icon" ng-if="tags.length > 0" ng-click="clearTags()"></i>
     </div>
+    <div class="col-sm-4"></div>
   </div>
 
   <div class="col-sm-24 dashboardBox" ng-show="searchList.length > 0">
