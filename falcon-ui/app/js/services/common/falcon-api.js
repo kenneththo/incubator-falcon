@@ -18,10 +18,10 @@
 (function () {
   'use strict';
 
-  var falconModule = angular.module('app.services.falcon', ['app.services.x2js', 'ngCookies', 'cgNotify']);
+  var falconModule = angular.module('app.services.falcon', ['app.services.x2js', 'ngCookies']);
 
-  falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', 'notify'
-    , function ($http, X2jsService, $location, $rootScope, $cookieStore, $notify) {
+  falconModule.factory('Falcon', ["$http", "X2jsService", "$location", '$rootScope', '$cookieStore', '$timeout',
+    function ($http, X2jsService, $location, $rootScope, $cookieStore, $timeout) {
 
     var Falcon = {},
         NUMBER_OF_ENTITIES = 10,
@@ -136,6 +136,42 @@
     //  Falcon.responses.queue.splice(index, 1);
     //};
 
+      Falcon.responses.showAll = false;
+      Falcon.responses.isVisible = false;
+
+      Falcon.hide = function(){
+        Falcon.hideTimeout = $timeout(function() {
+          $(".notifs").fadeOut(300);
+        }, 5000);
+      };
+
+      Falcon.notify = function (showAll) {
+        $(".notifs").stop();
+        $timeout.cancel(Falcon.hideTimeout);
+
+        if(showAll){
+          if(Falcon.responses.isVisible){
+            Falcon.responses.isVisible = false;
+            $(".notifs").fadeOut(300);
+          }else{
+            Falcon.responses.isVisible = true;
+            $(".notifs").hide();
+            $(".notifs").fadeIn(300);
+          }
+          Falcon.responses.showAll = true;
+        }else{
+          Falcon.responses.isVisible = false;
+          $(".notifs").stop();
+          $(".notifs").hide();
+          $(".notifs").fadeIn(300);
+          $(".notifs").fadeOut(300);
+          $(".notifs").fadeIn(300);
+          $(".notifs").fadeOut(300);
+          $(".notifs").fadeIn(300);
+          Falcon.hide();
+          Falcon.responses.showAll = false;
+        }
+      };
 
       Falcon.logResponse = function (type, messageObject, entityType, hide) {
         if(type === 'success') {
@@ -149,7 +185,7 @@
             };
             Falcon.responses.queue.push(response);
             Falcon.responses.count.success = Falcon.responses.count.success +1;
-            $notify(response);
+            Falcon.notify(false);
           }
           Falcon.responses.count.pending = Falcon.responses.count.pending -1;
         }
@@ -164,7 +200,7 @@
               model: messageObject.model
             };
             Falcon.responses.queue.push(response);
-            $notify(response);
+            Falcon.notify(false);
             return;
           }
         }
@@ -201,7 +237,7 @@
           Falcon.responses.queue.push(response);
           Falcon.responses.count.error = Falcon.responses.count.error +1;
           Falcon.responses.count.pending = Falcon.responses.count.pending -1;
-          $notify(response);
+          Falcon.notify(false);
         }
         if(type === 'warning') {
           if(!hide) {
@@ -213,7 +249,7 @@
               model: ''
             };
             Falcon.responses.queue.push(response);
-            $notify(response);
+            Falcon.notify(false);
             return;
           }
         }
@@ -244,7 +280,7 @@
         message: message
       };
       Falcon.responses.queue.push(response);
-      $notify(response);
+      Falcon.notify(false);
     };
     Falcon.warningMessage = function (message) {
       var response = {
@@ -252,7 +288,7 @@
         message: message
       };
       Falcon.responses.queue.push(response);
-      $notify(response);
+      Falcon.notify(false);
     };
 
     //-------------METHODS-----------------------------//
