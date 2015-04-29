@@ -19,7 +19,7 @@
 -->
 <div class="summaryBox">
   <div class="row">
-    <h5 class="col-sm-24">Process</h5>
+    <h5 class="col-sm-24">{{entityTypeLabel}}</h5>
 
     <label class="col-sm-24">Name</label>
     <label class="col-sm-24 light">{{process.name}}</label>
@@ -31,6 +31,23 @@
         {{tag.key}} = {{tag.value}}
       </div>
       <div ng-show="!hasTags()">No tags selected</div>
+    </div>
+
+    <h5 class="col-sm-24">Access Control List</h5>
+
+    <div class="row">
+      <div class="col-sm-8">
+        <label class="col-sm-24">Owner</label>
+        <label class="col-sm-24 light">{{process.ACL.owner}}</label>
+      </div>
+      <div class="col-sm-8">
+        <label class="col-sm-24">Group</label>
+        <label class="col-sm-24 light">{{process.ACL.group}}</label>
+      </div>
+      <div class="col-sm-8">
+        <label class="col-sm-24">Permissions</label>
+        <label class="col-sm-24 light">{{process.ACL.permission}} {{process.retry.delay.unit}}</label>
+      </div>
     </div>
 
     <h5 class="col-sm-24">Workflow</h5>
@@ -88,6 +105,8 @@
         <label class="col-sm-24 light">Up to {{process.retry.delay.quantity}} {{process.retry.delay.unit}}</label>
       </div>
     </div>
+
+
   </div>
 </div>
 
@@ -105,11 +124,11 @@
         <div class="row">
           <div class="col-sm-12">
             <label class="col-sm-24">Start</label>
-            <label class="col-sm-24 light">{{cluster.validity.start.date}} {{cluster.validity.start.time}}</label>
+            <label class="col-sm-24 light">{{dateFormatter(entity.start)}} </label>
           </div>
           <div class="col-sm-12">
             <label class="col-sm-24">End</label>
-            <label class="col-sm-24 light">{{cluster.validity.end.date}} {{cluster.validity.end.time}}</label>
+            <label class="col-sm-24 light">{{dateFormatter(entity.end)}}</label>
           </div>
         </div>
       </div>
