@@ -234,6 +234,10 @@
               };
             }
           }
+          if (hide) {
+            Falcon.responses.count.pending = Falcon.responses.count.pending -1;
+            return; //>> just takes out the pending request and returns from the func
+          }
           Falcon.responses.queue.push(response);
           Falcon.responses.count.error = Falcon.responses.count.error +1;
           Falcon.responses.count.pending = Falcon.responses.count.pending -1;
