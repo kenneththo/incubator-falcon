@@ -135,7 +135,7 @@
         unixId: new RegExp("^([a-z_][a-z0-9-_\\.\\-]{0,30})$"),
         unixPermissions: new RegExp("^((([x0-7]){1,5})|(\\*))$"),
         osPath: new RegExp("^[^\\0 ]+$"),
-        twoDigits: new RegExp("^([0-9]){1,2}$"),
+        twoDigits: new RegExp("^([0-9]){1,4}$"), //>> requirement change to 4 digits, just to dont change all inputs that reference this
         tableUri: new RegExp("^[^\\0]+$"),
         versionNumbers: new RegExp("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"),
         url: new RegExp("^[^\\0 ]+\\.[a-zA-Z0-9]{1,3}$"),
