@@ -730,6 +730,12 @@ tags-input .autocomplete .suggestion-item em {
   DEPENDENCIES & LINEAGE GRAPHS
 **/
 
+.node {
+  .foreignObject {
+    padding: 5px;
+  }
+}
+
 .node-name:before {
   font-family: 'Glyphicons Halflings';
   -webkit-font-smoothing: antialiased;
@@ -757,8 +763,11 @@ tags-input .autocomplete .suggestion-item em {
 .node rect {
   stroke-width: 0.5px;
   stroke: #999;
-  fill: #ffffff;
-  fill-opacity: 80%;
+  fill: @gray-dark;
+  fill-opacity: 5%;
+  &:hover {
+    fill-opacity: 10%;
+  }
 }
 
 .edge path {
@@ -768,6 +777,7 @@ tags-input .autocomplete .suggestion-item em {
 }
 
 .node-name {
+  font-size: 12px;
   vertical-align: middle;
   margin: 10px;
 }
