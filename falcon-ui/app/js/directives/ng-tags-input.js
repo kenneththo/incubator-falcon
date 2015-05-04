@@ -348,7 +348,11 @@
         };
 
         scope.getDisplayText = function (tag) {
-          return safeToString(tag[options.displayProperty]);
+          var label = safeToString(tag[options.displayProperty]);
+          if(label.indexOf("type=") === 0){
+            label = label.substring(5);
+          }
+          return label;
         };
 
         scope.track = function (tag) {
