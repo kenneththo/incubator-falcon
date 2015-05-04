@@ -78,7 +78,7 @@
         <span class="user"></span> <div><strong>{{userToken}}</strong></div>
       </div>
 
-      <button ng-click="notify()">
+      <button ng-click="notify()" ng-blur="hideNotifs()">
         <span class="glyphicon glyphicon-bell"></span> <div><strong class="pointer">Notifications</strong></div>
         <div class="notifications">
           <server-messages></server-messages>

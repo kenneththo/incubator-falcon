@@ -173,6 +173,13 @@
         }
       };
 
+      Falcon.hideNotifs = function () {
+        $(".notifs").stop();
+        $timeout.cancel(Falcon.hideTimeout);
+        Falcon.responses.isVisible = false;
+        $(".notifs").fadeOut(300);
+      };
+
       Falcon.logResponse = function (type, messageObject, entityType, hide) {
         if(type === 'success') {
           if(!hide) {

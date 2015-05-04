@@ -97,6 +97,10 @@
         Falcon.notify(true);
       };
 
+      $scope.hideNotifs = function() {
+        Falcon.hideNotifs();
+      };
+
     }]);
 
     navHeaderModule.filter('reverse', function() {
