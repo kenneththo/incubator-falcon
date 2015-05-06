@@ -23,10 +23,10 @@
     <th><div class="filtersSearchBox vertical-align"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
     <th><div class="filtersSearchBox vertical-align">Instance</div></th>
     <th><div class="filtersSearchBox">Started&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('startTime')"></span>
-      <input type="text" class="form-control dateInput" ng-model="startFilter" ng-enter="filterInstances('startTime')" placeholder="mm/dd/yyyy hh:mm" mask="12/39/2999 23:59" restrict="reject">
+      <input type="text" class="form-control dateInput" ng-model="startFilter" ng-enter="filterInstances('startTime')" placeholder="mm/dd/yyyy hh:mm" mask="12/31/2999 23:59" restrict="reject">
     </div></th>
     <th><div class="filtersSearchBox">Ended&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('endTime')"></span>
-      <input type="text" class="form-control dateInput" ng-model="endFilter" ng-enter="filterInstances('startTime')" placeholder="mm/dd/yyyy hh:mm" mask='12/39/2999 23:59' restrict="reject">
+      <input type="text" class="form-control dateInput" ng-model="endFilter" ng-enter="filterInstances('startTime')" placeholder="mm/dd/yyyy hh:mm" mask='12/31/2999 23:59' restrict="reject">
     </div></th>
     <th>
       <div class="filtersSearchBox">Status&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('status')"></span>
@@ -35,6 +35,7 @@
           <option value="RUNNING">RUNNING</option>
           <option value="SUCCEEDED">SUCCEEDED</option>
           <option value="SUSPENDED">SUSPENDED</option>
+          <option value="WAITING">WAITING</option>
           <option value="KILLED">KILLED</option>
         </select>
       </div>
