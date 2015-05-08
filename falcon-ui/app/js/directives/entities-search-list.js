@@ -202,7 +202,7 @@
             }
           });
           if(!added){
-            var tag = {text:text};
+            var tag = {text:"Tag:"+text};
             scope.tags.push(tag);
             scope.focusSearch();
           }

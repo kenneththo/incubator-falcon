@@ -373,6 +373,7 @@
       if (Falcon.orderBy.enable) {
         searchUrl += 'orderBy=name&sortOrder=' + Falcon.orderBy.name;
       }
+      console.log(buildURI(searchUrl));
       return $http.get(buildURI(searchUrl));
     };
 
