@@ -164,12 +164,22 @@
           tags.push({ text: 'Name:' + query });
         }
         if(!$scope.$parent.typeFounded){
-          tags.push({ text: 'Type:' + query });
-          //tags.push({ text: 'Type: feed'});
-          //tags.push({ text: 'Type: process'});
-          //tags.push({ text: 'Type: mirror'});
+          var queryAux = query.toUpperCase();
+          if(queryAux === "F" || queryAux === "FE" || queryAux === "FEE" || queryAux === "FEED"){
+            tags.push({ text: 'Type:feed'});
+          }
+          if(queryAux === "P" || queryAux === "PR" || queryAux === "PRO" || queryAux === "PROC" || queryAux === "PROCE"
+              || queryAux === "PROCES" || queryAux === "PROCESS"){
+            tags.push({ text: 'Type:process'});
+          }
+          if(queryAux === "M" || queryAux === "MI" || queryAux === "MIR" || queryAux === "MIRR" || queryAux === "MIRRO"
+              || queryAux === "MIRROR"){
+            tags.push({ text: 'Type:mirror'});
+          }
         }
-        tags.push({ text: 'Tag:' + query });
+        if(query !== "*"){
+          tags.push({ text: 'Tag:' + query });
+        }
         return tags;
       };
 

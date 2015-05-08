@@ -56,9 +56,6 @@
       $scope.goPage = function(page){
         $scope.loading = true;
         var offset = (page-1) * resultsPerPage;
-        console.log("entityName: "+$scope.entityName);
-        console.log("entityTags: "+$scope.entityTags);
-        console.log("entityType: "+$scope.entityType);
         EntityFalcon.searchEntities($scope.entityName, $scope.entityTags, $scope.entityType, offset).then(function() {
           if (EntityFalcon.data !== null) {
             $scope.actualPage = page;
@@ -89,13 +86,11 @@
 
       $scope.refreshList = function (tags) {
 
-        var tagsSt = "";
-        //var entityType = "";
-        //var nameFounded = false;
-        //var typeFounded = false;
-
         $scope.nameFounded = false;
         $scope.typeFounded = false;
+        $scope.entityName = "";
+        $scope.entityType = "";
+        var tagsSt = "";
 
         $scope.searchList = [];
 
@@ -108,7 +103,6 @@
 
         for(var i=0; i<tags.length; i++){
           var tag = tags[i].text;
-
           if(tag.indexOf("Name:") !== -1){
             $scope.nameFounded = true;
             tag = tag.substring(5);
