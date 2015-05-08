@@ -298,7 +298,12 @@
           "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "suspended successfully\n",
           "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
         };
-    mockData.instancesList[type][indexInArray].status = "SUSPENDED";
+    mockData.instancesList[type].forEach(function (item) {
+      if (item.instance === start) {
+        item.status = "SUSPENDED";
+      }
+    });
+    //mockData.instancesList[type][indexInArray].status = "SUSPENDED";
     res.json(200, responseMessage);
   });
 
@@ -313,7 +318,13 @@
           "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "resumed successfully\n",
           "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
         };
-    mockData.instancesList[type][indexInArray].status = "RUNNING";
+    mockData.instancesList[type].forEach(function (item) {
+      if (item.instance === start) {
+        item.status = "RUNNING";
+      }
+    });
+
+    //mockData.instancesList[type][indexInArray].status = "RUNNING";
     res.json(200, responseMessage);
   });
 
@@ -328,7 +339,13 @@
           "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "resumed successfully\n",
           "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
         };
-    mockData.instancesList[type][indexInArray].status = "RUNNING";
+
+    mockData.instancesList[type].forEach(function (item) {
+      if (item.instance === start) {
+        item.status = "RUNNING";
+      }
+    });//Its badly done makes no sense
+    //mockData.instancesList[type][indexInArray].status = "RUNNING";
     res.json(200, responseMessage);
   });
 
@@ -343,7 +360,12 @@
           "message": "default/" + name + "(" + type + ") start:" + start + " end: " + end + "killed successfully\n",
           "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
         };
-    mockData.instancesList[type][indexInArray].status = "KILLED";
+    mockData.instancesList[type].forEach(function (item) {
+      if (item.instance === start) {
+        item.status = "KILLED";
+      }
+    });
+    //mockData.instancesList[type][indexInArray].status = "KILLED";
     res.json(200, responseMessage);
   });
 
