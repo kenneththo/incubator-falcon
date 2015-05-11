@@ -21,12 +21,12 @@
   var navHeaderModule = angular.module('app.controllers.navHeader', [
     'app.services.entity.model',
     'app.services.validation',
-    'ngCookies', 'cgNotify'
+    'ngCookies'
   ]);
 
   navHeaderModule.controller('HeaderController', [
-    '$rootScope', '$scope', '$state', '$cookieStore', '$timeout', 'EntityModel', 'ValidationService', 'notify', 'Falcon',
-    function ($rootScope, $scope, $state, $cookieStore, $timeout, EntityModel, validationService, $notify, Falcon) {
+    '$rootScope', '$scope', '$state', '$cookieStore', '$timeout', 'EntityModel', 'ValidationService', 'Falcon',
+    function ($rootScope, $scope, $state, $cookieStore, $timeout, EntityModel, validationService, Falcon) {
 
       $scope.fake = { focus: false }; //used in upload button to fake the focus borders
       $scope.notifs = false;
@@ -89,22 +89,24 @@
       	$state.transitionTo('login');
       };
 
-      $scope.showNotifs = function() {
-        $notify.closeAll();
-        for(var i=0; i<Falcon.responses.queue.length; i++){
-          var response = {
-            success: true,
-            type: Falcon.responses.queue[i].type,
-            message: Falcon.responses.queue[i].message,
-            status: Falcon.responses.queue[i].state,
-            state: Falcon.responses.queue[i].state,
-            model: Falcon.responses.queue[i].model
-          };
-          $notify(response);
-        }
-        $("#notifBT").removeClass("blink-notification");
+      $scope.restore = function(state) {
+        $state.go(state);
+      };
+
+      $scope.notify = function() {
+        Falcon.notify(true);
+      };
+
+      $scope.hideNotifs = function() {
+        Falcon.hideNotifs();
       };
 
     }]);
+
+    navHeaderModule.filter('reverse', function() {
+      return function(items) {
+        return items.slice().reverse();
+      };
+    });
 
 })();
