@@ -1,28 +1,23 @@
-Falcon-ui
+Falcon-Ambari-UI
 =========
+Web UI inside ambari for the Falcon-UI
 
-Web UI to manage feeds, clusters and processes with the falcon REST API
+To clone the repository
+===============================
+- git clone https://github.com/kenneththo/incubator-falcon.git
+- git checkout falcon-ambari-view-V2.0
 
 
 Before starting
 ===============
-
 NodeJs , npm, Grunt must be installed in the local pc.
 
 - From git root cd to /falcon-ui
-
 - npm install (this will install all the app related node modules)
-
-
-To clone the repository
-===============================
-git clone https://github.com/kenneththo/incubator-falcon.git
-git checkout falcon-ambari-view-V2.0
 
 
 To deploy to the sandbox (v2-2)
 ===============================
-
 - Deploy ambari view in order to generate falcon-ambari-view-0.7-incubating-SNAPSHOT.jar:
  1. cd falcon-ui
  2. grunt ambariview
