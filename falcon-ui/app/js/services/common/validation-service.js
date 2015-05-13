@@ -125,7 +125,7 @@
         }
       },
       checkPatterns = {
-        name: new RegExp("^[a-zA-Z0-9-_]{1,39}$"),
+        name: new RegExp("^[a-zA-Z0-9-_]{1,60}$"),
         id: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9_])*){1,39})$"),
         password: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$"),
