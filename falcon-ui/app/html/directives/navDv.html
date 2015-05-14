@@ -25,71 +25,75 @@
       </h1>
     </button>
 
-      <div class="createNavWrapper" ng-show="userLogged()">
-        <h4>Create an entity</h4>
+    <div ng-show="userLogged()">
+      <div class="uploadNavWrapper">
+          <div class="pointer" title="Create entity"><img src="css/img/32x32_create-entity.png"/></div>
+          <div class="btn-file" ng-class="{fakeFocus: fake.focus}" title="Upload an entity definition">
+              <img src="css/img/32x32_upload.png"/>
+              <input type="file"
+                     id="files"
+                     ng-focus="fake.focus = true"
+                     ng-blur="fake.focus = false"
+                     name="files[]"
+                     multiple
+                     fileinput-change="handleFile"
+                     ng-model="fileJson" />
+          </div>
+      </div>
+      <div class="createNavWrapper">
         <button type="button"
-                id="cluster.create"
-                ng-click="resetCluster()"
-                ng-disabled="isInForm('cluster')"
-                ng-class="{disabled:isInForm('cluster')}">
-          <span class="entypo archive"></span> <span>Cluster</span>
+            id="cluster.create"
+            ng-click="resetCluster()"
+            ng-disabled="isInForm('cluster')"
+            ng-class="{disabled:isInForm('cluster')}"
+            class="cluster">
+            <span title="Cluster"><img src="css/img/32x32_cluster_hover.png"/></span>
         </button>
         <button type="button"
                 id="feed.create"
                 ng-click="resetFeed()"
                 ng-disabled="isInForm('feed')"
-                ng-class="{disabled:isInForm('feed')}">
-          <span class="entypo download"></span> <span>Feed</span>
+                ng-class="{disabled:isInForm('feed')}"
+                class="feed">
+            <span title="Feed"><img src="css/img/32x32_feed_hover.png"/></span>
         </button>
         <button type="button"
                 id="process.create"
                 ng-click="resetProcess()"
                 ng-disabled="isInForm('process')"
-                ng-class="{disabled:isInForm('process')}">
-          <span class="entypo cycle"></span> <span>Process</span>
+                ng-class="{disabled:isInForm('process')}"
+                class="process">
+            <span title="Process"><img src="css/img/32x32_process_hover.png"/></span>
         </button>
         <button type="button"
                 id="dataset.create"
                 ng-click="resetDataset()"
                 ng-disabled="isInForm('dataset')"
-                ng-class="{disabled:isInForm('dataset')}">
-          <span class="glyphicon glyphicon-duplicate"></span> <span>Mirror</span>
+                ng-class="{disabled:isInForm('dataset')}"
+                class="dataset">
+            <span title="Mirror"><img src="css/img/32x32_mirror_hover.png"/></span>
         </button>
       </div>
-
-    <div class="uploadNavWrapper" ng-show="userLogged()">
-      <h4>Upload an entity</h4>
-      <div class="btn-file" ng-class="{fakeFocus: fake.focus}">
-        <span class="entypo up"></span>
-        <input type="file"
-               id="files"
-               ng-focus="fake.focus = true"
-               ng-blur="fake.focus = false"
-               name="files[]"
-               multiple
-               fileinput-change="handleFile"
-               ng-model="fileJson">
-        <span>Browse for the XML file</span>
-      </div>
     </div>
-
     <div class="loginHeaderBox">
       <div ng-show="userLogged()">
         <span class="user"></span> <div><strong>{{userToken}}</strong></div>
       </div>
 
       <button ng-click="notify()">
-        <span class="glyphicon glyphicon-bell"></span> <div><strong class="pointer">Notifications</strong></div>
+          <span class="glyphicon glyphicon-bell" title="Notifications"></span>
         <div class="notifications">
           <server-messages></server-messages>
         </div>
       </button>
-
       <button ng-show="userLogged() && !ambariView()" ng-click="logOut()">
-        <span class="entypo logout pointer"></span> <div><strong class="pointer">Logout</strong></div>
+        <span class="entypo logout pointer" title="Logout"></span>
       </button>
-      <a href="http://hortonworks.com/hadoop/falcon/">
-        <span class="entypo circled-help"></span> <div>Help</div>
+      <a href="http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.1.1/bk_falcon/bk_falcon-20140422.pdf" target="_blank">
+        <span class="entypo circled-help" title="Help"></span>
+      </a>
+      <a href="http://hortonworks.com/hadoop/falcon/" target="_blank">
+        <span class="entypo circled-info" title="About"></span>
       </a>
     </div>
 

@@ -58,7 +58,7 @@
 
 .createNavWrapper, .uploadNavWrapper {
   float: left;
-  margin: 0 10px;
+  /*margin: 0 10px;*/
   > h4 {
     font-size: 14px;
     font-weight: bold;
@@ -66,8 +66,9 @@
   }
   > button {
     padding: 5px 10px;
-    border: 1px solid white;
-    border-radius: 3px;
+    border: none;
+    /*border: 1px solid white;*/
+    /*border-radius: 3px;*/
     display: inline-block;
     cursor: pointer;
     background-color: transparent;
@@ -89,12 +90,23 @@
     .background-opacity(black, 0.2);
   }
 }
+
+.createNavWrapper {
+  position: relative;
+  left: -80px;
+  top: 25px;
+  height: 60px;
+  margin: 10px 0px 5px;
+}
+
+/** Deprecated */
 .uploadNavWrapper {
+  height: 35px;
   > div {
-    min-width:183px;
-    padding: 5px 10px;
-    border: 1px solid white;
-    border-radius: 3px;
+    /*min-width:183px;*/
+    /*padding: 5px 10px;*/
+    /*border: 1px solid white;
+    border-radius: 3px;*/
     display: inline-block;
     cursor: pointer;
     &.fakeFocus {
@@ -102,12 +114,13 @@
     }
   }
 }
+
 .loginHeaderBox {
   margin: 0;
   display: inline-block;
   //width: 100%;
   text-align: right;
-  margin-top: 10px;
+  margin-top: 20px;
 
   .pull-right;
   >*{
@@ -165,8 +178,8 @@
   display:none;
   position:absolute;
   margin-left:-10px;
-  top:30px;
-  right:200px;
+  top:38px;
+  right:120px;
   width:0;
   height:0;
   color:transparent;
