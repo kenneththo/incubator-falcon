@@ -20,15 +20,37 @@
 
 .navbar {
   z-index: 2;
-  background-color: @headerNavBG;
   margin: 0;
   color: white;
-  padding: 5px 0;
+  /*padding: 5px 0;*/
   border-width: 0;
   border-radius: 0;
-  position: relative;
+  /*position: relative;*/
   &:hover{
     cursor: default;
+  }
+  &.header1 {
+    background-color: @headerNavBG;
+    .loginHeaderBox {
+      /*position: relative;
+      top: 50%;*/
+      transform: translateY(80%);
+      .btn-link {
+        color: @header2NavBG !important;
+        /*height: 40px;*/
+        &:hover {
+          color: @header2NavBG;
+        }
+      }
+    }
+  }
+  &.header2 {
+    min-height: 32px;
+    background-color: @header2NavBG;
+  }
+  &.header3 {
+    min-height: 32px;
+    background-color: @header3NavBG;
   }
 }
 .logoTitle {
@@ -40,14 +62,14 @@
     display: inline-block;
   }
   .falconLogo{
-    background: url(img/falcon-logo1.png) no-repeat center center;
-    background-size: 150%;
-    width: 40px;
-    height: 54px;
+    background: url(img/falcon-logo.jpg) no-repeat center center;
+    background-size: 110%;
+    width: 120px;
+    height: 72px;
   }
 }
 .navbar-header {
-  margin: 5px 15px 5px 5px;
+  margin: 6px;
   font-size: 30px;
   cursor: pointer;
   font-weight: bolder;
@@ -59,11 +81,11 @@
 .createNavWrapper, .uploadNavWrapper {
   float: left;
   /*margin: 0 10px;*/
-  > h4 {
+  /*> h4 {
     font-size: 14px;
     font-weight: bold;
     margin: 2px 0;
-  }
+  }*/
   > button {
     padding: 5px 10px;
     border: none;
@@ -72,10 +94,15 @@
     display: inline-block;
     cursor: pointer;
     background-color: transparent;
+    color: @header2NavBG;
+    &:hover {
+      color: #FFFFFF;
+    }
   }
   span {
     vertical-align: middle;
-    margin-right: 6px;
+    /*margin-right: 6px;*/
+    font-size: 16px;
     &.entypo, &.glyphicon{
       vertical-align: sub;
       &.up{
@@ -84,67 +111,107 @@
     }
   }
   .disabled {
-    //color: lighten(@headerNavBG, 30%);
+    color: #FFFFFF;
     //border-color: lighten(@headerNavBG, 10%);
     cursor: default;
-    .background-opacity(black, 0.2);
+    /*.background-opacity(black, 0.2);*/
+    span {
+      border-bottom: 1px #FFFFFF solid;
+      padding-bottom: 1px;
+    }
   }
 }
 
-.createNavWrapper {
+/*.createNavWrapper {
   position: relative;
   left: -80px;
   top: 25px;
   height: 60px;
   margin: 10px 0px 5px;
-}
+}*/
 
 /** Deprecated */
 .uploadNavWrapper {
-  height: 35px;
+  /*height: 35px;*/
   > div {
-    /*min-width:183px;*/
+    width: 35px;
+    height: 40px;
+    float: left;
     /*padding: 5px 10px;*/
     /*border: 1px solid white;
     border-radius: 3px;*/
-    display: inline-block;
+    /*display: inline-block;*/
     cursor: pointer;
+    background-size: 100%;
+    background: 50% no-repeat;
     &.fakeFocus {
       .box-shadow(0 0 2px white);
+    }
+    &.btn-file {
+      background-image: url('img/32x32_upload.png');
+      z-index: 2;
+    }
+    &.btn-create {
+      background-image: url('img/32x32_create-entity.png');
+      &.expanded {
+        background-image: url('img/32x32_create-entity-hover.png');
+      }
     }
   }
 }
 
 .loginHeaderBox {
-  margin: 0;
-  display: inline-block;
+  /*margin: 0;
+  display: inline-block;*/
   //width: 100%;
-  text-align: right;
-  margin-top: 20px;
-
-  .pull-right;
-  >*{
+  float: right;
+  /*margin-top: 20px;*/
+  color: @header2NavBG;
+  /*.pull-right;*/
+  >* {
     vertical-align: middle;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 3px;
     >*{
       display: inline-block;
       vertical-align: middle;
     }
   }
+  .btn-link {
+    color: @header2NavBG;
+    &:hover {
+      color: #FFFFFF;
+    }
+    .glyphicon {
+      font-size: 1.1em;
+    }
+  }
   span.entypo{
     vertical-align: sub;
   }
-  span.user{
+  span.user {
     background: url(img/user.svg) no-repeat center center;
     background-size: 35px 35px;
     height: 35px;
     width: 35px;
   }
-  button {
+  /*button {
     border: none;
     cursor: pointer;
     background-color: transparent;
+  }*/
+  button {
+    padding: 5px 10px;
+    border: none;
+    /*border: 1px solid white;*/
+    /*border-radius: 3px;*/
+    display: inline-block;
+    cursor: pointer;
+    background-color: transparent;
+    color: @header2NavBG;
+    &:hover {
+      color: #FFFFFF;
+    }
   }
   a {
     color: white;
@@ -165,7 +232,7 @@
 .notifications .messages {
   display:none;
   position: absolute;
-  top:57px;
+  top:35px;
   right:70px;
   width:280px;
   max-width:280px;
@@ -178,8 +245,8 @@
   display:none;
   position:absolute;
   margin-left:-10px;
-  top:38px;
-  right:120px;
+  top: 16px;
+  right: 166px;
   width:0;
   height:0;
   color:transparent;
