@@ -33,8 +33,6 @@
     function ($scope, $interval, Falcon, $state,
         validationService, SpinnersFlag, $timeout, $rootScope, $cookieStore, UserFalcon) {
 
-      console.log("UserFormCtrl");
-
       var resultsPerPage = 10;
 
       $scope.server = Falcon;
@@ -64,11 +62,8 @@
                 $scope.pages[i].enabled = true;
               }
             }
-            if($scope.searchList.length === 0){
-              Falcon.warningMessage("No results matched the search criteria.");
-            }
             //$timeout(function() {
-            //  angular.element('#userList').focus();
+            //  angular.element('#newUserBT').focus();
             //}, 0, false);
             Falcon.responses.listLoaded = true;
             $scope.loading = false;
@@ -78,6 +73,34 @@
 
       $scope.refreshList = function () {
         $scope.goPage(1);
+      };
+
+      $scope.newUser = function () {
+        $state.go("forms.user.new");
+        $scope.update = false;
+        $scope.user = {};
+      };
+
+      $scope.updateUser = function (user) {
+        $state.go("forms.user.new");
+        $scope.update = true;
+        $scope.user = user;
+      };
+
+      $scope.deleteUser = function (user) {
+        UserFalcon.deleteUser(user).then(function() {
+          $scope.refreshList();
+        });
+      };
+
+      $scope.save = function (user) {
+        if(user.isAdmin === undefined){
+          user.isAdmin = false;
+        }
+        UserFalcon.saveUser(user).then(function() {
+          $state.go("forms.user.list");
+          $scope.refreshList();
+        });
       };
 
       $scope.refreshList();

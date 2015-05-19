@@ -50,15 +50,15 @@
       .state('forms', {
         templateUrl: 'html/formsTpl.html'
       })
-      .state('forms.users', {
+      .state('forms.user', {
         controller: 'UserFormCtrl',
         templateUrl: 'html/user/userFormTpl.html'
       })
-      .state('forms.users.list', {
+      .state('forms.user.list', {
         templateUrl: 'html/user/userListTpl.html'
       })
       .state('forms.user.new', {
-        templateUrl: 'html/user/userFormTpl.html'
+        templateUrl: 'html/user/newUserForm.html'
       })
       .state('forms.cluster', {
         controller: 'ClusterFormCtrl',

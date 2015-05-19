@@ -144,5 +144,14 @@
     }
   ]);
 
+  directivesModule.directive('autofocus', ['$timeout', function($timeout) {
+    return {
+      restrict: 'A',
+      link: function($scope, element) {
+        $timeout(function () { element.trigger('focus'); }, 20);
+      }
+    };
+  }
+  ]);
 
 }());

@@ -96,6 +96,38 @@
     return result;
   }
 
+  function searchUsername(username, list){
+    var result = [];
+    for(var i=0; i<list.length; i++){
+      if(list[i].username === username){
+        result.push(list[i]);
+      }
+    }
+    return result;
+  }
+
+  function updateUser(user, list){
+    var result = [];
+    for(var i=0; i<list.length; i++){
+      if(list[i].username === user.username){
+        list[i].name = user.name;
+        list[i].password = user.password;
+        list[i].isAdmin = user.isAdmin;
+      }
+    }
+    return result;
+  }
+
+  function deleteUser(user, list){
+    var result = [];
+    for(var i=0; i<list.length; i++){
+      if(list[i].username === user.username){
+        list = list.splice(i, 1);
+      }
+    }
+    return result;
+  }
+
   server.get('/api/entities/list/:type', function (req, res) {
     var type = req.params.type;
     var name = req.query.nameseq === undefined ? "" : req.query.nameseq;
@@ -515,6 +547,53 @@
     paginated.users = paginated.users.slice(offset, offset+numResults);
 
     res.json(paginated);
+  });
+
+  server.get('/api/users/search', function (req, res) {
+
+    var username = req.query.username === undefined ? 0 : req.query.username;
+
+    var paginated = {};
+    paginated.users = [];
+    paginated.users = paginated.users.concat(mockData.users);
+    paginated.users = searchUsername(username, paginated.users);
+
+    res.json(paginated);
+  });
+
+  server.post('/api/users/save', function (req, res) {
+
+    var user = JSON.parse(req.text);
+    var users = searchUsername(user.username, mockData.users);
+
+    var responseMessage = {
+      "status": "SUCCEEDED",
+      "message": "user " + user.username + " saved successfully\n",
+      "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
+    };
+
+    if(users && users.length > 0){
+      updateUser(user, mockData.users);
+    }else{
+      mockData.users.push(user);
+    }
+
+    res.send(200, responseMessage);
+  });
+
+  server.post('/api/users/delete', function (req, res) {
+
+    var user = JSON.parse(req.text);
+
+    var responseMessage = {
+      "status": "SUCCEEDED",
+      "message": "user " + user.username + " deleted successfully\n",
+      "requestId": "default/546cbe05-2cb3-4e5c-8e7a-b1559d866c99\n"
+    };
+
+    deleteUser(user, mockData.users);
+
+    res.send(200, responseMessage);
   });
 
   server.listen(PORT, function () {

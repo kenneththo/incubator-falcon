@@ -102,7 +102,7 @@
       };
 
       $scope.goUsers = function () {
-        $state.go("forms.users.list");
+        $state.go("forms.user.list");
       };
 
     }]);

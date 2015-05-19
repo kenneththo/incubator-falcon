@@ -273,7 +273,6 @@
       Falcon.removeMessage = function (index) {
         if(index === -1){
           index = Falcon.responses.queue.length-1;
-          console.log(index);
         }
         if(Falcon.responses.queue[index].success) {
           Falcon.responses.count.success = Falcon.responses.count.success -1;
@@ -452,6 +451,18 @@
 
     Falcon.getUsers = function (offset) {
       return $http.get(buildURI('../api/users/list?'+ 'offset=' + offset +'numResults=' + NUMBER_OF_ENTITIES));
+    };
+
+    Falcon.searchUser = function (username) {
+      return $http.get(buildURI('../api/users/search?'+ 'username=' + username));
+    };
+
+    Falcon.saveUser = function (user) {
+      return $http.post(buildURI('../api/users/save'), user, { headers: {'Content-Type': 'text/plain'} });
+    };
+
+    Falcon.deleteUser = function (user) {
+      return $http.post(buildURI('../api/users/delete'), user, { headers: {'Content-Type': 'text/plain'} });
     };
 
     return Falcon;

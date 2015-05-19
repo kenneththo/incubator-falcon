@@ -43,6 +43,57 @@
         return deffered.promise;
       };
 
+      UserFalcon.searchUser = function(username){
+        var deffered = $q.defer();
+        Falcon.logRequest();
+        Falcon.searchUser(username).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          if(data.users === undefined){
+            data.users = [];
+          }
+          UserFalcon.users = data.users;
+          deffered.resolve();
+        }).error(function (err) {
+          Falcon.logResponse('error', err);
+          deffered.resolve();
+        });
+        return deffered.promise;
+      };
+
+      UserFalcon.saveUser = function(user){
+        var deffered = $q.defer();
+        Falcon.logRequest();
+
+        Falcon.saveUser(user)
+            .success(function (message) {
+              Falcon.logResponse('success', message, "user");
+              deffered.resolve();
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, "user");
+              deffered.resolve();
+
+            });
+        return deffered.promise;
+      };
+
+      UserFalcon.deleteUser = function(user){
+        var deffered = $q.defer();
+        Falcon.logRequest();
+
+        Falcon.deleteUser(user)
+            .success(function (message) {
+              Falcon.logResponse('success', message, "user");
+              deffered.resolve();
+            })
+            .error(function (err) {
+              Falcon.logResponse('error', err, "user");
+              deffered.resolve();
+
+            });
+        return deffered.promise;
+      };
+
       return UserFalcon;
 
     }]);

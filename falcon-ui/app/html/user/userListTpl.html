@@ -25,28 +25,26 @@
       <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
       <th><div class="filtersSearchBox pointer" ng-click="toggleSortOrder()">Name <span class="glyphicon glyphicon-sort"></span></div> </th>
       <th><div class="filtersSearchBox">Username</div></th>
-      <th><div class="filtersSearchBox">Email</div></th>
       <th><div class="filtersSearchBox">Is Admin?</div></th>
+      <th width="200px">&nbsp;</th>
     </tr>
   </thead>
 
   <tbody>
-    <tr ng-if="searchList.length > 0" class="buttonsRow">
-      <td class="buttonCell" colspan="9">
-        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeEdit()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
-          <span class="entypo cog"></span> <div>Edit</div>
-        </div>
-        <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeRemove()" ng-disabled="selectedRows.length === 0">
-          <span class="entypo trash"></span> <div>Delete</div>
-        </div>
+
+    <tr class="buttonsRow">
+      <td colspan="5">
+        <button id="newUserBT" type="button" class="btn btn-primary" ng-click="newUser()">
+          <span class="glyphicon glyphicon-plus"></span> New
+        </button>
       </td>
     </tr>
 
     <tr ng-if="searchList.length === 0 && !server.responses.listLoaded">
-      <td> loading... </td>
+      <td colspan="5"> loading... </td>
     </tr>
     <tr ng-if="searchList.length === 0 && server.responses.listLoaded">
-      <td> There are no results </td>
+      <td colspan="5"> There are no results </td>
     </tr>
 
     <tr ng-if="searchList.length !== 0"
@@ -63,18 +61,21 @@
                ng-change="checkButtonsToShow()"/>
       </td>
       <td class="nameCell" ng-init="entityType = item.type | uppercase">
-        <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
-          <span ng-class="displayIcon((item.type | uppercase), item.tags.tag)"></span> {{ item.name }}
-        </button>
+        {{ item.name }}
       </td>
       <td>
         {{ item.username }}
       </td>
       <td>
-        {{ item.email }}
+        {{ item.isAdmin? 'Yes' : 'No' }}
       </td>
       <td>
-        {{ item.isAdmin? 'Yes' : 'No' }}
+        <button type="button" class="btn btn-primary" ng-click="updateUser(item)">
+          <span class="glyphicon glyphicon-edit"></span> Modify
+        </button>
+        <button type="button" class="btn btn-primary" ng-click="deleteUser(item)">
+          <span class="glyphicon glyphicon-trash"></span> Delete
+        </button>
       </td>
     </tr>
 
@@ -87,7 +88,7 @@
     </tr>
 
     <tr>
-      <td colspan="9">
+      <td colspan="5">
         <nav class="pull-right">
           <ul class="pagination">
             <li ng-repeat="page in pages"><a href="javascript:void(0);" ng-click="page.enabled ? scopeGoPage(page.index) : void(0)" ng-class="page.enabled ? '' : 'pagDisabled'">{{ page.label }}</a></li>

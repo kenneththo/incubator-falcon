@@ -25,7 +25,7 @@
         name: {
           patternInvalid: "The name has an invalid format.",
           unavailable: "The name you choosed is not available",
-          empty: "You need to specify a name"
+          empty: "You need to provide a name"
         },
         colo: {
           empty: "You need to provide a colo",
@@ -81,7 +81,7 @@
         },
         option: { empty: "You need to select an option" },
         user: {
-          empty: "Please enter your user name.",
+          empty: "You need to provide a user name.",
           patternInvalid: "The User has an invalid format."
         },
         password: {
@@ -89,6 +89,7 @@
           patternInvalid: "The Password has an invalid format."
         },
         email: {
+          empty: "You need to provide an email",
           patternInvalid: "The email is invalid."
         },
         allocationNumber: {
@@ -122,10 +123,16 @@
         azure: {
           empty: "You need to provide an Azure URL",
           patternInvalid: "The URL has an invalid format. It needs to end with '.blob.core.windows.net'"
+        },
+        completeName: {
+          patternInvalid: "The name has an invalid format.",
+          unavailable: "The name you choosed is not available",
+          empty: "You need to provide a name"
         }
       },
       checkPatterns = {
         name: new RegExp("^[a-zA-Z0-9-_]{1,60}$"),
+        completeName: new RegExp("^([a-zA-Z0-9_ -]){1,100}$"),
         id: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9_])*){1,39})$"),
         password: new RegExp("^(([a-zA-Z]([\\-a-zA-Z0-9])*){1,39})$"),
         freeText: new RegExp("^([\\sa-zA-Z0-9]){1,40}$"),
