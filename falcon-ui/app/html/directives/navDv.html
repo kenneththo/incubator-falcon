@@ -74,23 +74,39 @@
     </div>
 
     <div class="loginHeaderBox">
-      <div ng-show="userLogged()">
-        <span class="user"></span> <div><strong>{{userToken}}</strong></div>
-      </div>
 
-      <button ng-click="notify()" ng-blur="hideNotifs()">
+      <button ng-click="notify()" ng-blur="hideNotifs()" ng-show="userLogged()">
         <span class="glyphicon glyphicon-bell"></span> <div><strong class="pointer">Notifications</strong></div>
         <div class="notifications">
           <server-messages></server-messages>
         </div>
       </button>
 
+      <div ng-show="userLogged()">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-cog"></span> Configuration <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a ng-click="goUsers()">Manage Users</a></li>
+              <li><a href="#">Manage Clusters</a></li>
+              <!--<li class="divider"></li>-->
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div ng-show="userLogged()">
+        <span class="user"></span> <div><strong>{{userToken}}</strong></div>
+      </div>
+
       <button ng-show="userLogged() && !ambariView()" ng-click="logOut()">
         <span class="entypo logout pointer"></span> <div><strong class="pointer">Logout</strong></div>
       </button>
+
       <a href="http://hortonworks.com/hadoop/falcon/">
         <span class="entypo circled-help"></span> <div>Help</div>
       </a>
+
     </div>
 
   </div>

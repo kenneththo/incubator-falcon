@@ -18,31 +18,33 @@
 (function () {
   'use strict';
 
-  var services = angular.module('app.services', [
-    'app.services.falcon',
-    'app.services.fileapi',
-    'app.services.json.transformer',
-    'app.services.x2js',
-    'app.services.validation',
-    'app.services.entity',
-    'app.services.entity.serializer',
-    'app.services.entity.factory',
-    'app.services.entity.model',
-    'app.services.instance',
-    'app.services.user'
-  ]);
+  var app = angular.module('app.services.user', ['app.services']);
 
-  services.factory('SpinnersFlag', function () {
-    return {
-      show: false,
-      backShow: false
-    };
-  });
-  services.factory('SpinnersFlag', function () {
-    return {
-      show: false,
-      backShow: false
-    };
-  });
+  app.factory('UserFalcon', [
+    "Falcon", "$q",
+    function (Falcon, $q) {
+
+      var UserFalcon = {};
+
+      UserFalcon.getUsers = function(offset){
+        var deffered = $q.defer();
+        Falcon.logRequest();
+        Falcon.getUsers(offset).success(function (data) {
+          Falcon.logResponse('success', data, false, true);
+          if(data.users === undefined){
+            data.users = [];
+          }
+          UserFalcon.users = data.users;
+          deffered.resolve();
+        }).error(function (err) {
+          Falcon.logResponse('error', err);
+          deffered.resolve();
+        });
+        return deffered.promise;
+      };
+
+      return UserFalcon;
+
+    }]);
 
 }());

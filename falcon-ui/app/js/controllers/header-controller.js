@@ -101,6 +101,10 @@
         Falcon.hideNotifs();
       };
 
+      $scope.goUsers = function () {
+        $state.go("forms.users.list");
+      };
+
     }]);
 
     navHeaderModule.filter('reverse', function() {

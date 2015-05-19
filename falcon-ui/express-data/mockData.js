@@ -594,7 +594,30 @@
         "type":"cluster-entity"
       },
       "totalSize":3
-    };
+    },
+    users = [//{
+      //"users":[
+        {
+          "name":"Armando Reyna",
+          "username":"armando",
+          "email":"armando.reyna@hortonworks.com",
+          "isAdmin": true
+        },
+        {
+          "name":"Federico Romano",
+          "username":"federico",
+          "email":"federico.romano@hortonworks.com",
+          "isAdmin": false
+        },
+        {
+          "name":"Santiago Rebella",
+          "username":"santiago",
+          "email":"santiago.rebella@hortonworks.com",
+          "isAdmin": true
+        }
+      //]
+    //}
+  ];
 
   exports.findByNameInList = findByNameInList;
   exports.findByStartEnd = findByStartEnd;
@@ -605,5 +628,6 @@
   exports.vertices = vertices;
   exports.verticesDirection = verticesDirection;
   exports.verticesProps = verticesProps;
+  exports.users = users;
 
 })();

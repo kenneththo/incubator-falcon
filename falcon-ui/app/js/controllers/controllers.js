@@ -20,6 +20,7 @@
 
   angular.module('app.controllers', [
                                       'app.controllers.login',
+                                      'app.controllers.user',
                                       'app.controllers.navHeader',
                                       'app.controllers.rootCtrl',
                                       'app.controllers.dashboardCtrl',

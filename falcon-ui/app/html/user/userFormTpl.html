@@ -1,3 +1,4 @@
+<!--
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -15,34 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function () {
-  'use strict';
+-->
+<div class="col-xs-22 col-xs-offset-1 clusterForm" id="clusterForm">
+  <div class="col-xs-24">
+    <div class="row">
 
-  var services = angular.module('app.services', [
-    'app.services.falcon',
-    'app.services.fileapi',
-    'app.services.json.transformer',
-    'app.services.x2js',
-    'app.services.validation',
-    'app.services.entity',
-    'app.services.entity.serializer',
-    'app.services.entity.factory',
-    'app.services.entity.model',
-    'app.services.instance',
-    'app.services.user'
-  ]);
+      <div class="col-xs-offset-1 col-xs-22">
 
-  services.factory('SpinnersFlag', function () {
-    return {
-      show: false,
-      backShow: false
-    };
-  });
-  services.factory('SpinnersFlag', function () {
-    return {
-      show: false,
-      backShow: false
-    };
-  });
+        <h3 id="cluster.title" class="col-xs-24">
+          <span class="glyphicon glyphicon-user"></span> Falcon Users
+        </h3>
+      </div>
 
-}());
+      <!--<div class="formBoxContainer detailsBox">-->
+        <!--<div class="row">-->
+          <div class="col-xs-offset-1 col-xs-22" ui-view></div>
+        <!--</div>-->
+      <!--</div>-->
+
+    </div>
+  </div>
+</div>

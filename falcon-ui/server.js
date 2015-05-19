@@ -504,6 +504,19 @@
 
   });
 
+  server.get('/api/users/list', function (req, res) {
+
+    var offset = parseInt(req.query.offset === undefined ? 0 : req.query.offset);
+    var numResults = parseInt(req.query.numResults === undefined ? 10 : req.query.numResults);
+
+    var paginated = {};
+    paginated.users = [];
+    paginated.users = paginated.users.concat(mockData.users);
+    paginated.users = paginated.users.slice(offset, offset+numResults);
+
+    res.json(paginated);
+  });
+
   server.listen(PORT, function () {
     console.log('Dev server listening on port ' + PORT);
   });

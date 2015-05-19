@@ -450,6 +450,10 @@
       return $http.post(buildURI('../api/entities/prepareAndSubmitRecipe'), recipe, { headers: {'Content-Type': 'text/plain'} });
     };
 
+    Falcon.getUsers = function (offset) {
+      return $http.get(buildURI('../api/users/list?'+ 'offset=' + offset +'numResults=' + NUMBER_OF_ENTITIES));
+    };
+
     return Falcon;
 
   }]);
