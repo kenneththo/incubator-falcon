@@ -176,7 +176,7 @@ input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focu
   // margin: 40px 0 40px 30px;
 }
 .btn-file input[type=file] {
-  position: absolute;
+  /*position: absolute;*/
   top: 0;
   /*right: 0;*/
   width: 32px;
@@ -266,7 +266,7 @@ input[type="password"]{
   }
 }
 
-@keyframes blink-success {
+/*@keyframes blink-success {
   0% { color: @summarySuccess; }
   100% { color: black; }
 }
@@ -320,6 +320,22 @@ input[type="password"]{
   -webkit-animation: blink-notification 1s linear infinite;
   -moz-animation: blink-notification 1s linear infinite;
   animation: blink-notification 1s linear infinite;
+}*/
+
+.blink-success {
+  color: @header2NavBG;
+}
+
+.blink-warning {
+  color: @summaryWarning;
+}
+
+.blink-danger {
+  color: @summaryWarning;
+}
+
+.blink-notification {
+  color: #ffff00;
 }
 
 .text-success {
@@ -383,6 +399,8 @@ input[type="password"]{
 }
 
 /*************************************** SEARCH **************************************/
+@searchIconTop:  14px;
+@searchFontSize:  22px;
 
 .search {
   height: 45px;
@@ -408,13 +426,13 @@ input[type="password"]{
 .search-icon {
   cursor: pointer;
   position: absolute;
-  top: 23px;
+  top: @searchIconTop;
   right: 48px;
   z-index: 2;
   display: block;
   line-height: 23px;
   text-align: center;
-  font-size: 26px;
+  font-size: @searchFontSize;
   color: #FFFFFF;
 }
 
@@ -422,13 +440,13 @@ input[type="password"]{
   cursor: pointer;
   position: absolute;
   background: transparent;
-  top: 23px;
+  top: @searchIconTop;
   right: 48px;
   z-index: 2;
   display: block;
   line-height: 23px;
   text-align: center;
-  font-size: 26px;
+  font-size: @searchFontSize;
   color: #FFFFFF;
   width: 23px;
 }
@@ -436,26 +454,26 @@ input[type="password"]{
 .remove-icon {
   cursor: pointer;
   position: absolute;
-  top: 23px;
+  top: @searchIconTop;
   right: 78px;
 //  z-index: 2;
   display: block;
   line-height: 23px;
   text-align: center;
-  font-size: 26px;
+  font-size: @searchFontSize;
   color: #FFFFFF;
 }
 
 .question-icon {
   cursor: pointer;
   position: absolute;
-  top: 23px;
+  top: @searchIconTop;
   right: 9px;
 //  z-index: 2;
   display: block;
   line-height: 23px;
   text-align: center;
-  font-size: 26px;
+  font-size: @searchFontSize;
   color: #FFFFFF;
   margin-right: 5px;
 }
@@ -493,7 +511,8 @@ input[type="password"]{
 }
 
 .searchResultContainer {
-  background-color: #343234;
+  background-color: @body-bg;
+  margin-top: 25px;
 }
 
 .tag-striked{
@@ -516,8 +535,9 @@ input[type="password"]{
 .buttonsRow {
   height: 43px;
   td {
-    border-top: none;
-    border-bottom: 1px solid @gray-lighter;
+    border-top: none !important;
+    border-width: 0px 1px 1px;
+    border-style: solid;
   }
   margin-bottom: 8px;
 }
@@ -539,9 +559,12 @@ input[type="password"]{
 }
 
 .btn-gray {
-  color: #333;
-  background-color: #ccc;
-  border-color: #ccc;
+  color: #FFFFFF;
+  background-color: transparent;
+  border-color: transparent;
+  &:hover {
+    color: #FFFFFF;
+  }
 }
 
 .btn-big {
