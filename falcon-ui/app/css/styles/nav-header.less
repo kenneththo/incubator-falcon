@@ -36,10 +36,10 @@
       top: 50%;*/
       transform: translateY(80%);
       .btn-link {
-        color: @header2NavBG !important;
+        color: @green-light !important;
         /*height: 40px;*/
         &:hover {
-          color: @header2NavBG;
+          color: @green-light;
         }
       }
     }
@@ -86,7 +86,7 @@
     font-weight: bold;
     margin: 2px 0;
   }*/
-  > button {
+  button {
     padding: 5px 10px;
     border: none;
     /*border: 1px solid white;*/
@@ -94,9 +94,13 @@
     display: inline-block;
     cursor: pointer;
     background-color: transparent;
-    color: @header2NavBG;
+    color: @green-light;
     &:hover {
       color: #FFFFFF;
+    }
+    &.btn-link {
+      text-decoration: none;
+      color: @green-light;
     }
   }
   span {
@@ -110,15 +114,11 @@
       }
     }
   }
-  .disabled {
-    color: #FFFFFF;
-    //border-color: lighten(@headerNavBG, 10%);
-    cursor: default;
-    /*.background-opacity(black, 0.2);*/
-    span {
-      border-bottom: 1px #FFFFFF solid;
-      padding-bottom: 1px;
-    }
+  ul.dropdown-menu {
+    border:none;
+    margin: 0px;
+    border-radius: inherit;
+    color: @green-light;
   }
 }
 
@@ -147,15 +147,8 @@
     &.fakeFocus {
       .box-shadow(0 0 2px white);
     }
-    &.btn-file {
-      background-image: url('img/32x32_upload.png');
-      z-index: 2;
-    }
-    &.btn-create {
-      background-image: url('img/32x32_create-entity.png');
-      &.expanded {
-        background-image: url('img/32x32_create-entity-hover.png');
-      }
+    .btn-upload, .btn-create {
+      margin-top: 4px;
     }
   }
 }
@@ -166,7 +159,7 @@
   //width: 100%;
   float: right;
   /*margin-top: 20px;*/
-  color: @header2NavBG;
+  color: @green-light;
   /*.pull-right;*/
   >* {
     vertical-align: middle;
@@ -178,7 +171,7 @@
     }
   }
   .btn-link {
-    color: @header2NavBG;
+    color: @green-light;
     &:hover {
       color: #FFFFFF;
     }
@@ -208,7 +201,7 @@
     display: inline-block;
     cursor: pointer;
     background-color: transparent;
-    color: @header2NavBG;
+    color: @green-light;
     &:hover {
       color: #FFFFFF;
     }
