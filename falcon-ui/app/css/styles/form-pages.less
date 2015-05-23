@@ -90,14 +90,14 @@
     vertical-align: top;
   }
 }
-.formBoxContainer {
+/*.formBoxContainer {
   width: 500px;
   display: inline-block;
-}
+}*/
 .dt {
   //display: table;
 }
-.xmlPreviewContainer {
+/*.xmlPreviewContainer {
   position: absolute;
   left: 530px;
   top: 55px;
@@ -110,7 +110,7 @@
     top:0;
     width: 500px;
   }
-}
+}*/
 .formPage {
 
   h3 {
@@ -402,15 +402,16 @@ select {
   }
 }
 .detailsBox {
-  border-radius: 5px;
-  border: 1px solid @gray-light2;
-  margin: 5px 0;
-  padding: 15px 5px;
+  /*border-radius: 5px;
+  border: 1px solid @gray-light2;*/
+  margin: 0px;
+  padding: 0px;
   font-size: 12px;
-  background-color: #ffffff;
+  background-color: @gray-dark;
   h4 {
     font-weight: bold;
     margin:5px 0;
+    color: #FFFFFF;
   }
   h5 {
     font-weight: bold;
@@ -425,6 +426,9 @@ select {
     width: 70px;
     font-weight: bold;
   }
+  label, span {
+    color: #FFFFFF;
+  }
   textarea {
     width: 100%;
   }
@@ -437,6 +441,10 @@ select {
         margin-top:0;
       }
     }
+  }
+  &.xmlPreviewContainer {
+    margin-left: 25px;
+    margin-right: -25px;
   }
 }
 
@@ -521,6 +529,7 @@ select {
 }
 
 .feedForm, .entityForm {
+  margin-top: 25px;
   .validityBox {
     .startDateBox, .endDateBox { width: 27%;}
     .startTimeBox, .endTimeBox {width: 17%;}

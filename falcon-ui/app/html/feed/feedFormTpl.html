@@ -17,13 +17,10 @@
  * limitations under the License.
  */
 -->
-<div class="col-xs-22 col-xs-offset-1 feedForm">
+<div class="feedForm">
   <div class="col-xs-24">
     <div class="row dt">
-      <h3 id="feed.title" class="col-xs-24">
-        New Feed
-      </h3>
-      <div class="formBoxContainer detailsBox">
+      <div class="col-xs-14 formBoxContainer detailsBox">
 
         <div class="feedProgressBox" ng-class="{
           general:isActive('forms.feed.general'),
@@ -33,28 +30,21 @@
           summary:isActive('forms.feed.summary')
           }">
           <div class="progressBar col-xs-24">
-            <div>
-              <span>
-                <div class="fir">1<span class="entypo check"></span></div>
-                <h6>General</h6>
-              </span>
-              <span>
-                <div class="sec">2<span class="entypo check"></span></div>
-                <h6>Properties</h6>
-              </span>
-              <span>
-                <div class="thi">3<span class="entypo check"></span></div>
-                <h6>Location</h6>
-              </span>
-              <span>
-                <div class="fou">4<span class="entypo check"></span></div>
-                <h6>Clusters</h6>
-              </span>
-              <span>
-                <div class="fif">5<span class="entypo check"></span></div>
-                <h6>Summary</h6>
-              </span>
-            </div>
+              <div class="text-center fir" ng-class="{
+                active:isActive('forms.feed.general'),
+                completed:isCompleted('forms.feed.general')}">General</div>
+              <div class="text-center sec" ng-class="{
+                active:isActive('forms.feed.properties'),
+                completed:isCompleted('forms.feed.properties')}">Properties</div>
+              <div class="text-center thi" ng-class="{
+                active:isActive('forms.feed.location'),
+                completed:isCompleted('forms.feed.location')}">Location</div>
+              <div class="text-center fou" ng-class="{
+                active:isActive('forms.feed.clusters'),
+                completed:isCompleted('forms.feed.clusters')}">Clusters</div>
+              <div class="text-center fif" ng-class="{
+                active:isActive('forms.feed.summary'),
+                completed:isCompleted('forms.feed.summary')}">Summary</div>
           </div>
         </div>
 
@@ -68,7 +58,7 @@
 
       </div>
 
-      <div class="xmlPreviewContainer detailsBox">
+      <div class="col-xs-10 xmlPreviewContainer detailsBox">
         <div class="row dt">
 
           <h5 class="col-xs-13 col-xs-offset-1 noSpecial">XML Preview</h5>
