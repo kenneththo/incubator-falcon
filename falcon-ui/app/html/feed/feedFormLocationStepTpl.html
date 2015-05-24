@@ -92,22 +92,29 @@
 
       </div>
     </div>
-
-    <div class="row">
-      <div class="col-xs-24 mt20">
-        <button type="button"
+		
+		
+		
+	   <div class="col-xs-24 mt20 pb15px">
+		<div class="col-xs-5">
+		<button type="button"
                 id="feed.backToStep2" class="btn prevBtn"
                 ng-click="goBack('forms.feed.properties')"
                 ng-disabled="buttonSpinners.backShow">
-          Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-        </button>
-        <button id="feed.step3" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
+          Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />    </button>
+		</div>
+		<div class="col-xs-10 pull-right">
+		<div class="col-xs-12">
+		<button id="feed.step3" class="btn nextBtn pull-right" ng-click="goNext(feedForm.$invalid, 'forms.feed.clusters')" >
           Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
         </button>
-        <a class="pull-right" ui-sref="main">
-          Cancel
-        </a>
-      </div>
-    </div>
+
+		</div>
+		<div class="col-xs-12">
+		<a class="pull-right btn cnclBtn" ui-sref="main">
+		  Cancel
+		</a> </div>
+		 </div>
+		</div>
   </div>
 </form>

@@ -33,6 +33,7 @@
   min-height: 140px;
   overflow: hidden;
   position: relative;
+  font-size: 12px;
   .spinner {
     .transition (all, 1s, linear);
     display: none;
@@ -112,10 +113,12 @@
 
   .entityRow {
     &:hover, &.rowSelected {
-      background: #F2F2F2;
+      background: #333333;
+	  height: 24px;
+	  color: #ffffff;
       td {
-        border-color: #E2E2E2;
-        color: @header3NavBG;
+        color: #ffffff;
+		height: 24px;
       }
     }
 
@@ -127,9 +130,7 @@
       vertical-align: middle;
       color: #FFFFFF;
     }
-    &.firstEntityRow {
-      td { padding-top: 26px; }
-    }
+    
     &.lastEntityRow {
       td {
         padding-bottom: 6px;

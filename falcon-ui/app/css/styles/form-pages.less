@@ -37,29 +37,47 @@
 
 }
 //-----------------next and previous buttons----------//
-@nextBtnBackground: #666666;
+@nextBtnBackground: #69be28;
 @prevBtnBackground: #CCCCCC;
-.nextBtn, .prevBtn {
+.nextBtn, .prevBtn ,.cnclBtn {
   .transition(background, 0.3s, ease);
   border: 0px none;
-  width: 90px;
-  border-radius: 7px!important;
-  padding: 10px;
+  width: 100px;
+  font-size: 12px;
 }
-.nextBtn {
-  background: @nextBtnBackground;
-  color: white;
+a.cnclBtn {
+	height:24px;
+	background-color:#cccccc;
+	border-radius:7px;
+	margin:0px;
+	line-height: 2.2em;
   &:hover {
-    background: darken(@nextBtnBackground, 10%);
-    color: white;
+    background: darken(#cccccc, 10%);
+    color: #232323;
     outline: hidden;
     border-radius: 7px!important;
   }
   &:focus, &:active, &:visited {
-    background: darken(@nextBtnBackground, 10%);
-    color: white;
+    background: darken(#cccccc, 10%);
+    color: #232323;
     outline: hidden;
-    border-radius: 10px!important;
+	border-radius: 7px!important;
+  }
+}
+.nextBtn {
+  background: #69be28;
+  color: #232323;
+  line-height: 1.3em;
+  &:hover {
+    background: darken(#69be28, 10%);
+    color: #232323;
+    outline: hidden;
+    border-radius: 7px!important;
+  }
+  &:focus, &:active, &:visited {
+    background: darken(#69be28, 10%);
+    color: #232323;
+    outline: hidden;
   }
 }
 .prevBtn {
@@ -116,11 +134,39 @@
   h3 {
     font-weight: bold;
   }
+  pl0px {
+	padding-left:0px;
+  }
+  a.cnclBtn {
+	height:24px;
+	background-color:#cccccc;
+	border-radius:7px;
+	margin:0px;
+	text-decoration: none;
+	text-align: center;
+	line-height: 1.3em;
+	&:hover {
+		background: darken(#cccccc, 10%);
+		color: #232323;
+		outline: hidden;
+		border-radius: 7px!important;
+	  }
+	  &:focus, &:active, &:visited {
+		background: darken(#cccccc, 10%);
+		color: #232323;
+		outline: hidden;
+		border-radius: 7px!important;
+	  }
+	}
   .entypo {
     font-size: 22px;
+	color: #000;
    /* line-height: 14px;*/
     /*vertical-align: top;
     display: inline-table;*/
+  }
+  .addTag {
+	background-color:#cccccc;
   }
   h4 {
     font-size: 14px;
@@ -213,9 +259,23 @@ select {
   input {
     padding-left: 1px;
     border-width: 1px;
+	background-color:#333333;
+	color:#ffffff;
+  }
+  input:active,input:focus,input:visited {
+	background-color:#ffffff;
+	color:#333333;
   }
   select {
-    background-color: white;
+    background-color: #333333;
+	color:#ffffff;
+  }
+  select:active,select:focus,select:visited {
+	background-color:#ffffff;
+	color:#333333;
+  }
+  .p0px{
+	padding:0px;
   }
   > div {
     &:first-child {
@@ -259,6 +319,23 @@ select {
   }
   .freqTitle {
     margin: 0 0 5px 0;
+  }
+  .title {
+	font-size: 14px;
+	color: #ffffff;
+  }
+  .pb15px {
+	padding-bottom:15px;
+  }
+  .pl0px {
+	padding-left:0px;
+  }
+  .bb1pxw {
+	border-bottom: 1px solid #666666;
+  }
+  input,select,button {
+	height:24px;
+	border-color:#cccccc;
   }
   .top-buffer {
     margin-top: 8px;
@@ -416,11 +493,28 @@ select {
   h5 {
     font-weight: bold;
     margin-top:2px;
+	color:#ffffff;
   }
   table {
     width: 100%;
     border-spacing: 5px;
     border-collapse: separate;
+  }
+  table.properties {
+	color: #ffffff;
+	border-collapse: collapse;
+  }
+  .no-border-top {
+	border-top:0px;
+  }
+  .no-border-bottom {
+	border-bottom:0px;
+  }
+
+  .editXMLBtn {
+	backgorund-color:#cccccc;
+	color:#232323;
+	font-size:12px;
   }
   .tableHeader {
     width: 70px;
@@ -429,8 +523,25 @@ select {
   label, span {
     color: #FFFFFF;
   }
-  textarea {
+  label {
+	line-height:1.8em;
+  }
+  label.custom-danger {
+	color: #f33;
+  }
+  textarea.form-control {
     width: 100%;
+	background-color:#232323;
+	color:#ffffff;
+	border:0px;
+	font-size:12px;
+  }
+  .dt {
+	background-color: #232323;
+	border:1px solid #666666;
+  }
+  .pt15px{
+	padding-top:15px;
   }
   &.processCluster {
     padding: 15px 4%;
