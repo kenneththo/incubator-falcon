@@ -71,16 +71,12 @@
     <div class="col-xs-24">
       <label class="light">Availability Flag</label>
 		<div class="row dynamic-table-spacer">
-		  <div class="col-xs-24">
 		  <div class="col-xs-10">
            <input type="text" id="availInput" class="form-control" ng-model="feed.availabilityFlag" ng-pattern="validations.patterns.alpha">
 		   </div>
-		   <div class="col-xs-14">
-		   </div>
-          </div>
         </div>
     </div>
-	<div class="col-xs-24">
+	<div class="col-xs-24 pb30px bb1pxw">
       <label class="light">Timezone</label>
 	  <div class="row dynamic-table-spacer">
 		  <div class="col-xs-24">
@@ -88,8 +84,7 @@
           </div>
 	  </div>
 	</div>
-	<div class="col-xs-24 p0px">
-	<label class="bold">Properties</label>
+	<div class="col-xs-24"><label class="mt15">PROPERTIES</label></div>
 	</div>
 	<div class="col-xs-24">
 		<table class="table properties col-xs-24">
@@ -106,7 +101,7 @@
 					<input type="text" class="form-control" placeholder="{{propPlaceholders[property.key]}}" ng-model="property.value" validation-optional-message="{{validations.messages.value}}" ng-pattern="validations.patterns.alpha">
 				  </div>
 				  <div class="col-xs-24 p0px" ng-if="property.key === 'timeout'">
-					<label class="col-xs-2">at</label>
+					<span class="col-xs-2">at</span>
 					<input type="text" class="col-xs-10" ng-keydown="validations.acceptOnlyNumber($event)" ng-model="property.value.quantity" ng-pattern="validations.patterns.twoDigits">
 					<div class="col-xs-2"></div>
 					<select ng-model="property.value.unit" class="col-xs-10">

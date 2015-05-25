@@ -113,7 +113,7 @@
         };
 
         $scope.isActive = function (route) {
-          return route === $state.$current.name;
+          return route === $state.current.name;
         };
 
         $scope.isCompleted = function (route) {

@@ -219,9 +219,21 @@
           $scope.clusterEntity.clusterModel.cluster.properties.property.splice(index, 1);
         }
       };
-      //--------------------------------------//
+
+      $scope.isActive = function (route) {
+          return route === $state.current.name;
+      };
+
+      $scope.isCompleted = function (route) {
+          return $state.get(route).data && $state.get(route).data.completed;
+      };
+
+                                                  //--------------------------------------//
       $scope.goSummaryStep = function (formInvalid) {
-        SpinnersFlag.show = true;
+          $state.current.data = $state.current.data || {};
+          $state.current.data.completed = !formInvalid;
+
+          SpinnersFlag.show = true;
         if (!$scope.validations.nameAvailable || formInvalid) {
           validationService.displayValidations.show = true;
           validationService.displayValidations.nameShow = true;

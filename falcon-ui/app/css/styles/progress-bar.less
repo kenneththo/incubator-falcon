@@ -312,7 +312,7 @@
     }
   }
 }*/
-.feedProgressBox {
+.feedProgressBox, .clusterProgressBox {
   .progressBar {
     padding: 0px;
     > div {
@@ -332,6 +332,14 @@
         background-color: @green-light;
         color: @gray-darken;
       }
+    }
+  }
+}
+
+.clusterProgressBox {
+  .progressBar {
+    > div {
+      width: 50%;
     }
   }
 }
