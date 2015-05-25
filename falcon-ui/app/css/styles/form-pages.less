@@ -273,11 +273,14 @@ select {
   padding: 0 10px;
 }
 .clusterForm, .feedForm, .entityForm {
-  input {
+  input, input[disabled] {
     padding-left: 1px;
     border-width: 1px;
 	background-color:#333333;
 	color:#ffffff;
+    &.form-control {
+	  background-color:#333333;
+    }
   }
   input:active,input:focus,input:visited {
 	background-color:#ffffff;
