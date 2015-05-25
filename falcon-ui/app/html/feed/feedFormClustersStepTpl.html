@@ -22,9 +22,7 @@
   <div ng-repeat="cluster in feed.clusters">
     <div class="row detailsBox">
 		  <div class="col-xs-24 pb15px bb1pxw">
-			<h4>{{capitalize(cluster.type)}} Cluster </h4>
-		  </div>
-          <div class="col-xs-24">
+            <h4>{{capitalize(cluster.type)}} Cluster </h4>
             <select ng-model="cluster.name" validation-message="{{validations.messages.cluster}}"
                     ng-required="true" class="col-xs-24 form-control padding0" id="clusterNameSelect">
               <option value="" disabled selected style='display:none;'>-Select cluster-</option>
@@ -32,8 +30,7 @@
             </select>
           </div>
 
-
-          <div class="col-xs-24 feedLocationNavBox nopointer">
+          <div class="col-xs-24 feedLocationNavBox nopointer pl0px">
             <h4 class="col-xs-7" ng-show="!feed.storage.fileSystem.active">Default Storage type</h4>
             <h4 class="col-xs-7" ng-show="feed.storage.fileSystem.active">Storage type</h4>
 
@@ -168,28 +165,22 @@
     </button>
   </div>
 
-  <div class="col-xs-24 mt20 pb15px">
-		<div class="col-xs-5">
-		<button id="feed.backToStep3"
-            class="btn prevBtn"
-            type="button"
-            ng-click="goBack('forms.feed.location')"
-            ng-disabled="buttonSpinners.backShow" >
-      Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+  <div class="col-xs-24 mt35 pb15px">
+    <button id="feed.backToStep3"
+        class="btn prevBtn"
+        type="button"
+        ng-click="goBack('forms.feed.location')"
+        ng-disabled="buttonSpinners.backShow" >
+      PREVIOUS <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
     </button>
-		</div>
-		<div class="col-xs-10 pull-right">
-		<div class="col-xs-12">
-		 <button id="feed.step4" class="btn nextBtn pull-right"
+    <div class="pull-right">
+        <a class="btn cnclBtn" ui-sref="main">
+          CANCEL
+        </a>
+         <button id="feed.step4" class="btn nextBtn"
             ng-click="goNext(feedForm.$invalid, 'forms.feed.summary')" >
-      Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-    </button>
-		</div>
-		<div class="col-xs-12">
-		<a class="pull-right btn cnclBtn" ui-sref="main">
-		  Cancel
-		</a> </div>
-		 </div>
-		</div>
+            NEXT <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+        </button>
+     </div>
   </div>
 </form>

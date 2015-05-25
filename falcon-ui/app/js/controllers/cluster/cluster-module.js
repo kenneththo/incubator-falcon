@@ -276,7 +276,7 @@
       //----------XML preview-----------------//
 
       $scope.xmlPreview.editXML = function () {
-        $scope.xmlPreview.edit = !$scope.xmlPreview.edit;
+          $scope.xmlPreview.edit = !$scope.xmlPreview.edit;
       };
       $scope.showInPreview = function() {
         var xmlStr = X2jsService.json2xml_str(angular.copy($scope.clusterEntity.clusterModel));
