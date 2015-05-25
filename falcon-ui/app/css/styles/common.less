@@ -353,14 +353,29 @@ input[type="password"]{
 .border-right{
   border-right: 2px solid @gray-lighter;
 }
-
+.pt15px {
+	padding-top:15px;
+}
+.border0px {
+	border: 0px;
+}
+.border1px {
+	border: 1px solid #666666;
+}
+.p10px {
+	padding : 10px;
+}
+.entityName {
+  color: #FFF;
+  font-size: 15px;
+  padding-left: 5px;
+}
 .summaryBox {
-  border-radius: 5px;
   border: 1px solid @gray-light2;
-  margin: 5px 0;
   padding: 15px 5px;
   font-size: 12px;
-  background-color: #ffffff;
+  color: #ffffff;
+  background-color: #333333;
   h4 {
     font-weight: bold;
     margin:5px 0;
@@ -600,6 +615,10 @@ input[type="password"]{
   padding: 0 10px;
 }
 
+.filtersSearchBox {
+  line-height: 2.3em;
+}
+
 .vertical-align {
   min-height: 5vh;
   display: -webkit-box;
@@ -617,6 +636,8 @@ input[type="password"]{
 
 .dependencies-graph{
   text-align: center;
+  padding: 50px 0;
+  border: 1px solid #666666;
 }
 
 /**
@@ -649,14 +670,14 @@ input[type="password"]{
 
 .node rect {
   stroke-width: 1px;
-  stroke: #999;
-  fill: #ffffff;
+  stroke: #FFFFFF;
+  fill: #333333;
   fill-opacity: 80%;
 }
 
 .edge path {
   fill: none;
-  stroke: #333;
+  stroke: #FFFFFF;
   stroke-width: 2px;
 }
 
@@ -665,6 +686,7 @@ input[type="password"]{
   margin: 10px;
   font-size: 15px;
   padding-top: 18px;
+  color: #FFFFFF;
 }
 
 .lineage-link {

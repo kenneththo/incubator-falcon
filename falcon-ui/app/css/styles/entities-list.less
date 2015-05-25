@@ -34,6 +34,17 @@
   overflow: hidden;
   position: relative;
   font-size: 12px;
+  .ptb5px {
+	padding: 5px 0;
+  }
+  input , select {
+	background-color: #333;
+	padding-left: 4px;
+	color: #FFFFFF;
+  }
+  .border0px {
+	border: 0px;
+  }
   .spinner {
     .transition (all, 1s, linear);
     display: none;
@@ -75,12 +86,13 @@
     text-align: left;
     background-color: @gray-dark;
     color: white;
-    tr > th { border-bottom: none; }
+    tr > th { border: none; }
   }
   tbody {
     padding: 5px;
     display: table-row-group;
     background-color: @listTbodyBackground;
+	tr > th { border: none; }
   }
   tbody:nth-child(2) {
     border-bottom: 20px solid transparent;
