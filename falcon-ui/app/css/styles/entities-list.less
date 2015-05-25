@@ -123,10 +123,10 @@
     }
 
     td {
-      padding: 3px 3px;
+      padding: 0;
       line-height: 22px;
-      border-top: 1px solid transparent;
-      border-bottom: 1px solid transparent;
+      border-top: 0;
+      border-bottom: 0;
       vertical-align: middle;
       color: #FFFFFF;
     }
@@ -162,6 +162,9 @@
   .checkboxCell {
     width: 20px;
     text-align: center;
+	  input[type="radio"], input[type="checkbox"] {
+	    vertical-align: middle;
+	  }
   }
   .stateCell {
     width: 120px;
@@ -174,11 +177,15 @@
 
   .nameCell {
     cursor: pointer;
+	.entypo {
+	  font-size: 1.4em;
+	}
     &:hover {
       text-decoration: underline;
     }
     button {
       color: @green-light;
+	  padding: 0 6px;
     }
   }
 }
