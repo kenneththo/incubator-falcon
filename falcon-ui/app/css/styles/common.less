@@ -371,13 +371,13 @@ input[type="password"]{
   padding-left: 5px;
 }
 .summaryBox {
-  border: 1px solid @gray-light2;
+  border: 1px solid @gray-light;
   padding: 15px 5px;
   font-size: 12px;
   color: #ffffff;
-  background-color: #333333;
+  background-color: transparent;
   h4 {
-    font-weight: bold;
+    /*font-weight: bold;*/
     margin:5px 0;
   }
   h5 {
@@ -638,6 +638,9 @@ input[type="password"]{
   text-align: center;
   padding: 50px 0;
   border: 1px solid #666666;
+  svg {
+    padding: 8px;
+  }
 }
 
 /**
@@ -671,7 +674,7 @@ input[type="password"]{
 .node rect {
   stroke-width: 1px;
   stroke: #FFFFFF;
-  fill: #333333;
+  fill: @gray-light;
   fill-opacity: 80%;
 }
 
