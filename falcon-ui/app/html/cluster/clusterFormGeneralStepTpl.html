@@ -32,14 +32,14 @@
         <!--check-type="cluster" check-name-flag="nameValid" check="true"-->
 
   </div>
-  <div class="col-xs-8">
+  <div class="col-xs-16">
     <label class="light">Colo</label>
     <input type="text" class="form-control"
     	ng-pattern="validations.patterns.freeText"
         ng-required="true" ng-disabled="xmlPreview.edit"
         ng-model="clusterEntity.clusterModel.cluster._colo" validation-message="{{validations.messages.colo}}"/>
   </div>
-  <div class="col-xs-8">
+  <div class="col-xs-24">
     <label class="light">Description</label>
     <input type="text" class="form-control"
     	ng-pattern="validations.patterns.freeText"
@@ -51,7 +51,7 @@
     <label class="light">Tags</label>
   </div>
 
-  <div class="col-xs-24">
+  <div class="col-xs-24 mt5 pb30px bb1pxw">
     <div ng-repeat="tag in tagsArray" class="row dynamic-table-spacer">
       <div class="col-xs-8">
         <input type="text" class="form-control" ng-model="tag.key" ng-disabled="xmlPreview.edit" placeholder="key"
@@ -61,18 +61,15 @@
         <input type="text" class="form-control" ng-disabled="xmlPreview.edit" placeholder="value"
                ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key" validation-optional-message="{{validations.messages.value}}"/>
       </div>
-      <div class="col-xs-3">
-        <button type="button" class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="$index>0">
+      <div class="col-xs-8">
+        <button type="button" class="btn btn-default btn-xs" ng-click="removeTag($index)" ng-disabled="xmlPreview.edit" ng-if="!$first || !$last">
           <span class="entypo minus"></span> delete
+        </button>
+        <button type="button" class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit" ng-if="$last">
+          <span class="entypo plus"></span> add tag
         </button>
       </div>
     </div>
-  </div>
-
-  <div class="col-xs-24 mt5 pb30px bb1pxw">
-    <button type="button" class="btn btn-default btn-xs" ng-click="addTag()" ng-disabled="xmlPreview.edit">
-      <span class="entypo plus"></span> add tag
-    </button>
   </div>
 
   <div class="col-xs-24"><label class="mt15">ACCESS CONTROL LIST</label></div>
@@ -102,10 +99,10 @@
 
   <div class="col-xs-24"><label class="mt15">INTERFACES</label></div>
   <div class="col-xs-24 pb30px bb1pxw pl0px">
-    <label class="col-xs-4">
+    <label class="col-xs-6 text-right">
     Type
     </label>
-    <label class="col-xs-16">
+    <label class="col-xs-10">
     Endpoint
     </label>
     <label class="col-xs-4">
@@ -114,14 +111,14 @@
     <div id="interfaces-detail" class="col-xs-24"
        ng-repeat="_interface in clusterEntity.clusterModel.cluster.interfaces.interface">
     <div class="row">
-      <div class="col-xs-4">
+      <div class="col-xs-6 text-right">
 
           <input type="checkbox" ng-checked="registry.check" ng-model="registry.check"
                  ng-if="_interface._type === 'registry'" ng-disabled="xmlPreview.edit"/>
           <label class="light">{{_interface._type}}</label>
 
       </div>
-      <div class="col-xs-16">
+      <div class="col-xs-10">
         <input type="text" class="form-control" ng-pattern="validations.patterns.osPath"
                ng-model="_interface._endpoint"
                ng-disabled="_interface._type === 'registry' && !registry.check || xmlPreview.edit"/>
@@ -152,59 +149,55 @@
                  ng-disabled="xmlPreview.edit"
                  ng-required="property._name" placeholder="value" />
         </div>
-        <div class="col-xs-3 dynamic-table-spacer">
-          <button type="button" class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="$index > 0"
+        <div class="dynamic-table-spacer">
+          <button type="button" class="btn btn-default btn-xs" ng-click="removeProperty($index)" ng-if="!$first || !$last"
                ng-disabled="xmlPreview.edit">
             <span class="entypo minus"></span> delete
           </button>
+          <button type="button" class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit" ng-if="$last">
+              <span class="entypo plus"></span> add property
+          </button>
         </div>
-    </div>
-    <div class="col-xs-24 dynamic-table-spacer">
-    <button type="button" class="btn btn-default btn-xs" ng-click="addProperty()" ng-disabled="xmlPreview.edit">
-      <span class="entypo plus"></span> add property
-    </button>
     </div>
   </div>
 
   <div class="col-xs-24"><label class="mt15">LOCATION</label></div>
   <div class="col-xs-24 pb30px bb1pxw pl0px">
-    <label class="col-xs-8">name</label><label class="col-xs-16">path</label>
+    <label class="col-xs-6 text-right">name</label><label class="col-xs-10">path</label>
     <div ng-repeat="location in clusterEntity.clusterModel.cluster.locations.location" class="col-xs-24">
         <div class="row" ng-if="location._name === 'staging' || location._name === 'working' || location._name === 'temp'">
-          <div class="col-xs-8 dynamic-table-spacer">
+          <div class="col-xs-6 dynamic-table-spacer text-right">
               <label class="light">{{location._name}}</label>
           </div>
-          <div class="col-xs-8 dynamic-table-spacer">
+          <div class="col-xs-10 dynamic-table-spacer">
             <input id="location.{{location._name}}" type="text" class="form-control" ng-model="location._path" ng-pattern="validations.patterns.osPath"
                    ng-disabled="xmlPreview.edit" ng-required="true" validation-message="{{validations.messages.location}}"/>
           </div>
         </div>
 
         <div class="row" ng-if="location._name !== 'staging' && location._name !== 'working' && location._name !== 'temp'">
-          <div class="col-xs-8 dynamic-table-spacer">
+          <div class="col-xs-6 dynamic-table-spacer">
             <input type="text" class="form-control" ng-model="location._name"
                    validation-optional-message="{{validations.messages.name}}"
                    ng-pattern="validations.patterns.alpha"
                    ng-disabled="xmlPreview.edit" ng-required="location._path" placeholder="name" />
           </div>
-          <div class="col-xs-8 dynamic-table-spacer">
+          <div class="col-xs-10 dynamic-table-spacer">
             <input type="text" class="form-control" ng-model="location._path"
                    validation-optional-message="{{validations.messages.path}}"
                    ng-pattern="validations.patterns.osPath"
                    ng-disabled="xmlPreview.edit" ng-required="location._name" placeholder="path" />
           </div>
-          <div class="col-xs-3 dynamic-table-spacer">
+          <div class="dynamic-table-spacer">
             <button class="btn btn-default btn-xs" ng-click="removeLocation($index)" ng-if="$index>3"
                  ng-disabled="xmlPreview.edit" >
               <span class="entypo minus"></span> delete
             </button>
+            <button type="button" class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit" ng-if="$last">
+                <span class="entypo plus"></span> add location
+            </button>
           </div>
         </div>
-    </div>
-    <div class="col-xs-24 dynamic-table-spacer">
-    <button type="button" class="btn btn-default btn-xs" ng-click="addLocation()" ng-disabled="xmlPreview.edit">
-      <span class="entypo plus"></span> add location
-    </button>
     </div>
   </div>
 
