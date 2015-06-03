@@ -172,33 +172,38 @@ input[type="checkbox"]:focus,
     .p20;
   }
 
-  /*.clusterBox {
+  .clusterBox {
     border: 1px solid @gray-light;
     border-radius: 5px;
-    .mt20;
+    .mt30;
     .mb10;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding: 10px 10px 15px;
 
     h3, .runJobOnBox {
       .pa;
-      background-color: white;
-      padding: 0 5px;
+      /*padding: 0 5px;*/
+      color: #FFFFFF;
+      border-radius: 5px;
+      border: 1px solid #777;
+      padding: 5px 9px;
+      background-color: @gray-dark;
     }
 
     h3 {
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 15px;
+      /*font-weight: 700;*/
       display: inline-block;
-      top: -30px;
-
+      top: -35px;
     }
     .runJobOnBox {
       width: 110px;
       right: 5px;
-      top: -13px;
+      top: -17px;
+      input[type=radio] {
+        margin-right: 5px;
+      }
     }
-    .hiveDatabasesTitol {
+    /*.hiveDatabasesTitol {
       font-size: 12px;
       padding-left: 5px;
     }
@@ -207,8 +212,8 @@ input[type="checkbox"]:focus,
       input {
         margin-left: 5px;
       }
-    }
-  }*/
+    }*/
+  }
   /*.alertsBox {
     .mt10;
     h4 {
@@ -271,6 +276,9 @@ input[type="checkbox"]:focus,
   &.expanded {
     max-height: 850px;
   }
+  h4 {
+    margin: 15px 0px;
+  }
   .frequencyBox {
     width: 36%;
     display: inline-block;
@@ -294,9 +302,12 @@ input[type="checkbox"]:focus,
       width: 24%;
       display: inline-block;
     }
-
+    label {
+      .m0;
+    }
   }
-  .retryBox {
+
+  /*.retryBox {
     .policyBox {
       width: 45%;
       select {
@@ -325,12 +336,45 @@ input[type="checkbox"]:focus,
         padding-right: 20px;
       }
     }
+  }*/
+
+
+  .retryBox {
+    .policyBox {
+      select {
+        position: inherit;
+      }
+    }
+    > div {
+      label {
+        margin-top: 0px;
+        font-weight: normal;
+        width: 95%;
+        input {
+          width: 40px;
+          margin-right: 10px;
+        }
+        select {
+          width: 70%;
+          position: relative;
+          top: -24px;
+          left: 50px;
+        }
+      }
+      width: 32%;
+      display: inline-block;
+      vertical-align: top;
+    }
   }
 
   .hiveOptBox {
     label {
       display: block;
     }
+  }
+
+  .frequencyBox, .allocationBox, .hiveOptBox, .retryBox, .aclBox {
+    .mb10;
   }
 }
 

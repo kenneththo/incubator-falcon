@@ -25,12 +25,12 @@
         <div class="row">
           <div class="col-sm-10">
             <h3 class="instance-title">
-              <a href="javascript:void(0);" ng-click="backToEntity()">{{ instance.name }}</a> | {{ instance.instance }}
+              <a href="javascript:void(0);" ng-click="backToEntity()">{{ instance.name }}</a> | <span>{{ instance.instance }}</span>
             </h3>
           </div>
           <div class="col-sm-3 instance-status">
             <span class="text-success">STARTED</span><br/>
-            {{ instance.startTime | date :'MM/dd/yyyy HH:mm' }}
+            <span>{{ instance.startTime | date :'MM/dd/yyyy HH:mm' }}</span>
           </div>
           <div class="col-sm-5 border-left">
             <h4 class="instance-title">

@@ -114,12 +114,12 @@
         </div>
     </div>
 
-    <div class="col-xs-24 mt5 pl0px">
+    <!--<div class="col-xs-24 mt5 pl0px">
         <div class="col-xs-3"><label class="mt15">RUN JOB</label></div>
         <div class="col-xs-4"><label class="mt15 radio-inline">
             <input type="radio"
                    id="runJobOnSourceRadio"
-                   ng-model="UIModel.runOn",
+                   ng-model="UIModel.runOn"
                    value="source"
                    ng-required="true"
                    ng-disabled="UIModel.source.location !== 'HDFS'"/>
@@ -134,20 +134,19 @@
                    ng-disabled="UIModel.target.location !== 'HDFS'"/>
             TARGET
         </label></div>
-    </div>
+    </div>-->
 
-    <div class="col-xs-24 clusterBox pb30px bb1pxw pl0px" data-ng-show="UIModel.runOn==='source'">
-    <!--<div class="col-xs-24 clusterBox pl0px">-->
-      <!--<h3>Source</h3>
+    <div class="col-xs-24 clusterBox pb30px bb1pxw pl0px">
+      <h3>Source</h3>
       <div class="runJobOnBox">
         <input type="radio"
                id="runJobOnSourceRadio"
-               ng-model="UIModel.runOn",
+               ng-model="UIModel.runOn"
                value="source"
                ng-required="true"
                ng-disabled="UIModel.source.location !== 'HDFS'"/>
         Run job here
-      </div>-->
+      </div>
 
       <div class="locationBox" ng-if="UIModel.formType === 'HDFS'">
         <div class="col-xs-3"><label class="mt15">Location</label></div>
@@ -327,9 +326,8 @@
 
     </div>
 
-    <div class="col-xs-24 clusterBox pb30px bb1pxw pl0px" data-ng-show="UIModel.runOn==='target'">
-    <!--<div class="col-xs-24 clusterBox pb30px bb1pxw pl0px">-->
-      <!--<h3>Target</h3>
+    <div class="col-xs-24 clusterBox pb30px bb1pxw pl0px">
+      <h3>Target</h3>
       <div class="runJobOnBox">
         <input type="radio"
                id="runJobOnTargetRadio"
@@ -338,7 +336,7 @@
                ng-required="true"
                ng-disabled="UIModel.target.location !== 'HDFS'"/>
         Run job here
-      </div>-->
+      </div>
       <div class="col-xs-3"><label class="mt15">Location</label></div>
       <div class="col-xs-3"><label class="mt15 radio-inline">
           <input type="radio"
@@ -552,11 +550,9 @@
     </div>
 
   <div class="col-xs-24 advancedOptionsButton pointer" ng-click="expandOptions = !expandOptions">
-    <div class="col-xs-24">
-        <label class="mt15">ADVANCED OPTIONS</label>
-        <span class="entypo chevron-down pull-right mt15" ng-if="!expandOptions"></span>
-        <span class="entypo chevron-up pull-right mt15" ng-if="expandOptions"></span>
-    </div>
+    <label class="mt15">ADVANCED OPTIONS</label>
+    <span class="entypo chevron-down pull-right mt15" ng-if="!expandOptions"></span>
+    <span class="entypo chevron-up pull-right mt15" ng-if="expandOptions"></span>
   </div>
 
   <div id="advancedOptionsBox" class="col-xs-24" ng-class="{expanded:expandOptions}">
@@ -699,49 +695,52 @@
       <h4>Retry</h4>
 
       <div class="policyBox">
-        <label>Policy</label>
-        <select ng-model="UIModel.retry.policy"
-                class="form-control">
-          <option selected value="periodic">PERIODIC</option>
-          <option value="exp-backoff">EXPONENTIAL_BACKOFF</option>
-          <option value="final">FINAL</option>
-        </select>
+        <label>Policy
+            <select ng-model="UIModel.retry.policy"
+                    class="form-control">
+                  <option selected value="periodic">PERIODIC</option>
+                  <option value="exp-backoff">EXPONENTIAL_BACKOFF</option>
+                  <option value="final">FINAL</option>
+            </select>
+        </label>
       </div>
 
       <div>
-        <label>Delay</label>
-        <input type="text"
-               name="frequencyEveryInput"
-               ng-model="UIModel.retry.delay.number"
-               ng-pattern="validations.patterns.twoDigits"
-               ng-keydown="validations.acceptOnlyNumber($event)"
-               class="form-control"
-               validation-optional-message="{{validations.messages.number}}" />
+        <label>Delay
+            <input type="text"
+                   name="frequencyEveryInput"
+                   ng-model="UIModel.retry.delay.number"
+                   ng-pattern="validations.patterns.twoDigits"
+                   ng-keydown="validations.acceptOnlyNumber($event)"
+                   class="form-control"
+                   validation-optional-message="{{validations.messages.number}}" />
 
-        <select ng-model="UIModel.retry.delay.unit"
-                class="form-control">
-          <option selected value="minutes">minutes</option>
-          <option value="hours">hours</option>
-          <option value="days">days</option>
-          <option value="months">months</option>
-        </select>
+            <select ng-model="UIModel.retry.delay.unit"
+                    class="form-control">
+              <option selected value="minutes">minutes</option>
+              <option value="hours">hours</option>
+              <option value="days">days</option>
+              <option value="months">months</option>
+            </select>
+        </label>
       </div>
 
       <div>
-        <label>Attempts</label>
-        <input type="text"
+        <label>Attempts
+            <input type="text"
                name="frequencyEveryInput"
                ng-model="UIModel.retry.attempts"
                ng-pattern="validations.patterns.twoDigits"
                ng-keydown="validations.acceptOnlyNumber($event)"
                class="form-control"
                validation-optional-message="{{validations.messages.number}}" />
+        </label>
       </div>
     </div>
 
-    <div class="aclBox col-xs-24">
+    <div class="aclBox">
       <h4>Access Control List</h4>
-      <div class="col-xs-8">
+      <div class="col-xs-8 pl0px">
         <label>Owner
           <input type="text"
                  name="aclOwnerInput"
@@ -752,7 +751,7 @@
                  validation-message="{{validations.messages.acl.owner}}"/>
         </label>
       </div>
-      <div class="col-xs-8">
+      <div class="col-xs-8 pl0px">
         <label>Group
           <input type="text"
                  name="aclGroupInput"
@@ -763,7 +762,7 @@
                  validation-message="{{validations.messages.acl.group}}" />
         </label>
       </div>
-      <div class="col-xs-8">
+      <div class="col-xs-8 pl0px">
         <label>Permissions
           <input type="text"
                  name="aclPermissionsInput"
