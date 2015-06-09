@@ -23,6 +23,7 @@
 //== Colors
 //
 //## Gray and brand colors for use across Bootstrap.
+@white: #FFFFFF;
 
 @gray-darker:            lighten(#000, 13.5%); // #222
 @gray-dark:              lighten(#000, 20%);   // #333
@@ -34,6 +35,7 @@
 @gray-darken:           #232323;
 
 @green-light:           #69BE28;
+@green-lighter:         lighten(#69BE28, 20%);
 
 @brand-primary:         #428bca;
 @brand-success:         #5cb85c;
@@ -41,9 +43,15 @@
 @brand-warning:         #f0ad4e;
 @brand-danger:          #d9534f;
 
-@headerNavBG: #FFFFFF;
+@headerNavBG: @white;
+@header1Border: @white;
+@header2Border: @green-light;
 @header2NavBG: @green-light;
 @header3NavBG: @gray-dark;
+
+@search-box-border: @white;
+@search-input-color: @white;
+@search-icon-color: @white;
 /*@search-bar-background: #676567;*/
 //== Scaffolding
 //

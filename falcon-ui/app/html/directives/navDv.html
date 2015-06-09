@@ -25,18 +25,61 @@
       </h1>
     </a>
     <div class="loginHeaderBox" ng-show="userLogged()">
-        <button type="button" class="btn btn-lg btn-link" data-ng-click="showMenu=!showMenu">
+        <!--<button type="button" class="btn btn-lg btn-link" data-ng-click="showMenu=!showMenu">
             <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
-        </button>
-        <span> | </span>
-        <span class="user hide"></span><div>{{userToken}}</div>
+        </button>-->
+        <div class="dropdown visible-lg-inline-block">
+            <a class="btn btn-link dropdown-toggle" data-ng-click="" id="settingMenu" data-toggle="dropdown" aria-expanded="true" role="button">
+                <span class="glyphicon glyphicon-cog" title="Settings"></span>
+            </a>
+            <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="settingMenu">
+                <li role="presentation" role="menuitem" tabindex="-1" data-ng-if="theme=='dark'">
+                    <button type="button" class="btn btn-link" data-ng-click="themeChange('white')">
+                        White theme
+                    </button>
+                </li>
+                <li role="presentation" role="menuitem" tabindex="-1" data-ng-if="theme=='white'">
+                    <button type="button" class="btn btn-link" data-ng-click="themeChange('dark')">
+                        Dark Theme
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <span class="separator"> | </span>
+        <a class="btn btn-link" ng-click="notify()">
+            <span class="glyphicon glyphicon-bell" title="Notifications"></span>
+            <div class="notifications">
+                <server-messages></server-messages>
+            </div>
+        </a>
+        <span class="separator"> | </span>
+        <div class="dropdown visible-lg-inline-block">
+            <div class="dropdown-toggle pointer" id="userMenu" data-toggle="dropdown" aria-expanded="true" role="button"><span class="user hide"></span>{{userToken}} <span class="caret"></span></div>
+            <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="userMenu">
+                <li role="presentation">
+                    <a class="btn btn-link" ng-show="userLogged() && !ambariView()" ng-click="logOut()">
+                        <span class="glyphicon glyphicon-log-out" title="Logout"></span>
+                        Logout
+                    </a>
+                </li>
+                <li><a class="btn btn-link" href="http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.1.1/bk_falcon/bk_falcon-20140422.pdf" target="_blank">
+                    <span class="glyphicon glyphicon-question-sign" title="Help"></span>
+                    Help
+                </a></li>
+                <li><a class="btn btn-link" href="http://hortonworks.com/hadoop/falcon/" target="_blank">
+                    <span class="glyphicon glyphicon-info-sign" title="About"></span>
+                    About
+                </a></li>
+            </ul>
+        </div>
     </div>
   </div>
 </nav>
 <nav class="col-sm-24 navbar navbar-default header2" role="navigation" ng-show="userLogged()">
   <div class="col-sm-offset-19 uploadNavWrapper">
       <div class="dropdown">
-          <img src="css/img/32x32_create-entity.png" data-ng-click="showMenu=false" class="dropdown-toggle btn-create" title="Create entity" id="entityMenu" data-toggle="dropdown" aria-expanded="true" role="button" />
+          <!--<img src="css/img/32x32_create-entity.png" data-ng-click="showMenu=false" class="dropdown-toggle btn-create" title="Create entity" id="entityMenu" data-toggle="dropdown" aria-expanded="true" role="button" />-->
+          <img src="css/img/32x32_create-entity.png" class="dropdown-toggle btn-create" title="Create entity" id="entityMenu" data-toggle="dropdown" aria-expanded="true" role="button" />
           <ul class="dropdown-menu" role="menu" aria-labelledby="entityMenu">
               <li role="presentation">
                   <button class="cluster btn btn-link" role="menuitem" tabindex="-1" type="button" id="cluster.create" ng-click="resetCluster()" ng-disabled="isInForm('cluster')" ng-class="{disabled:isInForm('cluster')}">
@@ -61,7 +104,8 @@
           </ul>
       </div>
       <div class="dropdown">
-          <img src="css/img/32x32_upload.png" data-ng-click="showMenu=false" class="dropdown-toggle btn-upload" title="Upload an entity definition" id="uploadMenu" data-toggle="dropdown" aria-expanded="true" role="button" />
+          <!--<img src="css/img/32x32_upload.png" data-ng-click="showMenu=false" class="dropdown-toggle btn-upload" title="Upload an entity definition" id="uploadMenu" data-toggle="dropdown" aria-expanded="true" role="button" />-->
+          <img src="css/img/32x32_upload.png" class="dropdown-toggle btn-upload" title="Upload an entity definition" id="uploadMenu" data-toggle="dropdown" aria-expanded="true" role="button" />
           <ul class="dropdown-menu" role="menu" aria-labelledby="uploadMenu">
               <li role="presentation" class="btn-file">
                   <button class="btn btn-link" role="menuitem" tabindex="-1" type="button">
@@ -81,6 +125,7 @@
 
   </div>
 </nav>
+<!--
 <nav class="col-sm-24 navbar navbar-default header3" role="navigation" ng-show="userLogged() && showMenu">
     <div class="col-sm-offset-4 col-sm-18">
         <div class="loginHeaderBox">
@@ -101,4 +146,4 @@
             </a>
         </div>
     </div>
-</nav>
+</nav>-->

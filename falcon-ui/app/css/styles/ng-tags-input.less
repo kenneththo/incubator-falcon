@@ -25,7 +25,7 @@ tags-input .tags {
   word-wrap: break-word;
   cursor: text;
   background-color: transparent;
-  border: 1px solid white;
+  border: 1px solid @search-box-border;
   //  box-shadow: 1px 1px 1px 0 lightgray inset;
   height: 100%;
   padding-left: 10px;
@@ -34,9 +34,9 @@ tags-input .tags {
 //tags-input .tags.focused {
 tags-input .tags {
   outline: none;
-  -webkit-box-shadow: 0 0 3px 1px white;
-  -moz-box-shadow: 0 0 3px 1px white;
-  box-shadow: 0 0 3px 1px white;
+  -webkit-box-shadow: 0 0 3px 1px @search-box-border;
+  -moz-box-shadow: 0 0 3px 1px @search-box-border;
+  box-shadow: 0 0 3px 1px @search-box-border;
 }
 tags-input .tags .tag-list {
   margin: 0;
@@ -83,7 +83,7 @@ tags-input .tags .input {
   height: 32px;
   font: 18px Arial, sans-serif;
   background: transparent;
-  color: #FFFFFF;
+  color: @search-input-color;
 }
 tags-input .tags .input.invalid-tag {
   color: red;

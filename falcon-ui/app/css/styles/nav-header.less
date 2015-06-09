@@ -19,7 +19,7 @@
 //---------navHeader----------------------//
 
 .navbar {
-  z-index: 2;
+  /*z-index: 2;*/
   margin: 0;
   color: white;
   /*padding: 5px 0;*/
@@ -31,12 +31,15 @@
   }
   &.header1 {
     background-color: @headerNavBG;
+    border-bottom: 3px solid @header1Border;
     .loginHeaderBox {
       /*position: relative;
       top: 50%;*/
-      transform: translateY(80%);
+      /*transform: translateY(80%);*/
       .btn-link {
         color: @green-light !important;
+        padding-top: 12px;
+        text-align: left;
         /*height: 40px;*/
         &:hover {
           color: @green-light;
@@ -47,6 +50,7 @@
   &.header2 {
     min-height: 32px;
     background-color: @header2NavBG;
+    border-bottom: 3px solid @header2Border;
   }
   &.header3 {
     min-height: 32px;
@@ -157,11 +161,14 @@
   /*margin: 0;
   display: inline-block;*/
   //width: 100%;
-  float: right;
+  /*float: right;*/
   /*margin-top: 20px;*/
   color: @green-light;
+  position: absolute;
+  right: 0%;
+  top: 25px;
   /*.pull-right;*/
-  >* {
+  /*>* {
     vertical-align: middle;
     display: inline-block;
     margin-right: 3px;
@@ -169,9 +176,15 @@
       display: inline-block;
       vertical-align: middle;
     }
+  }*/
+  .dropdown-toggle {
+    padding-left: 6px;
   }
+
   .btn-link {
+    padding: 6px 3px;
     color: @green-light;
+    text-decoration: none;
     &:hover {
       color: #FFFFFF;
     }
@@ -182,12 +195,12 @@
   span.entypo{
     vertical-align: sub;
   }
-  span.user {
+  /*span.user {
     background: url(img/user.svg) no-repeat center center;
     background-size: 35px 35px;
     height: 35px;
     width: 35px;
-  }
+  }*/
   /*button {
     border: none;
     cursor: pointer;
@@ -218,6 +231,12 @@
       text-decoration: none;
     }
   }
+  ul.dropdown-menu {
+    border:none;
+    margin: 0px;
+    border-radius: inherit;
+    color: @green-light;
+  }
 }
 
 /* NOTIFICATIONS */
@@ -226,25 +245,28 @@
   display:none;
   position: absolute;
   top:35px;
-  right:70px;
-  width:280px;
-  max-width:280px;
+  right:14%;
+  width:282px;
+  max-width:282px;
   max-height:300px;
   overflow: auto;
+  border: 1px solid @green-light;
+  background-color: white;
+  z-index: 1000;
 }
 
 .messagesArrow {
   content:'.';
   display:none;
   position:absolute;
-  margin-left:-10px;
-  top: 16px;
-  right: 166px;
+  margin-left:-2px;
+  top: 17px;
+  /*right: 166px;*/
   width:0;
   height:0;
-  color:transparent;
+  color:@green-light;
   border:10px solid black;
-  border-color:transparent transparent white;
+  border-color:transparent transparent @green-light;
 }
 
 .notifications .messages:before {
