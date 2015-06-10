@@ -548,9 +548,10 @@ input[type="password"]{
 .buttonsRow {
   height: 43px;
   td {
-    border-top: none !important;
-    border-width: 0px 1px 1px;
+    /*border-top: none !important;*/
+    border-width: @table-header-border-width;
     border-style: solid;
+    border-color: @table-header-border-color;
   }
   margin-bottom: 8px;
 }

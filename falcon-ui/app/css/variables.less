@@ -35,7 +35,7 @@
 @gray-darken:           #232323;
 
 @green-light:           #69BE28;
-@green-lighter:         lighten(#69BE28, 20%);
+@green-lighter:         lighten(#69BE28, 40%);
 
 @brand-primary:         #428bca;
 @brand-success:         #5cb85c;
@@ -53,6 +53,12 @@
 @search-input-color: @white;
 @search-icon-color: @white;
 /*@search-bar-background: #676567;*/
+
+/*
+@header-menu-color: #000;
+@header-menu-background-color: transparent;
+*/
+
 //== Scaffolding
 //
 //## Settings for some of the most global styles.
@@ -153,11 +159,16 @@
 
 //** Padding for `<th>`s and `<td>`s.
 @table-cell-padding:            8px;
+@table-cell-color:              @white;
+@table-cell-hover-color:        @white;
+
+@table-row-selected-background-color: @gray-dark;
 //** Padding for cells in `.table-condensed`.
 @table-condensed-cell-padding:  5px;
 
 //** Default background color used for all tables.
 @table-bg:                      transparent;
+@table-inactive-bg:             #000;
 //** Background color used for `.table-striped`.
 @table-bg-accent:               #f9f9f9;
 //** Background color used for `.table-hover`.
@@ -165,8 +176,14 @@
 @table-bg-active:               @table-bg-hover;
 
 //** Border color for table and cell borders.
-@table-border-color:            #ddd;
+@table-border-color:            transparent;
 
+@table-header-border-width: 0px 1px 1px;
+@table-header-border-color: @gray-dark;
+@table-header-color: @white;
+@table-header-background-color: @gray-dark;
+@table-header-button-color: @white;
+@table-header-button-hover-color: @white;
 
 //== Buttons
 //
@@ -468,12 +485,12 @@
 @pagination-hover-bg:                  @gray-lighter;
 @pagination-hover-border:              #ddd;
 
-@pagination-active-color:              #fff;
-@pagination-active-bg:                 @brand-primary;
+@pagination-active-color:              @white;
+@pagination-active-bg:                 @gray-dark;
 @pagination-active-border:             @brand-primary;
 
 @pagination-disabled-color:            @gray-light;
-@pagination-disabled-bg:               #fff;
+@pagination-disabled-bg:               @gray-dark;
 @pagination-disabled-border:           #ddd;
 
 
