@@ -213,7 +213,6 @@
                 .attr('markerWidth', 8)
                 .attr('markerHeight', 5)
                 .attr('orient', 'auto')
-                .attr('style', 'fill: #fff')
                 .append('svg:path')
                 .attr('d', 'M 0 0 L 10 5 L 0 10 z');
           }

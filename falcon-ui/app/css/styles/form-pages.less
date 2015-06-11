@@ -345,7 +345,7 @@ select {
   }
   .title {
 	font-size: 14px;
-	color: #ffffff;
+	color: @detail-color;
     .mb0;
   }
   .pb15px {
@@ -487,16 +487,21 @@ select {
 
 //----old entity details------------------//
 .detailsHeaders {
-  h3 { display: inline-block;}
-  small{
+  /*h3 { display: inline-block;}
+  small {
     color: @gray-light;
     display: block;
     margin-bottom: -2px;
-  }
+  }*/
   .btn {
     margin-top: -2px;
-    background-color: @gray;
-    color: white;
+    background-color: @detail-header-button-background-color;
+    color: @detail-header-color;
+  }
+  .entityName {
+    color: @detail-header-color;
+    font-size: 15px;
+    padding-left: 5px;
   }
 }
 
@@ -506,25 +511,35 @@ select {
   }
 }
 .entityDetailsBox {
-	background-color: #232323;
-	color: #FFFFFF;
+	background-color: @entity-detail-background-color;
+	color: @detail-color;
+    border: 1px solid @detail-border-color;
 }
+
+.instanceDetails {
+  .detailsBox {
+    border: 1px solid @detail-border-color;
+    margin: 5px;
+    padding: 15px;
+  }
+}
+
 .detailsBox {
   /*border-radius: 5px;
   border: 1px solid @gray-light2;*/
   margin: 0px;
   padding: 0px;
   font-size: 12px;
-  background-color: @gray-dark;
+  background-color: @detail-background-color;
   h4 {
     font-weight: bold;
     margin:5px 0;
-    color: #FFFFFF;
+    color: @detail-color;
   }
   h5 {
     font-weight: bold;
     margin-top:2px;
-	color:#ffffff;
+	color: @detail-color;
   }
   table {
     width: 100%;
@@ -568,7 +583,7 @@ select {
     font-weight: bold;
   }
   label, span {
-    color: #FFFFFF;
+    color: @detail-color;
   }
   label {
 	line-height:1.8em;
