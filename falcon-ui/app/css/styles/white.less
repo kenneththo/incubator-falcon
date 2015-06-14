@@ -56,3 +56,23 @@
 @pagination-active-color:              @green-light;
 @pagination-disabled-bg:               @green-light;
 @pagination-disabled-color:            @white;
+
+.datasetForm {
+  input, input[disabled],textarea, textarea[disabled] {
+    padding-left: 1px;
+    border-width: 1px;
+	background-color: gray!important;
+	color:#ffffff;
+    &.form-control {
+	  background-color: gray!important;
+    }
+  }
+  input:active,input:focus,input:visited,
+  select:active,select:focus,select:visited,
+  textarea:active,textarea:focus,textarea:visited {
+	background-color:#ffffff!important;
+  }
+  select {
+    background-color: gray!important;
+  }
+}
