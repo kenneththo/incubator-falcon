@@ -131,10 +131,14 @@ a.cnclBtn {
     vertical-align: top;
   }
 }
-/*.formBoxContainer {
-  width: 500px;
-  display: inline-block;
-}*/
+.formBoxContainer {
+  .customContainer{
+  	overflow:auto;
+  	border:1px solid @details-form-border;
+  	margin-left:0px;
+  	margin-right:0px;
+  }
+}
 .dt {
   //display: table;
 }
@@ -295,7 +299,7 @@ select {
   }
   select {
     background-color: @form-input-background-color;
-	color:color:#ffffff;
+	color:#ffffff;
   }
   .p0px{
 	padding:0px;
@@ -562,7 +566,7 @@ select {
 	color: #3c763d;
   }
   table.properties {
-	color: #ffffff;
+	color: @form-table-color;
 	border-collapse: collapse;
     .mb0;
   }
