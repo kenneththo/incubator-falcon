@@ -114,7 +114,7 @@
         var plotDependencyGraph = function(nodes, element) {
           var NODE_WIDTH  = 150;
           var NODE_HEIGHT = 60;
-          var RECT_ROUND  = 5;
+          var RECT_ROUND  = 8;
           var SEPARATION  = 40;
           var UNIVERSAL_SEP = 80;
 
@@ -213,7 +213,6 @@
                 .attr('markerWidth', 8)
                 .attr('markerHeight', 5)
                 .attr('orient', 'auto')
-                .attr('style', 'fill: #333')
                 .append('svg:path')
                 .attr('d', 'M 0 0 L 10 5 L 0 10 z');
           }
@@ -243,8 +242,8 @@
 
             var graph = layout.graph();
 
-            svg.attr("width", graph.width);
-            svg.attr("height", graph.height);
+            svg.attr("width", graph.width + 10);
+            svg.attr("height", graph.height + 10);
 
             postRender();
           }

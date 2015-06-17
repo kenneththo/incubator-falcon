@@ -166,6 +166,8 @@
                 resume:true
               };
             }
+            scope.showButtons = scope.selectedRows.length > 0;
+
           }, 50);
         };
 

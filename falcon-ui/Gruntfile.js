@@ -153,7 +153,8 @@
             ieCompat: false
           },
           files: {
-            'dist/css/main.css': 'app/css/main.less'
+            'dist/css/dark-theme.css': 'app/css/main.less',
+            'dist/css/white-theme.css': 'app/css/white-theme.less'
           }
         }
       },

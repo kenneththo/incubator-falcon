@@ -19,34 +19,32 @@
 -->
 <div class="container">
 
-  <div class="row">
-    <div class="col-sm-24">
-      <button class="btn " ui-sref="main">< Back to Search</button>
+  <div class="row pt15px">
+    <div class="col-sm-24 detailsHeaders pl0px">
+      	<button class="btn " ui-sref="main">< </button>
+		<span class="entityName">{{entity.name}}</span>
     </div>
   </div>
-
+<!--*
 	<h3 class="link-icons entity-title entity-link-null" id="entity-title">
 		{{entity.name}} <button type="button" class="detailsBT">
 		<span ng-class="displayIcon((entity.type | uppercase), entity.model)"></span> {{entityTypeLabel}}
 	</button>
-	</h3>
+	</h3>-->
 
-	<div class="row">
-		<div class="col-sm-24">
-			<div class="detailsBox">
-				<h4>
-					Dependencies
-				</h4>
-        <div class="dependencies-graph"><dependencies-graph name="entity.name" type="entity.type"/></div>
+	<div class="row pt15px">
+		<div class="col-sm-24 pl0px">
+			<div class="entityDetailsBox">
+			<div class="dependencies-graph"><dependencies-graph name="entity.name" type="entity.type"/></div>
 			</div>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-sm-16">
-			<div class="detailsBox">
+	<div class="row pt15px">
+		<div class="col-sm-16 entityDetailsBox p10px">
+			<div>
 				<h4>
-					Instances
+					INSTANCES
 				</h4>
 				<instances-list input="instancesList" type="entity.type" name="entity.name" instance-details="instanceDetails" resume="resumeInstance"
 												schedule="scheduleInstance" suspend="suspendInstance" stop="killInstance" rerun="reRunInstance"
@@ -59,7 +57,7 @@
 				<div class="row">
 					<div class="col-sm-21">
 						<h4>
-							Properties
+							PROPERTIES
 						</h4>
 					</div>
 					<div class="col-sm-3">

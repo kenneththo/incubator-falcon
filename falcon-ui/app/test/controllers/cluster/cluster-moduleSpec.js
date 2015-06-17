@@ -57,7 +57,12 @@
         $scope: scope,
         Falcon: falconServiceMock,
         EntityModel: entityModel,
-        $state: stateMock,
+        $state: {
+          current: {
+            name: 'main.forms.custer.general'
+          },
+          go: angular.noop
+        },
         X2jsService: x2jsServiceMock,
         validationService:ValidationService
       });

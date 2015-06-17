@@ -1,4 +1,3 @@
-<!--
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,21 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
--->
-<div>
-  <h4><small>Legends</small></h4>
-  <ul class="lineage-legend">
-    <li class="lineage-legend-feed-inst"><span>Feed instance</span></li>
-    <li class="lineage-legend-feed-inst lineage-legend-terminal"><span>Feed instance (terminal)</span></li>
-    <li class="lineage-legend-process-inst"><span>Process instance</span></li>
-    <li class="lineage-legend-process-inst lineage-legend-terminal"><span>Process instance (terminal)</span></li>
-  </ul>
-</div>
-<div>
-  <center>
-    <svg id="lineage-graph"></svg>
-  </center>
-</div>
-<div>
-  <div id="lineage-info-panel"></div>
-</div>
+(function() {
+    'use strict';
+
+    var app = angular.module('app.controllers.theme', []);
+
+    app.controller('ThemeController', ["$scope", function($scope) {
+
+        $scope.theme = 'dark';
+        $scope.themeChange = function(theme) {
+            $scope.theme = theme;
+        };
+    }]);
+
+}());

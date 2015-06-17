@@ -37,7 +37,7 @@
       controller = $controller('ProcessRootCtrl', {
         $scope: scope,
         $state: {
-          $current:{
+          current:{
             name: 'forms.process.general'
           },
           go: angular.noop
