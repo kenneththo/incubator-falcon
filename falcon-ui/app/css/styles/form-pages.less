@@ -88,18 +88,18 @@ a.cnclBtn {
   }
 }
 .nextBtn {
-  background: #69be28;
-  color: #232323;
+  background: @form-nxt-btn;
+  color: @progress-div-active-color;
   /*line-height: 1.3em;*/
   &:hover {
-    background: darken(#69be28, 10%);
-    color: #232323;
+    background: darken(@form-nxt-btn, 10%);
+    color: @progress-div-active-color;
     outline: hidden;
     /*border-radius: 7px!important;*/
   }
   &:focus, &:active, &:visited {
-    background: darken(#69be28, 10%);
-    color: #232323;
+    background: darken(@form-nxt-btn, 10%);
+    color: @progress-div-active-color;
     outline: hidden;
   }
 }
@@ -131,10 +131,14 @@ a.cnclBtn {
     vertical-align: top;
   }
 }
-/*.formBoxContainer {
-  width: 500px;
-  display: inline-block;
-}*/
+.formBoxContainer {
+  .customContainer{
+  	overflow:auto;
+  	border:1px solid @details-form-border;
+  	margin-left:0px;
+  	margin-right:0px;
+  }
+}
 .dt {
   //display: table;
 }
@@ -281,10 +285,10 @@ select {
   input, input[disabled],textarea, textarea[disabled] {
     padding-left: 1px;
     border-width: 1px;
-	background-color:#333333;
+	background-color:@form-input-background-color;
 	color:#ffffff;
     &.form-control {
-	  background-color:#333333;
+	  background-color:@form-input-background-color;
     }
   }
   input:active,input:focus,input:visited,
@@ -294,7 +298,7 @@ select {
 	color:#333333;
   }
   select {
-    background-color: #333333;
+    background-color: @form-input-background-color;
 	color:#ffffff;
   }
   .p0px{
@@ -345,7 +349,7 @@ select {
   }
   .title {
 	font-size: 14px;
-	color: @detail-color;
+	color: @form-label-color;
     .mb0;
   }
   .pb15px {
@@ -534,12 +538,12 @@ select {
   h4 {
     font-weight: bold;
     margin:5px 0;
-    color: @detail-color;
+    color: @form-label-color;
   }
   h5 {
     font-weight: bold;
     margin-top:2px;
-	color: @detail-color;
+	color:  @form-label-color;
   }
   table {
     width: 100%;
@@ -562,7 +566,7 @@ select {
 	color: #3c763d;
   }
   table.properties {
-	color: #ffffff;
+	color: @form-table-color;
 	border-collapse: collapse;
     .mb0;
   }
@@ -583,7 +587,7 @@ select {
     font-weight: bold;
   }
   label, span {
-    color: @detail-color;
+    color: @form-label-color;
   }
   label {
 	line-height:1.8em;
@@ -600,7 +604,7 @@ select {
 	font-size:12px;*/
   }
   .dt {
-	background-color: #232323;
+	background-color: @details-box-dt-bg;
 	border:1px solid #666666;
   }
   /*&.processCluster {

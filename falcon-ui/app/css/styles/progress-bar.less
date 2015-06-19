@@ -319,18 +319,19 @@
       width: 20%;
       float: left;
       height: 32px;
-      border: 1px solid @green-light;
+      border: 1px solid @progress-div-border;
+      border-bottom:1px solid @progress-div-bottom-border;
       line-height: 32px;
       font-size: 110%;
-      color: @green-light;
+      color: @progress-div-color;
       &.completed {
-        background-color: @gray-dark;
-        color: @gray-lightest;
+        background-color: @progress-div-completed-bg;
+        color: @progress-div-completed-color;
         border-color: @gray-lightest;
       }
       &.active {
-        background-color: @green-light;
-        color: @gray-darken;
+        background-color: @progress-div-active-bg;
+        color: @progress-div-active-color;
       }
     }
   }
