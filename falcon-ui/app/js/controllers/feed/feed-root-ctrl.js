@@ -113,7 +113,11 @@
         };
 
         $scope.isActive = function (route) {
-          return route === $state.$current.name;
+          return route === $state.current.name;
+        };
+
+        $scope.isCompleted = function (route) {
+          return $state.get(route).data && $state.get(route).data.completed;
         };
 
         $scope.parseDate = function(input) {
@@ -174,6 +178,8 @@
           }
         });
         $scope.goNext = function (formInvalid, stateName) {
+          $state.current.data = $state.current.data || {};
+          $state.current.data.completed = !formInvalid;
 
           SpinnersFlag.show = true;
 
@@ -185,7 +191,6 @@
           }
           validationService.displayValidations.show = false;
           validationService.displayValidations.nameShow = false;
-
           $state.go(stateName);
 
 

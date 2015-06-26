@@ -47,7 +47,11 @@
       };
 
       $scope.isActive = function (route) {
-        return route === $state.$current.name;
+        return route === $state.current.name;
+      };
+
+      $scope.isCompleted = function (route) {
+        return $state.get(route).data && $state.get(route).data.completed;
       };
 
       $scope.loadOrCreateEntity = function() {
@@ -110,6 +114,8 @@
 
       //---------------------------------//
       $scope.goNext = function (formInvalid, stateName) {
+        $state.current.data = $state.current.data || {};
+        $state.current.data.completed = !formInvalid;
         SpinnersFlag.show = true;
         if (!validationService.nameAvailable || formInvalid) {
           validationService.displayValidations.show = true;

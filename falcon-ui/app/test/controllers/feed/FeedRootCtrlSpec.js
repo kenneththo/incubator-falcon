@@ -39,7 +39,7 @@
       controller = $controller('FeedController', {
         $scope: scope,
         $state: {
-          $current:{
+          current:{
             name: 'main.forms.feed.general'
           },
           go: angular.noop

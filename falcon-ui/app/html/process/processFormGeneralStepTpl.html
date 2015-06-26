@@ -20,6 +20,10 @@
 <form name="processForm" class="mt10" novalidate>
 
     <div class="col-xs-24">
+        <label class="mt15">GENERAL</label>
+    </div>
+
+    <div class="col-xs-8">
       <label class="light">Name</label>
       <input type="text" class="form-control" ng-keydown="validations.acceptNoSpaces($event)"
              check-name="{type:'process', check:cloningMode}" ng-class="{fakeInvalid:!validations.nameAvailable}"
@@ -34,12 +38,12 @@
     <div id="tagsSection" class="col-xs-24">
       <div ng-repeat="tag in process.tags">
         <div class="row dynamic-table-spacer">
-          <div class="col-xs-10">
+          <div class="col-xs-8">
             <input type="text" class="form-control" ng-model="tag.key" placeholder="key"
                    validation-optional-message="{{validations.messages.key}}"
                    ng-pattern="validations.patterns.alpha" ng-required="tag.value"/>
           </div>
-          <div class="col-xs-11">
+          <div class="col-xs-8">
             <input type="text" class="form-control" placeholder="value"
                    validation-optional-message="{{validations.messages.value}}"
                    ng-model="tag.value" ng-pattern="validations.patterns.alpha" ng-required="tag.key"/>
@@ -52,16 +56,15 @@
         </div>
       </div>
     </div>
-    <div class="col-xs-24 mt10 mb10">
+    <div class="col-xs-24 mt10 pb30px bb1pxw">
       <button type="button" class="btn btn-default btn-xs" ng-click="addTag()">
         <span class="entypo plus"></span> add tag
       </button>
     </div>
 
-  <h4 class="col-xs-24">Workflow</h4>
-
-  <div class="col-xs-24">
-    <div class="light">Name</div>
+  <div class="col-xs-24"><label class="mt15">WORKFLOW</label></div>
+  <div class="col-xs-8">
+    <label class="light">Name</label>
     <input type="text" class="form-control" validation-optional-message="{{validations.messages.name}}"
            id="workflowNameField"
            ng-model="process.workflow.name"
@@ -77,19 +80,19 @@
                 type="radio" id="oozieEngineRadio"
                 ng-change="selectWorkflow()"
                 ng-model="process.workflow.engine"
-                value="oozie" /> Oozie
+                value="oozie" /><span> Oozie</span>
       </div>
       <div class="col-xs-4">
         <input type="radio" id="pigEngineRadio"
                ng-change="selectWorkflow()"
                ng-model="process.workflow.engine"
-               value="pig" /> Pig
+               value="pig" /><span> Pig</span>
       </div>
       <div class="col-xs-4">
         <input type="radio" id="hiveEngineRadio"
                ng-change="selectWorkflow()"
                ng-model="process.workflow.engine"
-               value="hive" /> Hive
+               value="hive" /><span> Hive</span>
       </div>
 
       <select id="engineVersionField"
@@ -105,10 +108,9 @@
           {{version}}
         </option>
       </select>
-
     </div>
   </div>
-  <div class="col-xs-24">
+  <div class="col-xs-24 pb30px bb1pxw">
     <label class="light">Path</label>
     <input type="text" class="form-control"
            id="pathField"
@@ -119,10 +121,10 @@
            ng-pattern="validations.patterns.osPath"/>
   </div>
 
-  <div class="aclBox col-xs-24">
-    <h4>Access Control List</h4>
-    <div>
-      <label>Owner
+  <div class="col-xs-24"><label class="mt15">ACCESS CONTROL LIST</label></div>
+  <div class="col-xs-24 pb30px bb1pxw pl0px">
+    <div class="col-xs-8">
+        <label>Owner</label>
         <input type="text"
                name="aclOwnerInput"
                ng-model="process.ACL.owner"
@@ -130,10 +132,9 @@
                ng-required="true"
                class="form-control"
                validation-message="{{validations.messages.acl.owner}}"/>
-      </label>
     </div>
-    <div>
-      <label>Group
+    <div class="col-xs-8">
+        <label>Group</label>
         <input type="text"
                name="aclGroupInput"
                ng-model="process.ACL.group"
@@ -141,10 +142,9 @@
                ng-required="true"
                class="form-control"
                validation-message="{{validations.messages.acl.group}}" />
-      </label>
     </div>
-    <div>
-      <label>Permissions
+    <div class="col-xs-8">
+        <label>Permissions</label>
         <input type="text"
                name="aclPermissionsInput"
                ng-model="process.ACL.permission"
@@ -152,19 +152,18 @@
                ng-required="true"
                class="form-control"
                validation-message="{{validations.messages.acl.permission}}" />
-      </label>
     </div>
   </div>
 
-  <div class="col-xs-24 mt20">
-    <button id="nextButton" class="btn nextBtn pull-right"
+  <div class="col-xs-24 pb15px mt35">
+    <a class="btn cnclBtn" ui-sref="main">
+      CANCEL
+    </a>
+    <button id="nextButton" class="btn nextBtn"
          ng-disabled="buttonSpinners.show"
          ng-click="goNext(processForm.$invalid, 'forms.process.properties')" >
-      Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+      NEXT <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
     </button>
-    <a class="pull-right" ui-sref="main">
-      Cancel
-    </a>
   </div>
 
 </form>

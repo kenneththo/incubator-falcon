@@ -18,11 +18,13 @@
  */
 -->
 <form name="processForm" novalidate>
-  <div class="col-sm-offset-1 col-sm-22">
-    <h4 ng-if="process.inputs.length === 0">Inputs</h4>
+  <div class="col-sm-24">
+    <div ng-if="process.inputs.length === 0">
+      <label class="mt15">INPUTS</label>
+    </div>
 
-    <div ng-repeat="input in process.inputs" class="row">
-      <h4 class="col-xs-24">Input</h4>
+    <div ng-repeat="input in process.inputs">
+      <div><label class="mt15">INPUT</label></div>
 
       <div class="col-xs-24 detailsBox processCluster">
 
@@ -39,7 +41,7 @@
             </div>
           </div>
 
-        <div class="row">
+        <div class="row pb30px bb1pxw pl0px">
           <div class="col-xs-24">
             <label class="light">Feed</label>
 
@@ -51,10 +53,9 @@
           </div>
         </div>
 
-          <div class="clearfix"></div>
-          <h5>Instance</h5>
+          <div><label class="mt15">INSTANCE</label></div>
 
-          <div class="row">
+          <div class="row pb30px bb1pxw pl0px">
             <div class="col-xs-12">
               <label class="light">Start</label>
 
@@ -73,11 +74,11 @@
                      ng-maxlength="39"/>
             </div>
 
-            <div class="col-xs-24 mt10">
+          </div>
+          <div class="col-xs-24 mt10">
               <button type="button" class="btn btn-default pull-right btn-xs" ng-click="removeInput($index)">
                 <span class="entypo minus"></span> delete
               </button>
-            </div>
           </div>
       </div>
     </div>
@@ -86,10 +87,11 @@
       <span class="entypo plus"></span> add input
     </button>
 
-    <h4 ng-if="process.outputs.length === 0">Outputs</h4>
-
-    <div ng-repeat="output in process.outputs" class="row">
-      <h4 class="col-xs-24">Output</h4>
+    <div ng-if="process.outputs.length === 0">
+      <label class="mt15">OUTPUTS</label>
+    </div>
+    <div ng-repeat="output in process.outputs">
+      <div><label class="mt15">OUTPUT</label></div>
 
       <div class="col-xs-24 detailsBox processCluster">
         <div class="row">
@@ -105,7 +107,7 @@
                    ng-pattern="validations.patterns.id"/>
           </div>
         </div>
-        <div class="row">
+        <div class="row pb30px bb1pxw pl0px">
           <div class="col-xs-24">
             <label class="light">Feed</label>
             <select ng-model="output.feed" ng-required="true" class="col-sm-24 form-control padding0"
@@ -115,9 +117,9 @@
             </select>
           </div>
         </div>
-        <div class="clearfix"></div>
-        <h5>Instance</h5>
-        <div class="row">
+
+        <div><label class="mt15">INSTANCE</label></div>
+        <div class="row pb30px bb1pxw pl0px">
           <div class="col-xs-24">
             <label class="light">Instance</label>
 
@@ -140,21 +142,21 @@
       <span class="entypo plus"></span> add output
     </button>
   </div>
-  <div class="row">
-    <div class="col-xs-24 mt20">
-      <button class="btn prevBtn" type="button"
-           ng-click="goBack('forms.process.clusters')"
-           ng-disabled="buttonSpinners.backShow">
-        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-      </button>
-      <button class="btn nextBtn pull-right"
+  <div class="col-xs-24 pb15px mt35">
+    <button class="btn prevBtn" type="button"
+       ng-click="goBack('forms.process.clusters')"
+       ng-disabled="buttonSpinners.backShow">
+    PREVIOUS <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+    </button>
+    <div class="pull-right">
+        <a class="btn cnclBtn" ui-sref="main">
+            CANCEL
+        </a>
+        <button class="btn nextBtn"
            ng-disabled="buttonSpinners.show"
            ng-click="goNext(processForm.$invalid, 'forms.process.summary')" >
-        Next <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
-      </button>
-      <a class="pull-right" ui-sref="main">
-        Cancel
-      </a>
+        NEXT <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+        </button>
     </div>
   </div>
 </form>

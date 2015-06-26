@@ -107,7 +107,8 @@
             <exclude>bower.json</exclude>
             <exclude>karma.conf.js</exclude>
             <exclude>bower.json</exclude>
-            <exclude>app/css/main.css</exclude>
+            <exclude>app/css/dark-theme.css</exclude>
+            <exclude>app/css/white-theme.css</exclude>
 	    <exclude>app/css/img/**</exclude>
             <exclude>app/test/e2e/protractor.js</exclude>
           </excludes>

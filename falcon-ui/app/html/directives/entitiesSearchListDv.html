@@ -22,17 +22,18 @@
 <table class="listTable table">
   <thead>
     <tr>
-      <th><div class="filtersSearchBox"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
+      <th data-ng-click="showButtons=!showButtons"><div class="filtersSearchBox pointer">Edit<!--<input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/>--></div></th>
       <th><div class="filtersSearchBox pointer" ng-click="toggleSortOrder()">Name <span class="glyphicon glyphicon-sort"></span></div> </th>
       <th><div class="filtersSearchBox">Tags</div></th>
       <th><div class="filtersSearchBox">Cluster</div></th>
       <th><div class="filtersSearchBox">Type</div></th>
       <th><div class="filtersSearchBox">Status</div></th>
     </tr>
+	
   </thead>
 
   <tbody>
-    <tr ng-if="input.length > 0" class="buttonsRow">
+    <tr ng-if="input.length > 0" class="buttonsRow" data-ng-show="showButtons">
       <td class="buttonCell" colspan="9">
         <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSchedule()" ng-disabled="selectedDisabledButtons.schedule">
           <span class="entypo play"></span> <div>Schedule</div>
@@ -41,7 +42,7 @@
           <span class="entypo play"></span> <div>Resume</div>
         </div>
         <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend">
-          <span class="entypo paus"></span> <div>Suspend</div>
+          <span class="entypo paus"></span> <div>Pause</div>
         </div>
         <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeEdit()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
           <span class="entypo cog"></span> <div>Edit</div>
@@ -57,7 +58,16 @@
         </div>
       </td>
     </tr>
-
+	<tr>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th></th>
+	</tr>
+  </tbody>
+  <tbody>
     <tr ng-if="input.length === 0 && !server.responses.listLoaded">
       <td> loading... </td>
     </tr>
@@ -79,7 +89,7 @@
                ng-change="checkButtonsToShow()"/>
       </td>
       <td class="nameCell" ng-init="entityType = item.type | uppercase">
-        <button type="button" class="btn btn-default" ng-click="goEntityDetails(item.name, item.type)">
+        <button type="button" class="btn btn-link" ng-click="goEntityDetails(item.name, item.type)">
           <span ng-class="displayIcon((item.type | uppercase), item.tags.tag)"></span> {{ item.name }}
         </button>
       </td>
@@ -112,7 +122,7 @@
       </td>
     </tr>
 
-    <tr>
+    <tr class="paginationRow">
       <td colspan="9">
         <nav class="pull-right">
           <ul class="pagination">

@@ -20,8 +20,10 @@
 <table class="listTable table">
   <thead>
   <tr>
-    <th><div class="filtersSearchBox vertical-align"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
-    <th><div class="filtersSearchBox vertical-align">Instance</div></th>
+    <th><div class="filtersSearchBox vertical-align ptb5px"><input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/></div></th>
+    <th><div class="filtersSearchBox vertical-align">Instance</div>
+		 <input type="text" class="form-control dateInput" placeholder="instance" restrict="reject">
+	</th>
     <th><div class="filtersSearchBox">Started&nbsp;<span class="glyphicon glyphicon-sort pointer" ng-click="filterInstances('startTime')"></span>
       <input type="text" class="form-control dateInput" ng-model="startFilter" ng-enter="filterInstances('startTime')" placeholder="mm/dd/yyyy hh:mm" mask="12/31/2999 23:59" restrict="reject">
     </div></th>
@@ -44,7 +46,7 @@
 
   <tbody>
   <tr ng-if="input.length > 0" class="buttonsRow">
-    <td class="buttonCell" colspan="9">
+    <td class="buttonCell border0px" colspan="9">
       <div class="btn btn-gray btn-xs buttons-to-show" ng-click="download()" ng-disabled="selectedRows.length === 0 || selectedRows.length > 1">
         <span class="entypo down"></span> <div>Log</div>
       </div>
@@ -52,7 +54,7 @@
         <span class="entypo play"></span> <div>Resume</div>
       </div>
       <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeSuspend()" ng-disabled="selectedDisabledButtons.suspend">
-        <span class="entypo paus"></span> <div>Suspend</div>
+        <span class="entypo paus"></span> <div>Pause</div>
       </div>
       <div class="btn btn-gray btn-xs buttons-to-show" ng-click="scopeStop()" ng-disabled="selectedDisabledButtons.stop">
         <span class="entypo stop"></span> <div>Kill</div>
@@ -101,9 +103,8 @@
     </td>
     <td class="stateCell">
       <span ng-class="{'blink-success': item.status === 'RUNNING', 'text-success': item.status === 'SUCCEEDED',
-      'blink-warning': item.status === 'SUSPENDED', 'text-danger': item.status === 'KILLED',
-      'blink-danger': item.status === 'UNKNOWN', 'blink-warning': item.status === 'WAITING',
-      'text-danger': item.status === 'FAILED'}">{{ item.status }}</span>
+      'blink-warning': (item.status === 'SUSPENDED') || (item.status === 'WAITING'), 'text-danger': (item.status === 'KILLED') || (item.status === 'FAILED'),
+      'blink-danger': item.status === 'UNKNOWN'}">{{ item.status }}</span>
     </td>
 
   </tr>
@@ -115,7 +116,7 @@
     </td>
   </tr>
 
-  <tr>
+  <tr class="paginationRow">
     <td colspan="5">
       <nav class="pull-right">
         <ul class="pagination">

@@ -18,22 +18,23 @@
  */
 -->
 
-<div class="col-sm-offset-1 col-sm-22">
+<div class="col-sm-24">
 
   <div class="row searchBoxContainer">
-    <div class="col-sm-4"></div>
-    <div class="col-sm-16">
+    <div class=" col-sm-offset-4 col-sm-16">
+      <!--<i class="glyphicon glyphicon-refresh search-loading-icon" ng-show="loading"></i>-->
       <img src="css/img/ajax-loader.gif" class="glyphicon search-loading-icon" ng-show="loading"/>
-      <i class="glyphicon glyphicon-search search-icon" ng-hide="loading"></i>
       <tags-input ng-model="tags" min-length="1" add-on-space="true" on-tag-added="displayResults()"
                   on-tag-removed="displayResults()"></tags-input>
-      <i id="nsPopover" class="glyphicon glyphicon-question-sign" ng-class="tags.length > 0 ? 'question-icon' : 'remove-icon'"
+         <!--ng-class="tags.length > 0 ? 'question-icon' : 'remove-icon'"-->
+      <i id="nsPopover" class="glyphicon glyphicon-question-sign question-icon"
          ns-popover
          ns-popover-template="menu"
          ns-popover-trigger="click"
          ns-popover-theme="ns-popover-tooltip-theme"
          ns-popover-timeout="5"
          ns-popover-placement="bottom|right"></i>
+      <i class="glyphicon glyphicon-search search-icon" ng-hide="loading"></i>
       <script type="text/ng-template" id="menu">
         <div class="triangle"></div>
         <div class="ns-popover-tooltip">
@@ -49,16 +50,13 @@
       </script>
       <i class="glyphicon glyphicon-remove remove-icon" ng-if="tags.length > 0" ng-click="clearTags()"></i>
     </div>
-    <div class="col-sm-4"></div>
   </div>
 
-  <div class="col-sm-24 dashboardBox" ng-show="searchList.length > 0">
-    <div class="row">
-      <div class="col-sm-24">
+  <div class="row searchResultContainer" ng-show="searchList.length > 0">
+    <div class="col-sm-offset-2 col-sm-20 dashboardBox">
         <entities-search-list input="searchList" entity-details="entityDetails" clone="cloneEntity" tags="tags"
                               remove="deleteEntity" edit="editEntity" schedule="scheduleEntity" suspend="suspendEntity"
                               resume="resumeEntity" focus-search="focusSearch" pages="pages" go-page="goPage"/>
-      </div>
     </div>
   </div>
 

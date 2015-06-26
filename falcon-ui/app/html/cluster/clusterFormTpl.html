@@ -17,63 +17,55 @@
  * limitations under the License.
  */
 -->
-<div class="col-xs-22 col-xs-offset-1 clusterForm">
+<div class="clusterForm">
   <div class="col-xs-24">
     <div class="row">
-      <h3 id="cluster.title" class="col-xs-24">
-        New Cluster
-      </h3>
-      <div class="formBoxContainer detailsBox">
+      <div class="col-xs-14 formBoxContainer detailsBox">
         <div class="clusterProgressBox" ng-class="{summary:secondStep===true}">
           <div class="progressBar col-xs-24">
-            <div>
-              <span>
-                <div>1<span class="entypo check"></span></div>
-                <h6>General</h6>
-              </span>
-              <span>
-                <div>2</div>
-                <h6>Summary</h6>
-              </span>
-            </div>
+            <div class="text-center" ng-class="{
+                active:isActive('forms.cluster.general'),
+                completed:isCompleted('forms.cluster.general')}">General</div>
+            <div class="text-center" ng-class="{
+                active:isActive('forms.cluster.summary'),
+                completed:isCompleted('forms.cluster.summary')}">Summary</div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-xs-offset-1 col-xs-22" ui-view></div>
+        <div class="row customContainer">
+          <div class="col-xs-offset-1 col-xs-22">
+            <div class="col-xs-24 bb1pxw">
+              <label class="title">CLUSTER</label>
+            </div>
+            <div ui-view></div>
+          </div>
         </div>
       </div>
 
-      <div class="xmlPreviewContainer detailsBox">
-        <div class="row">
+      <div class="col-xs-10 xmlPreviewContainer detailsBox">
+          <div class="row dt">
+		  <div class="col-xs-24 pt15px">
+            <div class="col-xs-13 noSpecial"><h5>XML Preview</h5></div>
 
-          <h5 class="col-xs-13 col-xs-offset-1 noSpecial">XML Preview</h5>
-
-          <div class="col-xs-9">
-            <button type="button"
-                    id="cluster.editXML"
-                    class="btn btn-default btn-xs pull-right"
-                    ng-click="xmlPreview.editXML()"
-                    ng-class="{'btn-warning':xmlPreview.edit}">
-              <div ng-if="!xmlPreview.edit">Edit XML</div>
-              <div ng-if="xmlPreview.edit">Finish</div>
-            </button>
-          </div>
-
+            <div class="pull-right">
+                <button type="button"
+                        id="cluster.editXML"
+                        class="btn btn-default btn-xs"
+                        ng-click="xmlPreview.editXML()"
+                        ng-class="{'btn-warning':xmlPreview.edit}">
+                  <div ng-if="!xmlPreview.edit">Edit XML</div>
+                  <div ng-if="xmlPreview.edit">Finish</div>
+                </button>
+            </div>
+		  </div>
           <div class="col-xs-24">
-            <div class="row">
-              <div class="col-xs-22 col-xs-offset-1">
-                <textarea ng-model="prettyXml"
-                          elastic
-                          class="form-control"
-                          ng-disabled="!xmlPreview.edit">
-                </textarea>
-              </div>
-            </div>
+            <textarea ng-model="prettyXml"
+                      elastic
+                      class="form-control"
+                      ng-disabled="!xmlPreview.edit">
+            </textarea>
           </div>
-
         </div>
       </div>
-
     </div>
   </div>
 </div>

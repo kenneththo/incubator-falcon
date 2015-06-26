@@ -32,9 +32,9 @@
     <label class="col-sm-24">Tags</label>
     <div class="col-sm-24">
       <div ng-repeat="tag in process.tags | filter:{key: '!!'}">
-        {{tag.key}} = {{tag.value}}
+        <span>{{tag.key}}</span> = <span>{{tag.value}}</span>
       </div>
-      <div ng-show="!hasTags()">No tags selected</div>
+      <div ng-show="!hasTags()"><span>No tags selected</span></div>
     </div>
 
     <div class="clearfix hidden-md">&nbsp</div>
@@ -152,21 +152,21 @@
   </div>
   <div class="clearfix hidden-md">&nbsp</div>
 
-  <div class="row">
-    <div class="col-xs-24 mt20">
-      <button type="button" class="btn prevBtn"
-           ng-click="goBack('forms.process.io')"
-           ng-disabled="buttonSpinners.backShow">
-        Previous <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
-      </button>
-      <button class="btn nextBtn pull-right"
+  <div class="col-xs-24 mt35 pb15px pl0px">
+    <button type="button" class="btn prevBtn"
+         ng-click="goBack('forms.process.io')"
+         ng-disabled="buttonSpinners.backShow">
+      PREVIOUS <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.backShow" />
+    </button>
+    <div class="pull-right">
+      <a class="btn cnclBtn" ui-sref="main">
+        CANCEL
+      </a>
+      <button class="btn nextBtn"
            ng-disabled="processForm.$invalid || buttonSpinners.show"
            ng-click="saveEntity()">
-        Save <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
+        SAVE <img src="css/img/ajax-loader.gif" ng-if="buttonSpinners.show" />
       </button>
-      <a class="pull-right" ui-sref="main">
-        Cancel
-      </a>
     </div>
   </div>
 
